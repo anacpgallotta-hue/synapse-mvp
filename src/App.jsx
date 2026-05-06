@@ -31,12 +31,12 @@ const X = ({ className = "", size = 20 }) => <svg {...iconProps} width={size} he
 // DATA INICIAL (mesmo do MVP)
 // ============================
 const initialTeam = [
-  { id: "t1", name: "Mel", role: "Executor", area: "viagens", activeTasks: 0 },
-  { id: "t2", name: "Julia Costa", role: "Executor", area: "viagens", activeTasks: 0 },
-  { id: "t3", name: "Pedro Santos", role: "Executor", area: "viagens", activeTasks: 0 },
-  { id: "t4", name: "Antônio", role: "Senior", area: "viagens", activeTasks: 0 },
-  { id: "t5", name: "Mari Ribeiro", role: "Senior", area: "viagens", activeTasks: 0 },
-  { id: "t6", name: "Amanda Gomes", role: "Senior", area: "viagens", activeTasks: 0 },
+  { id: "t1", name: "Mel", role: "Executor", area: "eventos", activeTasks: 0 },
+  { id: "t2", name: "Julia Costa", role: "Executor", area: "eventos", activeTasks: 0 },
+  { id: "t3", name: "Pedro Santos", role: "Executor", area: "eventos", activeTasks: 0 },
+  { id: "t4", name: "Antônio", role: "Senior", area: "eventos", activeTasks: 0 },
+  { id: "t5", name: "Mari Ribeiro", role: "Senior", area: "eventos", activeTasks: 0 },
+  { id: "t6", name: "Amanda Gomes", role: "Senior", area: "eventos", activeTasks: 0 },
   { id: "t7", name: "Carlos Lima", role: "Executor", area: "eventos", activeTasks: 0 },
   { id: "t8", name: "Bianca Reis", role: "Executor", area: "eventos", activeTasks: 0 },
   { id: "t9", name: "Rafael Souza", role: "Senior", area: "eventos", activeTasks: 0 },
@@ -51,30 +51,30 @@ const initialClients = [
 ];
 
 const initialProjects = [
-  { id: "p1", name: "Viagem Patagônia Premium", clientId: "c5", client: "XP", type: "Viagem", area: "viagens", status: "em_execucao", priority: "Alta", responsible: "Antônio", deadline: "2026-05-15", progress: 65 },
-  { id: "p2", name: "Expedição Torres del Paine", clientId: "c3", client: "Red Bull", type: "Viagem", area: "viagens", status: "em_execucao", priority: "Alta", responsible: "Mari Ribeiro", deadline: "2026-05-28", progress: 30 },
+  { id: "p1", name: "Gala de Premiação Anual", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Antônio", deadline: "2026-05-15", progress: 65 },
+  { id: "p2", name: "Festival de Esportes Radicais", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Mari Ribeiro", deadline: "2026-05-28", progress: 30 },
   { id: "p3", name: "Convenção Anual de Vendas", clientId: "c1", client: "Ambev", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Rafael Souza", deadline: "2026-06-10", progress: 40 },
   { id: "p4", name: "Summit Digital 2026", clientId: "c2", client: "Hotmart", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Rafael Souza", deadline: "2026-06-20", progress: 20 },
-  { id: "p5", name: "Retreat Executivo Patagônia", clientId: "c1", client: "Ambev", type: "Viagem", area: "viagens", status: "em_execucao", priority: "Média", responsible: "Antônio", deadline: "2026-06-01", progress: 15 },
-  { id: "p6", name: "Lançamento Produto - Evento", clientId: "c4", client: "Seara", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Rafael Souza", deadline: "2026-05-25", progress: 50 },
-  { id: "p7", name: "Incentivo Equipe Comercial", clientId: "c5", client: "XP", type: "Viagem", area: "viagens", status: "em_execucao", priority: "Média", responsible: "Mari Ribeiro", deadline: "2026-07-10", progress: 10 },
-  { id: "p10", name: "Operações", clientId: "c5", client: "XP", type: "Viagem", area: "viagens", status: "em_execucao", priority: "Alta", responsible: "Antônio", deadline: "2026-05-30", progress: 0 },
+  { id: "p5", name: "Happy Hour Corporativo", clientId: "c1", client: "Ambev", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Antônio", deadline: "2026-06-01", progress: 15 },
+  { id: "p6", name: "Lançamento de Produto", clientId: "c4", client: "Seara", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Rafael Souza", deadline: "2026-05-25", progress: 50 },
+  { id: "p7", name: "Premiação Top Performers", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Mari Ribeiro", deadline: "2026-07-10", progress: 10 },
+  { id: "p10", name: "Operações", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Antônio", deadline: "2026-05-30", progress: 0 },
   { id: "p8", name: "Workshop Inovação", clientId: "c2", client: "Hotmart", type: "Evento", area: "eventos", status: "em_execucao", priority: "Baixa", responsible: "Rafael Souza", deadline: "2026-07-15", progress: 5 },
-  { id: "p9", name: "Experiência Gourmet Torres", clientId: "c3", client: "Red Bull", type: "Viagem", area: "viagens", status: "em_execucao", priority: "Média", responsible: "Antônio", deadline: "2026-06-15", progress: 25 },
+  { id: "p9", name: "Ativação de Marca - Evento Gastronômico", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Antônio", deadline: "2026-06-15", progress: 25 },
 ];
 
 const initialTasks = [
-  { id: "tk5", title: "Organizar reunião de alinhamento pré-viagem", projectId: "p1", project: "Viagem Patagônia Premium", executor: "t2", executorName: "Julia Costa", priority: "Alta", status: "a_fazer", area: "viagens", deadline: "2026-04-30T12:00", description: "Agendar e organizar reunião de alinhamento com todos os stakeholders antes da viagem", checklist: [{ text: "Definir pauta", done: false }, { text: "Enviar convites", done: false }, { text: "Preparar material", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
+  { id: "tk5", title: "Organizar reunião de alinhamento pré-evento", projectId: "p1", project: "Gala de Premiação Anual", executor: "t2", executorName: "Julia Costa", priority: "Alta", status: "a_fazer", area: "eventos", deadline: "2026-04-30T12:00", description: "Agendar e organizar reunião de alinhamento com todos os stakeholders antes do evento", checklist: [{ text: "Definir pauta", done: false }, { text: "Enviar convites", done: false }, { text: "Preparar material", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
   { id: "tk6", title: "Montar checklist de fornecedores", projectId: "p3", project: "Convenção Anual de Vendas", executor: "t7", executorName: "Carlos Lima", priority: "Alta", status: "em_execucao", area: "eventos", deadline: "2026-04-18T17:00", description: "Listar e confirmar todos os fornecedores para o evento", checklist: [{ text: "Buffet", done: true }, { text: "Som e luz", done: false }, { text: "Decoração", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
   { id: "tk7", title: "Criar cronograma do evento", projectId: "p3", project: "Convenção Anual de Vendas", executor: "t8", executorName: "Bianca Reis", priority: "Média", status: "a_fazer", area: "eventos", deadline: "2026-04-25T12:00", description: "Desenvolver cronograma detalhado hora a hora do evento", checklist: [{ text: "Definir programação", done: false }, { text: "Alocar espaços", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
 ];
 
 const initialLearnings = [
-  { id: "l1", title: "Validação incompleta do seguro viagem", description: "Item reprovado em QA: cobertura do seguro não incluía explicitamente escalada em altitude. Precisou ser refeito antes da entrega ao cliente.", client: "Red Bull", date: "2025-12-18", type: "erro", origin: "QA", tags: ["seguro", "qa", "especificações"], area: "viagens" },
+  { id: "l1", title: "Checklist de fornecedores incompleto", description: "Item reprovado em QA: fornecedor de som e iluminação não tinha contrato confirmado. Precisou ser refeito antes da entrega ao cliente.", client: "Ambev", date: "2025-12-18", type: "erro", origin: "QA", tags: ["fornecedores", "qa", "checklist"], area: "eventos" },
 ];
 
 const initialFeedbacks = [
-  { id: "f2", projectId: "p2", clientId: "c3", clientName: "Red Bull", type: "Sugestão", text: "Incluir opção de trilha alternativa para participantes com menor preparo físico.", date: "2026-04-14", status: "pendente", assignedTaskId: null },
+  { id: "f2", projectId: "p2", clientId: "c3", clientName: "Red Bull", type: "Sugestão", text: "Incluir opção de atividade alternativa para participantes com menor preparo físico.", date: "2026-04-14", status: "pendente", assignedTaskId: null },
 ];
 
 // ============================
@@ -90,9 +90,9 @@ function AppProvider({ children }) {
   const [learnings, setLearnings] = useState(initialLearnings);
   const [feedbacks, setFeedbacks] = useState(initialFeedbacks);
   const [notifications, setNotifications] = useState([
-    { id: "n1", text: "Tarefa 'Confirmar guias locais' enviada para QA", date: "2026-04-16", read: false },
-    { id: "n2", text: "Feedback recebido do cliente XP sobre Viagem Patagônia Premium", date: "2026-04-15", read: false },
-    { id: "n3", text: "Prazo se aproximando: Criar roteiro detalhado dia 1-3", date: "2026-04-16", read: false },
+    { id: "n1", text: "Tarefa 'Montar checklist de fornecedores' enviada para QA", date: "2026-04-16", read: false },
+    { id: "n2", text: "Feedback recebido do cliente XP sobre Gala de Premiação Anual", date: "2026-04-15", read: false },
+    { id: "n3", text: "Prazo se aproximando: Criar cronograma do evento", date: "2026-04-16", read: false },
   ]);
 
   const addTask = useCallback((task) => {
@@ -162,6 +162,26 @@ function AppProvider({ children }) {
     setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: "em_execucao", qaComment: "" } : t));
   }, []);
 
+  const revertFromQA = useCallback((taskId) => {
+    setTasks(prev => {
+      const task = prev.find(t => t.id === taskId);
+      setNotifications(n => [{ id: "n" + Date.now(), text: `Tarefa '${task?.title}' retirada do QA pelo executor`, date: new Date().toISOString().split("T")[0], read: false }, ...n]);
+      return prev.map(t => t.id === taskId ? { ...t, status: "em_execucao", submittedLink: "", submittedFiles: [] } : t);
+    });
+  }, []);
+
+  const revertFromCompleted = useCallback((taskId) => {
+    setTasks(prev => {
+      const task = prev.find(t => t.id === taskId);
+      setNotifications(n => [{ id: "n" + Date.now(), text: `Aprovação revertida: '${task?.title}' voltou para QA`, date: new Date().toISOString().split("T")[0], read: false }, ...n]);
+      return prev.map(t => t.id === taskId ? { ...t, status: "em_qa", qaComment: "" } : t);
+    });
+  }, []);
+
+  const dismissNotification = useCallback((notifId) => {
+    setNotifications(prev => prev.filter(n => n.id !== notifId));
+  }, []);
+
   const getTeamWithLoad = useCallback((area) => {
     return team.filter(m => m.area === area).map(m => ({
       ...m,
@@ -176,7 +196,7 @@ function AppProvider({ children }) {
   }, [team, tasks]);
 
   return (
-    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, resubmitTask, getTeamWithLoad, setNotifications }}>
+    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, resubmitTask, revertFromQA, revertFromCompleted, dismissNotification, getTeamWithLoad, setNotifications }}>
       {children}
     </AppContext.Provider>
   );
@@ -244,15 +264,15 @@ function Header({ currentView, setView, currentExecutor, setShowNotif, notifCoun
   };
 
   const headerTitle = isQA
-    ? (currentView === "qa_selector" ? "Portal QA" : `Portal QA – ${currentView.includes("viagens") ? "Viagens" : "Eventos"}`)
+    ? "Portal QA"
     : isLider
-    ? (currentView === "lider_selector" ? "Portal Líder" : `Portal ${currentView.includes("viagens") ? "Viagens" : "Eventos"}`)
+    ? "Portal Líder"
     : isProjectDetail ? "Detalhe do Projeto"
     : "Jazz Side";
 
-  const subtitle = isQA && currentView !== "qa_selector"
+  const subtitle = isQA
     ? "Revise entregas, devolva com comentários claros e gere aprendizados para o time."
-    : isLider && currentView !== "lider_selector"
+    : isLider
     ? "Gerencie projetos e distribua tarefas para o time."
     : currentView === "executor" ? `Olá, ${currentExecutor}`
     : null;
@@ -454,7 +474,7 @@ function ExecutorView({ executorId, onTaskClick }) {
 // TASK DETAIL VIEW
 // ============================
 function TaskDetailView({ taskId, onBack }) {
-  const { tasks, toggleChecklist, submitToQA, resubmitTask } = useContext(AppContext);
+  const { tasks, toggleChecklist, submitToQA, resubmitTask, revertFromQA } = useContext(AppContext);
   const task = tasks.find(t => t.id === taskId);
   const [link, setLink] = useState("");
   const [files, setFiles] = useState([]);
@@ -509,6 +529,21 @@ function TaskDetailView({ taskId, onBack }) {
           <h3 className="font-bold text-red-700 mb-2">Devolvida pelo QA</h3>
           <p className="text-sm text-gray-700 mb-4">{task.qaComment}</p>
           <Button size="sm" onClick={handleResubmit}>Retomar execução</Button>
+        </Card>
+      )}
+
+      {task.status === "em_qa" && (
+        <Card className="p-6 mb-6 border-l-4 border-l-purple-500">
+          <h3 className="font-bold text-purple-700 mb-2">Enviada para QA</h3>
+          <p className="text-sm text-gray-700 mb-4">Esta tarefa está aguardando revisão do QA. Se você precisa fazer ajustes, pode retirar do QA.</p>
+          <Button variant="outline" size="sm" onClick={() => { revertFromQA(taskId); }}>← Retirar do QA e voltar a editar</Button>
+        </Card>
+      )}
+
+      {task.status === "concluida" && (
+        <Card className="p-6 mb-6 border-l-4 border-l-green-500">
+          <h3 className="font-bold text-green-700 mb-2">Tarefa concluída</h3>
+          <p className="text-sm text-gray-700">{task.qaComment && `Comentário do QA: ${task.qaComment}`}</p>
         </Card>
       )}
 
@@ -593,34 +628,10 @@ function TaskDetailView({ taskId, onBack }) {
 // ============================
 // QA VIEWS
 // ============================
-function QASquadSelector({ onSelect }) {
-  const squads = [
-    { key: "viagens", title: "Viagens", desc: "Projetos de viagens corporativas, roteiros e logística.", icon: Plane, color: "text-green-700", bg: "bg-green-50" },
-    { key: "eventos", title: "Eventos", desc: "Projetos de eventos presenciais, convenções e lançamentos.", icon: Calendar, color: "text-orange-600", bg: "bg-orange-50" },
-  ];
-  return (
-    <div className="max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Escolha o squad de QA</h1>
-      <p className="text-gray-500 mb-8">Selecione qual área você quer revisar.</p>
-      <div className="grid grid-cols-2 gap-6">
-        {squads.map(s => {
-          const IconComp = s.icon;
-          return (
-            <Card key={s.key} className="p-6 hover:shadow-md transition-shadow cursor-pointer" onClick={() => onSelect(s.key)}>
-              <div className={`h-10 w-10 rounded-lg ${s.bg} flex items-center justify-center mb-4`}><IconComp size={22} className={s.color} /></div>
-              <h3 className="font-bold text-lg text-gray-900 mb-1">{s.title}</h3>
-              <p className="text-sm text-gray-500 mb-4 leading-relaxed">{s.desc}</p>
-              <span className="text-sm font-medium text-gray-900 hover:underline">Entrar →</span>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
+// QASquadSelector removed — only eventos squad exists now
 
 function QAPortalView({ area, onBack, onViewErrors }) {
-  const { tasks, approveTask, rejectTask } = useContext(AppContext);
+  const { tasks, approveTask, rejectTask, revertFromCompleted } = useContext(AppContext);
   const [comments, setComments] = useState({});
   const [expandedId, setExpandedId] = useState(null);
   const [tab, setTab] = useState("pendentes");
@@ -640,8 +651,8 @@ function QAPortalView({ area, onBack, onViewErrors }) {
       <div className="flex items-center justify-between mb-8">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            {area === "viagens" ? <Plane size={28} className="text-green-700" /> : <Calendar size={28} className="text-orange-600" />}
-            <h1 className="text-3xl font-bold text-gray-900">QA {area === "viagens" ? "Viagens" : "Eventos"}</h1>
+            <Calendar size={28} className="text-orange-600" />
+            <h1 className="text-3xl font-bold text-gray-900">QA Eventos</h1>
           </div>
           <p className="text-gray-500">Revise entregas, devolva com comentários claros e gere aprendizados para o time.</p>
         </div>
@@ -884,9 +895,12 @@ function QAPortalView({ area, onBack, onViewErrors }) {
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <h4 className="font-semibold text-gray-900">{task.title}</h4>
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-green-50 text-green-700 border border-green-200">
-                      <span className="h-1.5 w-1.5 rounded-full bg-green-500" /> Aprovada
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => revertFromCompleted(task.id)} className="text-xs text-gray-400 hover:text-red-500 px-2 py-1 rounded border border-gray-200 hover:border-red-300 transition-colors">Reverter aprovação</button>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-green-50 text-green-700 border border-green-200">
+                        <span className="h-1.5 w-1.5 rounded-full bg-green-500" /> Aprovada
+                      </span>
+                    </div>
                   </div>
                   <p className="text-sm text-gray-500 mt-0.5">{task.project} · {task.executorName} · {new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</p>
                 </div>
@@ -918,7 +932,7 @@ function QAErrorsView({ area, onBack }) {
         <Sparkles size={28} className="text-orange-500" />
         <h1 className="text-3xl font-bold text-gray-900">Erros & Aprendizados</h1>
       </div>
-      <p className="text-gray-500 mb-6">Base viva de aprendizados do squad de {area === "viagens" ? "Viagens" : "Eventos"}. Consulte antes de planejar, revisar ou entregar.</p>
+      <p className="text-gray-500 mb-6">Base viva de aprendizados do squad de Eventos. Consulte antes de planejar, revisar ou entregar.</p>
 
       <Card className="mb-6">
         <button onClick={() => setShowForm(!showForm)} className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors rounded-xl">
@@ -966,31 +980,7 @@ function QAErrorsView({ area, onBack }) {
 // ============================
 // LÍDER VIEWS
 // ============================
-function LiderSquadSelector({ onSelect }) {
-  const squads = [
-    { key: "viagens", title: "Viagens", desc: "Gestão de projetos e demandas do time de viagens.", icon: Plane, color: "text-green-700", bg: "bg-green-50" },
-    { key: "eventos", title: "Eventos", desc: "Gestão de eventos, convenções e ativações.", icon: Calendar, color: "text-orange-600", bg: "bg-orange-50" },
-  ];
-  return (
-    <div className="max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Escolha o portal de liderança</h1>
-      <p className="text-gray-500 mb-8">Selecione qual squad você quer gerenciar.</p>
-      <div className="grid grid-cols-2 gap-6">
-        {squads.map(s => {
-          const IconComp = s.icon;
-          return (
-            <Card key={s.key} className="p-6 hover:shadow-md transition-shadow cursor-pointer" onClick={() => onSelect(s.key)}>
-              <div className={`h-10 w-10 rounded-lg ${s.bg} flex items-center justify-center mb-4`}><IconComp size={22} className={s.color} /></div>
-              <h3 className="font-bold text-lg text-gray-900 mb-1">{s.title}</h3>
-              <p className="text-sm text-gray-500 mb-4 leading-relaxed">{s.desc}</p>
-              <span className="text-sm font-medium text-gray-900 hover:underline">Entrar →</span>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
+// LiderSquadSelector removed — only eventos squad exists now
 
 function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProjectClick, onViewAsClient }) {
   const { projects, tasks, feedbacks, clients, addTask, assignFeedbackAsTask, getTeamWithLoad, team: rawTeam } = useContext(AppContext);
@@ -1072,11 +1062,11 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
         </div>
       </div>
       <div className="flex items-center gap-3 mb-1">
-        {area === "viagens" ? <Plane size={28} className="text-green-600" /> : <Calendar size={28} className="text-orange-600" />}
-        <h1 className="text-3xl font-bold">Portal {area === "viagens" ? "Viagens" : "Eventos"}</h1>
+        <Calendar size={28} className="text-orange-600" />
+        <h1 className="text-3xl font-bold">Portal Eventos</h1>
       </div>
       <p className="text-gray-500 mb-1">Gerencie projetos e distribua tarefas para o time.</p>
-      <p className="text-sm text-gray-400 mb-6">Você está vendo projetos da área de {area === "viagens" ? "Viagens" : "Eventos"}.</p>
+      <p className="text-sm text-gray-400 mb-6">Você está vendo todos os projetos de eventos.</p>
 
       <div className="flex gap-2 mb-6">
         <Button variant={tab === "geral" ? "outline" : "ghost"} size="sm" onClick={() => setTab("geral")} className={tab === "geral" ? "border-green-600 text-green-700" : ""}>Visão geral</Button>
@@ -1377,12 +1367,11 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
   const clientProjects = projects.filter(p => p.clientId === client.id);
   const [showFeedback, setShowFeedback] = useState(false);
   const [fbForm, setFbForm] = useState({ projectId: "", type: "Ajuste", text: "" });
-  const [areaFilter, setAreaFilter] = useState("todos");
   const [expandedProject, setExpandedProject] = useState(null);
   const [showSchedule, setShowSchedule] = useState(false);
   const [inlineFbProject, setInlineFbProject] = useState(null);
 
-  const filtered = areaFilter === "todos" ? clientProjects : clientProjects.filter(p => p.type.toLowerCase() === areaFilter);
+  const filtered = clientProjects;
 
   const handleSendFeedback = () => {
     if (!fbForm.projectId || !fbForm.text.trim()) return;
@@ -1440,12 +1429,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
       {/* Projects */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold">Seus projetos</h2>
-        <div className="flex gap-2 items-center">
-          <span className="text-sm text-gray-500">Filtrar:</span>
-          {["todos", "viagem", "evento"].map(f => (
-            <Button key={f} variant={areaFilter === f ? "default" : "outline"} size="sm" onClick={() => setAreaFilter(f)}>{f === "todos" ? "Todos" : f === "viagem" ? "Viagens" : "Eventos"}</Button>
-          ))}
-        </div>
+        <p className="text-sm text-gray-500">{clientProjects.length} projeto{clientProjects.length !== 1 ? "s" : ""} ativo{clientProjects.length !== 1 ? "s" : ""}</p>
       </div>
 
       <div className="space-y-4 mb-8">
@@ -1463,7 +1447,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-bold text-lg">{p.name}</h3>
-                      <Badge variant={p.type === "Viagem" ? "info" : "purple"}>{p.type}</Badge>
+                      <Badge variant="purple">Evento</Badge>
                     </div>
                     <p className="text-sm text-gray-500">Responsável: {p.responsible} · Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
                   </div>
@@ -1772,7 +1756,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
         <div>
           <div className="flex items-center gap-3 mb-1">
             <h1 className="text-3xl font-bold text-gray-900">{project.name}</h1>
-            <Badge variant={project.type === "Viagem" ? "info" : "purple"}>{project.type}</Badge>
+            <Badge variant="purple">Evento</Badge>
           </div>
           <p className="text-gray-500">Cliente: <strong>{project.client}</strong> · Responsável: <strong>{project.responsible}</strong> · Prazo: <strong>{new Date(project.deadline).toLocaleDateString("pt-BR")}</strong></p>
         </div>
@@ -1877,7 +1861,7 @@ function TrocarExecutorView({ currentId, onSelect, onBack }) {
           return (
             <Card key={e.id} className={`p-5 cursor-pointer ${e.id === currentId ? "ring-2 ring-gray-900" : ""}`} onClick={() => onSelect(e.id, e.name)}>
               <div className="flex justify-between items-center">
-                <div><p className="font-bold">{e.name}</p><p className="text-sm text-gray-500">{e.role} · {e.area === "viagens" ? "Viagens" : "Eventos"}</p></div>
+                <div><p className="font-bold">{e.name}</p><p className="text-sm text-gray-500">{e.role} · Eventos</p></div>
                 <div className="text-right"><p className="text-sm font-medium">{taskCount} tarefas ativas</p><Badge variant={taskCount === 0 ? "success" : taskCount <= 3 ? "warning" : "danger"}>{taskCount === 0 ? "Disponível" : taskCount <= 3 ? "Moderado" : "Sobrecarregado"}</Badge></div>
               </div>
             </Card>
@@ -1892,21 +1876,26 @@ function TrocarExecutorView({ currentId, onSelect, onBack }) {
 // NOTIFICAÇÕES
 // ============================
 function NotificationPanel({ onClose }) {
-  const { notifications, setNotifications } = useContext(AppContext);
+  const { notifications, setNotifications, dismissNotification } = useContext(AppContext);
   const markAllRead = () => setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  const clearAll = () => setNotifications([]);
   return (
     <div className="fixed top-16 right-6 w-96 bg-white rounded-xl shadow-xl border z-50 max-h-96 overflow-y-auto">
       <div className="flex items-center justify-between p-4 border-b">
         <h3 className="font-bold">Notificações</h3>
         <div className="flex gap-2">
-          <button onClick={markAllRead} className="text-xs text-gray-500 hover:text-gray-700">Marcar todas como lidas</button>
+          <button onClick={markAllRead} className="text-xs text-gray-500 hover:text-gray-700">Marcar lidas</button>
+          <button onClick={clearAll} className="text-xs text-gray-500 hover:text-red-500">Limpar todas</button>
           <button onClick={onClose}><X size={16} /></button>
         </div>
       </div>
       {notifications.length === 0 ? <p className="p-4 text-sm text-gray-400">Sem notificações.</p> : notifications.map(n => (
-        <div key={n.id} className={`p-4 border-b text-sm ${n.read ? "text-gray-400" : "text-gray-700 bg-blue-50"}`}>
-          <p>{n.text}</p>
-          <p className="text-xs text-gray-400 mt-1">{n.date}</p>
+        <div key={n.id} className={`p-4 border-b text-sm flex items-start gap-3 ${n.read ? "text-gray-400" : "text-gray-700 bg-blue-50"}`}>
+          <div className="flex-1">
+            <p>{n.text}</p>
+            <p className="text-xs text-gray-400 mt-1">{n.date}</p>
+          </div>
+          <button onClick={() => dismissNotification(n.id)} className="text-gray-300 hover:text-red-400 flex-shrink-0 mt-0.5" title="Remover"><X size={14} /></button>
         </div>
       ))}
     </div>
@@ -2053,21 +2042,15 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
         {!selectedTask && view === "trocar_executor" && (
           <TrocarExecutorView currentId={executorId} onSelect={(id, name) => { setExecutorId(id); setExecutorName(name); setView("executor"); }} onBack={goBack} />
         )}
-        {!selectedTask && view === "qa_selector" && (
-          <QASquadSelector onSelect={(area) => { setQaArea(area); setView("qa_" + area); }} />
-        )}
-        {!selectedTask && (view === "qa_viagens" || view === "qa_eventos") && !view.includes("errors") && (
-          <QAPortalView area={qaArea} onBack={goBack} onViewErrors={() => setView(view + "_errors")} />
+        {!selectedTask && (view === "qa_selector" || view === "qa_eventos") && !view.includes("errors") && (
+          <QAPortalView area="eventos" onBack={goBack} onViewErrors={() => setView("qa_eventos_errors")} />
         )}
         {!selectedTask && view.includes("qa_") && view.includes("_errors") && (
-          <QAErrorsView area={qaArea} onBack={goBack} />
+          <QAErrorsView area="eventos" onBack={goBack} />
         )}
-        {!selectedTask && view === "lider_selector" && (
-          <LiderSquadSelector onSelect={(area) => { setLiderArea(area); setView("lider_" + area); }} />
-        )}
-        {!selectedTask && (view === "lider_viagens" || view === "lider_eventos") && (
+        {!selectedTask && (view === "lider_selector" || view === "lider_eventos") && (
           <LiderPortalView
-            area={liderArea}
+            area="eventos"
             onBack={goBack}
             onViewClients={() => setView("clientes")}
             onSimulateClient={() => { setClientPortalId("c5"); setView("experiencia_cliente"); }}
