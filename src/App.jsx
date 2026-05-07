@@ -1053,7 +1053,7 @@ function QAErrorsView({ area, onBack }) {
 // LiderSquadSelector removed — only eventos squad exists now
 
 function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProjectClick, onViewAsClient }) {
-  const { projects, tasks, feedbacks, clients, addTask, assignFeedbackAsTask, addClientNote, getTeamWithLoad, team: rawTeam } = useContext(AppContext);
+  const { projects, tasks, feedbacks, clients, clientNotes, addTask, assignFeedbackAsTask, addClientNote, getTeamWithLoad, team: rawTeam } = useContext(AppContext);
   const [tab, setTab] = useState("geral");
   const [showCreate, setShowCreate] = useState(false);
   const [feedFilter, setFeedFilter] = useState("pendentes");
@@ -1107,6 +1107,9 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
   const [elogioNotes, setElogioNotes] = useState({});
   const [archivedElogios, setArchivedElogios] = useState(new Set());
   const [relNote, setRelNote] = useState({ clientId: "", text: "" });
+  const [showRelacionamento, setShowRelacionamento] = useState(false);
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [clientDetailTab, setClientDetailTab] = useState("projetos");
 
   const openAssign = (fb) => {
     const relatedTask = fb.relatedTaskId ? tasks.find(t => t.id === fb.relatedTaskId) : null;
@@ -1285,7 +1288,15 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
             );
           })}
 
-          <h2 className="text-xl font-bold mt-8 mb-4">Relacionamento com cliente</h2>
+          <button onClick={() => setShowRelacionamento(!showRelacionamento)} className="w-full flex items-center justify-between mt-8 mb-4 group">
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-bold">Relacionamento com cliente</h2>
+              {elogios.filter(e => !archivedElogios.has(e.id)).length > 0 && <Badge variant="success">{elogios.filter(e => !archivedElogios.has(e.id)).length} elogio{elogios.filter(e => !archivedElogios.has(e.id)).length > 1 ? "s" : ""}</Badge>}
+            </div>
+            {showRelacionamento ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+          </button>
+
+          {showRelacionamento && <>
           <p className="text-sm text-gray-500 mb-4">Elogios recebidos e anotações sobre preferências dos clientes. Ao registrar, a informação vai para o Histórico de Clientes.</p>
 
           {elogios.filter(e => !archivedElogios.has(e.id)).length > 0 && (
@@ -1348,6 +1359,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
               <Button size="sm" onClick={() => { if (relNote.clientId && relNote.text.trim()) { addClientNote(relNote.clientId, relNote.text.trim()); setRelNote({ clientId: "", text: "" }); } }} disabled={!relNote.clientId || !relNote.text.trim()}>Salvar nota</Button>
             </div>
           </Card>
+          </>}
 
           <h2 className="text-xl font-bold mt-8 mb-4">Carga do time</h2>
           <Card className="p-6 mb-8">
@@ -1442,84 +1454,176 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
       {tab === "portal" && (() => {
         const uniqueClientIds = [...new Set(areaProjects.map(p => p.clientId))];
         const areaClients = uniqueClientIds.map(cid => clients.find(c => c.id === cid)).filter(Boolean);
+
+        // Detail view for selected client
+        if (selectedClient) {
+          const client = clients.find(c => c.id === selectedClient);
+          if (!client) return null;
+          const cProjects = areaProjects.filter(p => p.clientId === client.id);
+          const cHistoric = historicProjects.filter(p => p.clientId === client.id);
+          const cTasks = tasks.filter(t => cProjects.some(p => p.id === t.projectId));
+          const cDone = cTasks.filter(t => t.status === "concluida");
+          const cFeedbacks = feedbacks.filter(f => f.clientId === client.id);
+          const cPendingFb = cFeedbacks.filter(f => f.status === "pendente");
+          const cElogios = cFeedbacks.filter(f => f.type === "Elogio" && !archivedElogios.has(f.id));
+          const cNotes = clientNotes.filter(n => n.clientId === client.id);
+
+          return (
+            <>
+              <button onClick={() => { setSelectedClient(null); setClientDetailTab("projetos"); }} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-4"><ArrowLeft size={16} /> Voltar</button>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-gray-900 text-white flex items-center justify-center text-lg font-bold">{client.name.slice(0, 2).toUpperCase()}</div>
+                  <div>
+                    <h2 className="text-2xl font-bold">{client.name}</h2>
+                    <p className="text-sm text-gray-500">Contato: {client.contact} · Responsável: {client.responsible}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm"><MessageSquare size={14} /> WhatsApp</Button>
+                  <Button variant="outline" size="sm" onClick={() => onViewAsClient && onViewAsClient(client.id)}><ExternalLink size={14} /> Ver como cliente</Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-4 gap-4 mb-6">
+                <Card className="p-4 text-center"><p className="text-2xl font-bold">{cProjects.length}</p><p className="text-xs text-gray-500">Projetos ativos</p></Card>
+                <Card className="p-4 text-center"><p className="text-2xl font-bold">{cDone.length}/{cTasks.length}</p><p className="text-xs text-gray-500">Tarefas concluídas</p></Card>
+                <Card className="p-4 text-center"><p className={`text-2xl font-bold ${cPendingFb.length > 0 ? "text-orange-600" : "text-green-600"}`}>{cPendingFb.length}</p><p className="text-xs text-gray-500">Feedbacks pendentes</p></Card>
+                <Card className="p-4 text-center"><p className="text-sm font-medium"><Calendar size={12} className="inline" /> {new Date(client.nextMeeting).toLocaleDateString("pt-BR")}</p><p className="text-xs text-gray-500 mt-1">Próxima reunião</p></Card>
+              </div>
+
+              <div className="flex border-b mb-6">
+                {[
+                  { key: "projetos", label: "Projetos" },
+                  { key: "feedbacks", label: `Feedbacks (${cFeedbacks.length})` },
+                  { key: "relacionamento", label: `Relacionamento${cElogios.length > 0 ? " (" + cElogios.length + " elogio" + (cElogios.length > 1 ? "s" : "") + ")" : ""}` },
+                ].map(t => (
+                  <button key={t.key} onClick={() => setClientDetailTab(t.key)} className={`px-5 py-3 text-sm font-medium transition-colors ${clientDetailTab === t.key ? "border-b-2 border-gray-900 text-gray-900" : "text-gray-500 hover:text-gray-700"}`}>{t.label}</button>
+                ))}
+              </div>
+
+              {clientDetailTab === "projetos" && (
+                <div className="space-y-3">
+                  {cProjects.length > 0 && <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Ativos</p>}
+                  {cProjects.map(p => {
+                    const pTasks = tasks.filter(t => t.projectId === p.id);
+                    const pDone = pTasks.filter(t => t.status === "concluida").length;
+                    const progress = pTasks.length > 0 ? Math.round((pDone / pTasks.length) * 100) : p.progress;
+                    return (
+                      <Card key={p.id} className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => onProjectClick && onProjectClick(p.id)}>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">{p.name}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")} · {pTasks.length} tarefas</p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Badge variant={p.priority === "Alta" ? "danger" : "warning"}>{p.priority}</Badge>
+                            <div className="flex items-center gap-2 w-28"><div className="flex-1 bg-gray-100 rounded-full h-1.5"><div className="bg-gray-900 h-1.5 rounded-full" style={{ width: progress + "%" }} /></div><span className="text-xs text-gray-400">{progress}%</span></div>
+                          </div>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                  {cHistoric.length > 0 && <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-6">Concluídos</p>}
+                  {cHistoric.map(p => (
+                    <Card key={p.id} className="p-4 opacity-70">
+                      <div className="flex items-center justify-between">
+                        <div><p className="font-medium text-gray-600">{p.name}</p><p className="text-xs text-gray-400 mt-0.5">Concluído em: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p></div>
+                        <Badge variant="success">Concluído</Badge>
+                      </div>
+                    </Card>
+                  ))}
+                  {cProjects.length === 0 && cHistoric.length === 0 && <p className="text-sm text-gray-400">Nenhum projeto registrado.</p>}
+                </div>
+              )}
+
+              {clientDetailTab === "feedbacks" && (
+                <div className="space-y-3">
+                  {cFeedbacks.length === 0 && <p className="text-sm text-gray-400">Nenhum feedback registrado.</p>}
+                  {cFeedbacks.map(fb => {
+                    const relTask = fb.relatedTaskId ? tasks.find(t => t.id === fb.relatedTaskId) : null;
+                    return (
+                      <Card key={fb.id} className={`p-4 border-l-4 ${fb.type === "Elogio" ? "border-l-green-500" : fb.type === "Ajuste" ? "border-l-orange-500" : "border-l-blue-500"}`}>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge variant={fb.type === "Elogio" ? "success" : fb.type === "Ajuste" ? "danger" : "warning"}>{fb.type}</Badge>
+                          <Badge variant={fb.status === "pendente" ? "warning" : "success"}>{fb.status === "pendente" ? "Pendente" : "Atribuído"}</Badge>
+                          <span className="text-xs text-gray-400">{fb.date}</span>
+                        </div>
+                        <p className="text-sm text-gray-800">{fb.text}</p>
+                        {relTask && <p className="text-xs text-gray-500 mt-1">Entrega: {relTask.title} (por {relTask.executorName})</p>}
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+
+              {clientDetailTab === "relacionamento" && (
+                <div>
+                  {cElogios.length > 0 && (
+                    <div className="mb-6">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Elogios para registrar</p>
+                      {cElogios.map(fb => {
+                        const proj = projects.find(p => p.id === fb.projectId);
+                        return (
+                          <Card key={fb.id} className="mb-3 border-l-4 border-l-green-500">
+                            <div className="p-4">
+                              <p className="text-sm text-gray-800 mb-1">"{fb.text}"</p>
+                              {proj && <p className="text-xs text-gray-400 mb-3">Projeto: {proj.name} · {fb.date}</p>}
+                              <textarea value={elogioNotes[fb.id] || ""} onChange={e => setElogioNotes(prev => ({ ...prev, [fb.id]: e.target.value }))} placeholder="O que aprendemos? Ex: 'Cliente valoriza agilidade — manter padrão'" className="w-full border border-gray-200 rounded-lg p-2.5 text-sm min-h-[50px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50" />
+                              <div className="flex justify-end mt-2">
+                                <Button size="sm" variant="outline" onClick={() => { const txt = elogioNotes[fb.id]?.trim() ? `[Elogio] ${fb.text} — ${elogioNotes[fb.id].trim()}` : `[Elogio] ${fb.text}`; addClientNote(fb.clientId, txt); setArchivedElogios(prev => new Set([...prev, fb.id])); setElogioNotes(prev => { const n = { ...prev }; delete n[fb.id]; return n; }); }}><CheckCircle2 size={14} /> Registrar no histórico</Button>
+                              </div>
+                            </div>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Notas internas</p>
+                  <div className="flex gap-2 mb-4">
+                    <input value={relNote.clientId === client.id ? relNote.text : ""} onChange={e => setRelNote({ clientId: client.id, text: e.target.value })} onKeyDown={e => { if (e.key === "Enter" && relNote.text.trim()) { addClientNote(client.id, relNote.text.trim()); setRelNote({ clientId: "", text: "" }); } }} placeholder="Adicionar anotação sobre este cliente..." className="flex-1 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                    <Button size="sm" onClick={() => { if (relNote.text.trim()) { addClientNote(client.id, relNote.text.trim()); setRelNote({ clientId: "", text: "" }); } }} disabled={!relNote.text.trim()}>Salvar</Button>
+                  </div>
+                  <div className="space-y-2">
+                    {cNotes.length === 0 && <p className="text-sm text-gray-400">Nenhuma nota ainda.</p>}
+                    {cNotes.map(n => (
+                      <div key={n.id} className="p-3 bg-gray-50 rounded-lg">
+                        <div className="flex justify-between"><span className="text-xs font-medium text-gray-500">{n.author}</span><span className="text-xs text-gray-400">{n.date}</span></div>
+                        <p className="text-sm mt-1">{n.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          );
+        }
+
+        // Client list
         return (
         <>
-          <h2 className="text-xl font-bold mb-2">Gestão de relacionamento com clientes</h2>
-          <p className="text-gray-500 text-sm mb-6">Acompanhe o status de cada cliente, feedbacks recentes e gerencie o relacionamento.</p>
-
           {areaClients.map(client => {
-            const clientProjects = areaProjects.filter(p => p.clientId === client.id);
-            const clientFeedbacks = feedbacks.filter(f => clientProjects.some(p => p.id === f.projectId));
-            const pendingFb = clientFeedbacks.filter(f => f.status === "pendente");
-            const approvedTasks = tasks.filter(t => clientProjects.some(p => p.id === t.projectId) && t.status === "concluida");
-            const totalTasks = tasks.filter(t => clientProjects.some(p => p.id === t.projectId));
-            const satisfaction = pendingFb.length === 0 && approvedTasks.length > 0 ? "positivo" : pendingFb.length >= 2 ? "atenção" : "neutro";
+            const cProjects = areaProjects.filter(p => p.clientId === client.id);
+            const cFb = feedbacks.filter(f => f.clientId === client.id && f.status === "pendente");
+            const health = cFb.filter(f => f.type === "Ajuste").length >= 2 ? "danger" : cFb.length > 0 ? "warning" : "good";
 
             return (
-              <Card key={client.id} className="mb-6 overflow-hidden">
-                <div className="p-6 border-b border-gray-100">
-                  <div className="flex items-start justify-between">
+              <Card key={client.id} className="mb-3 hover:shadow-md transition-shadow cursor-pointer" onClick={() => { setSelectedClient(client.id); setClientDetailTab("projetos"); }}>
+                <div className="p-5 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold ${health === "good" ? "bg-green-100 text-green-700" : health === "warning" ? "bg-orange-100 text-orange-700" : "bg-red-100 text-red-700"}`}>
+                      {client.name.slice(0, 2).toUpperCase()}
+                    </div>
                     <div>
-                      <div className="flex items-center gap-3 mb-1">
-                        <h3 className="text-xl font-bold">{client.name}</h3>
-                        <Badge variant={client.relationship === "estável" ? "success" : client.relationship === "atenção" ? "danger" : "success"}>
-                          {client.relationship === "estável" ? "Relacionamento estável" : client.relationship === "atenção" ? "Requer atenção" : "Excelente"}
-                        </Badge>
-                        <Badge variant={satisfaction === "positivo" ? "success" : satisfaction === "atenção" ? "danger" : "default"}>
-                          Satisfação: {satisfaction}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-gray-500">Contato: {client.contact} · Responsável: {client.responsible}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm"><MessageSquare size={14} /> WhatsApp</Button>
-                      <Button variant="outline" size="sm" onClick={() => onViewAsClient && onViewAsClient(client.id)}><ExternalLink size={14} /> Ver como cliente</Button>
+                      <h3 className="font-bold text-lg">{client.name}</h3>
+                      <p className="text-xs text-gray-500">{cProjects.length} projetos ativos · Reunião: {new Date(client.nextMeeting).toLocaleDateString("pt-BR")}</p>
                     </div>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-4 gap-0 border-b border-gray-100">
-                  <div className="p-4 border-r border-gray-100 text-center">
-                    <p className="text-2xl font-bold">{clientProjects.length}</p>
-                    <p className="text-xs text-gray-500">Projetos ativos</p>
-                  </div>
-                  <div className="p-4 border-r border-gray-100 text-center">
-                    <p className="text-2xl font-bold">{approvedTasks.length}/{totalTasks.length}</p>
-                    <p className="text-xs text-gray-500">Tarefas concluídas</p>
-                  </div>
-                  <div className="p-4 border-r border-gray-100 text-center">
-                    <p className="text-2xl font-bold text-orange-600">{pendingFb.length}</p>
-                    <p className="text-xs text-gray-500">Feedbacks pendentes</p>
-                  </div>
-                  <div className="p-4 text-center">
-                    <p className="text-sm font-medium"><Calendar size={12} className="inline" /> {new Date(client.nextMeeting).toLocaleDateString("pt-BR")}</p>
-                    <p className="text-xs text-gray-500">Próxima reunião</p>
-                  </div>
-                </div>
-
-                {clientFeedbacks.length > 0 && (
-                  <div className="p-4 border-b border-gray-100">
-                    <p className="text-sm font-semibold mb-3">Feedbacks recentes</p>
-                    {clientFeedbacks.slice(0, 3).map(fb => (
-                      <div key={fb.id} className="flex items-start gap-3 py-2">
-                        <Badge variant={fb.status === "pendente" ? "warning" : "success"} className="mt-0.5">{fb.status === "pendente" ? "Pendente" : "Atribuído"}</Badge>
-                        <div>
-                          <p className="text-sm text-gray-700">{fb.text}</p>
-                          <p className="text-xs text-gray-400">{fb.type} · {fb.date}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="p-4">
-                  <p className="text-sm font-semibold mb-2">Projetos</p>
-                  <div className="flex flex-wrap gap-2">
-                    {clientProjects.map(p => (
-                      <span key={p.id} className="text-sm px-3 py-1 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200" onClick={() => onProjectClick && onProjectClick(p.id)}>
-                        {p.name} <Badge variant="info" className="ml-1">{p.type}</Badge>
-                      </span>
-                    ))}
+                  <div className="flex items-center gap-3">
+                    {cFb.length > 0 && <Badge variant="warning">{cFb.length} pendência{cFb.length > 1 ? "s" : ""}</Badge>}
+                    {cFb.length === 0 && <Badge variant="success">Sem pendências</Badge>}
+                    <ChevronDown size={16} className="text-gray-400 -rotate-90" />
                   </div>
                 </div>
               </Card>
