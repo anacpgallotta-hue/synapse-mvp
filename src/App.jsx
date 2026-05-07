@@ -31,15 +31,10 @@ const X = ({ className = "", size = 20 }) => <svg {...iconProps} width={size} he
 // DATA INICIAL (mesmo do MVP)
 // ============================
 const initialTeam = [
-  { id: "t1", name: "Mel", role: "Executor", area: "eventos", activeTasks: 0 },
-  { id: "t2", name: "Julia Costa", role: "Executor", area: "eventos", activeTasks: 0 },
-  { id: "t3", name: "Pedro Santos", role: "Executor", area: "eventos", activeTasks: 0 },
-  { id: "t4", name: "Antônio", role: "Senior", area: "eventos", activeTasks: 0 },
-  { id: "t5", name: "Mari Ribeiro", role: "Senior", area: "eventos", activeTasks: 0 },
-  { id: "t6", name: "Amanda Gomes", role: "Senior", area: "eventos", activeTasks: 0 },
-  { id: "t7", name: "Carlos Lima", role: "Executor", area: "eventos", activeTasks: 0 },
-  { id: "t8", name: "Bianca Reis", role: "Executor", area: "eventos", activeTasks: 0 },
-  { id: "t9", name: "Rafael Souza", role: "Senior", area: "eventos", activeTasks: 0 },
+  { id: "t1", name: "Melissa Zambon", role: "Executor", area: "eventos", activeTasks: 0 },
+  { id: "t2", name: "Maria Eduarda Vittori", role: "Executor", area: "eventos", activeTasks: 0 },
+  { id: "t3", name: "Carolina Guimarães", role: "Executor", area: "eventos", activeTasks: 0 },
+  { id: "t4", name: "Samara Aboultaif", role: "Executor", area: "eventos", activeTasks: 0 },
 ];
 
 const initialClients = [
@@ -51,22 +46,22 @@ const initialClients = [
 ];
 
 const initialProjects = [
-  { id: "p1", name: "Gala de Premiação Anual", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Antônio", deadline: "2026-05-15", progress: 65 },
-  { id: "p2", name: "Festival de Esportes Radicais", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Mari Ribeiro", deadline: "2026-05-28", progress: 30 },
-  { id: "p3", name: "Convenção Anual de Vendas", clientId: "c1", client: "Ambev", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Rafael Souza", deadline: "2026-06-10", progress: 40 },
-  { id: "p4", name: "Summit Digital 2026", clientId: "c2", client: "Hotmart", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Rafael Souza", deadline: "2026-06-20", progress: 20 },
-  { id: "p5", name: "Happy Hour Corporativo", clientId: "c1", client: "Ambev", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Antônio", deadline: "2026-06-01", progress: 15 },
-  { id: "p6", name: "Lançamento de Produto", clientId: "c4", client: "Seara", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Rafael Souza", deadline: "2026-05-25", progress: 50 },
-  { id: "p7", name: "Premiação Top Performers", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Mari Ribeiro", deadline: "2026-07-10", progress: 10 },
-  { id: "p10", name: "Operações", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Antônio", deadline: "2026-05-30", progress: 0 },
-  { id: "p8", name: "Workshop Inovação", clientId: "c2", client: "Hotmart", type: "Evento", area: "eventos", status: "em_execucao", priority: "Baixa", responsible: "Rafael Souza", deadline: "2026-07-15", progress: 5 },
-  { id: "p9", name: "Ativação de Marca - Evento Gastronômico", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Antônio", deadline: "2026-06-15", progress: 25 },
+  { id: "p1", name: "Gala de Premiação Anual", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Melissa Zambon", deadline: "2026-05-15", progress: 65 },
+  { id: "p2", name: "Festival de Esportes Radicais", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Maria Eduarda Vittori", deadline: "2026-05-28", progress: 30 },
+  { id: "p3", name: "Convenção Anual de Vendas", clientId: "c1", client: "Ambev", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Carolina Guimarães", deadline: "2026-06-10", progress: 40 },
+  { id: "p4", name: "Summit Digital 2026", clientId: "c2", client: "Hotmart", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Samara Aboultaif", deadline: "2026-06-20", progress: 20 },
+  { id: "p5", name: "Happy Hour Corporativo", clientId: "c1", client: "Ambev", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Melissa Zambon", deadline: "2026-06-01", progress: 15 },
+  { id: "p6", name: "Lançamento de Produto", clientId: "c4", client: "Seara", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Carolina Guimarães", deadline: "2026-05-25", progress: 50 },
+  { id: "p7", name: "Premiação Top Performers", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Maria Eduarda Vittori", deadline: "2026-07-10", progress: 10 },
+  { id: "p10", name: "Operações", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Samara Aboultaif", deadline: "2026-05-30", progress: 0 },
+  { id: "p8", name: "Workshop Inovação", clientId: "c2", client: "Hotmart", type: "Evento", area: "eventos", status: "em_execucao", priority: "Baixa", responsible: "Samara Aboultaif", deadline: "2026-07-15", progress: 5 },
+  { id: "p9", name: "Ativação de Marca - Evento Gastronômico", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Melissa Zambon", deadline: "2026-06-15", progress: 25 },
 ];
 
 const initialTasks = [
-  { id: "tk5", title: "Organizar reunião de alinhamento pré-evento", projectId: "p1", project: "Gala de Premiação Anual", executor: "t2", executorName: "Julia Costa", priority: "Alta", status: "a_fazer", area: "eventos", deadline: "2026-04-30T12:00", description: "Agendar e organizar reunião de alinhamento com todos os stakeholders antes do evento", checklist: [{ text: "Definir pauta", done: false }, { text: "Enviar convites", done: false }, { text: "Preparar material", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
-  { id: "tk6", title: "Montar checklist de fornecedores", projectId: "p3", project: "Convenção Anual de Vendas", executor: "t7", executorName: "Carlos Lima", priority: "Alta", status: "em_execucao", area: "eventos", deadline: "2026-04-18T17:00", description: "Listar e confirmar todos os fornecedores para o evento", checklist: [{ text: "Buffet", done: true }, { text: "Som e luz", done: false }, { text: "Decoração", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
-  { id: "tk7", title: "Criar cronograma do evento", projectId: "p3", project: "Convenção Anual de Vendas", executor: "t8", executorName: "Bianca Reis", priority: "Média", status: "a_fazer", area: "eventos", deadline: "2026-04-25T12:00", description: "Desenvolver cronograma detalhado hora a hora do evento", checklist: [{ text: "Definir programação", done: false }, { text: "Alocar espaços", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
+  { id: "tk5", title: "Organizar reunião de alinhamento pré-evento", projectId: "p1", project: "Gala de Premiação Anual", executor: "t2", executorName: "Maria Eduarda Vittori", priority: "Alta", status: "a_fazer", area: "eventos", deadline: "2026-04-30T12:00", description: "Agendar e organizar reunião de alinhamento com todos os stakeholders antes do evento", checklist: [{ text: "Definir pauta", done: false }, { text: "Enviar convites", done: false }, { text: "Preparar material", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
+  { id: "tk6", title: "Montar checklist de fornecedores", projectId: "p3", project: "Convenção Anual de Vendas", executor: "t3", executorName: "Carolina Guimarães", priority: "Alta", status: "em_execucao", area: "eventos", deadline: "2026-04-18T17:00", description: "Listar e confirmar todos os fornecedores para o evento", checklist: [{ text: "Buffet", done: true }, { text: "Som e luz", done: false }, { text: "Decoração", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
+  { id: "tk7", title: "Criar cronograma do evento", projectId: "p3", project: "Convenção Anual de Vendas", executor: "t4", executorName: "Samara Aboultaif", priority: "Média", status: "a_fazer", area: "eventos", deadline: "2026-04-25T12:00", description: "Desenvolver cronograma detalhado hora a hora do evento", checklist: [{ text: "Definir programação", done: false }, { text: "Alocar espaços", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
 ];
 
 const initialLearnings = [
@@ -89,17 +84,40 @@ function AppProvider({ children }) {
   const [team] = useState(initialTeam);
   const [learnings, setLearnings] = useState(initialLearnings);
   const [feedbacks, setFeedbacks] = useState(initialFeedbacks);
-  const [notifications, setNotifications] = useState([
-    { id: "n1", text: "Tarefa 'Montar checklist de fornecedores' enviada para QA", date: "2026-04-16", read: false },
-    { id: "n2", text: "Feedback recebido do cliente XP sobre Gala de Premiação Anual", date: "2026-04-15", read: false },
-    { id: "n3", text: "Prazo se aproximando: Criar cronograma do evento", date: "2026-04-16", read: false },
-  ]);
+  // Notifications: target = "executor:t1", "qa", "lider", "client:c5"
+  // priority = "info" | "warning" | "danger"
+  const [notifications, setNotifications] = useState([]);
+
+  const notify = useCallback((text, target, priority = "info") => {
+    setNotifications(prev => [{ id: "n" + Date.now() + Math.random(), text, date: new Date().toISOString().split("T")[0], read: false, target, priority }, ...prev]);
+  }, []);
+
+  // Smart alerts: computed from task state (overdue, at risk, devolvida)
+  const getSmartAlerts = useCallback((executorId) => {
+    const now = new Date();
+    const alerts = [];
+    const myTasks = tasks.filter(t => t.executor === executorId);
+    myTasks.forEach(t => {
+      if (t.status === "concluida") return;
+      const deadline = new Date(t.deadline);
+      const diffHours = (deadline - now) / (1000 * 60 * 60);
+      if (t.status === "devolvida") {
+        alerts.push({ id: "smart-dev-" + t.id, text: `QA devolveu "${t.title}" — ${t.qaComment}`, priority: "danger", date: t.deadline, isDevolvida: true, taskId: t.id });
+      }
+      if (diffHours < 0 && t.status !== "devolvida") {
+        alerts.push({ id: "smart-late-" + t.id, text: `Atrasada: "${t.title}" — prazo era ${deadline.toLocaleDateString("pt-BR")}`, priority: "danger", date: t.deadline });
+      } else if (diffHours >= 0 && diffHours < 48 && t.status !== "devolvida") {
+        alerts.push({ id: "smart-risk-" + t.id, text: `Em risco: "${t.title}" — prazo em ${Math.round(diffHours)}h`, priority: "warning", date: t.deadline });
+      }
+    });
+    return alerts.sort((a, b) => (a.priority === "danger" ? 0 : 1) - (b.priority === "danger" ? 0 : 1));
+  }, [tasks]);
 
   const addTask = useCallback((task) => {
     const newTask = { ...task, id: "tk" + Date.now(), status: "a_fazer", submittedLink: "", qaComment: "", feedbackOrigin: null };
     setTasks(prev => [...prev, newTask]);
-    setNotifications(prev => [{ id: "n" + Date.now(), text: `Nova tarefa atribuída: ${task.title}`, date: new Date().toISOString().split("T")[0], read: false }, ...prev]);
-  }, []);
+    notify(`Nova tarefa atribuída: "${task.title}"`, "executor:" + task.executor, "info");
+  }, [notify]);
 
   const updateTaskStatus = useCallback((taskId, newStatus, extra = {}) => {
     setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus, ...extra } : t));
@@ -108,26 +126,27 @@ function AppProvider({ children }) {
   const submitToQA = useCallback((taskId, link, submittedFiles) => {
     setTasks(prev => {
       const task = prev.find(t => t.id === taskId);
-      setNotifications(n => [{ id: "n" + Date.now(), text: `Tarefa '${task?.title}' enviada para revisão do QA`, date: new Date().toISOString().split("T")[0], read: false }, ...n]);
+      notify(`"${task?.title}" enviada para revisão por ${task?.executorName}`, "qa", "info");
       return prev.map(t => t.id === taskId ? { ...t, status: "em_qa", submittedLink: link, submittedFiles: submittedFiles || [] } : t);
     });
-  }, []);
+  }, [notify]);
 
   const approveTask = useCallback((taskId, comment) => {
     setTasks(prev => {
       const task = prev.find(t => t.id === taskId);
-      setNotifications(n => [{ id: "n" + Date.now(), text: `Tarefa '${task?.title}' aprovada pelo QA`, date: new Date().toISOString().split("T")[0], read: false }, ...n]);
+      notify(`Sua tarefa "${task?.title}" foi aprovada pelo QA!`, "executor:" + task?.executor, "info");
+      notify(`"${task?.title}" aprovada com sucesso`, "qa", "info");
       return prev.map(t => t.id === taskId ? { ...t, status: "concluida", qaComment: comment || "Aprovado" } : t);
     });
-  }, []);
+  }, [notify]);
 
   const rejectTask = useCallback((taskId, comment) => {
     setTasks(prev => {
       const task = prev.find(t => t.id === taskId);
-      setNotifications(n => [{ id: "n" + Date.now(), text: `Tarefa '${task?.title}' devolvida pelo QA: ${comment}`, date: new Date().toISOString().split("T")[0], read: false }, ...n]);
+      notify(`QA devolveu "${task?.title}": ${comment}`, "executor:" + task?.executor, "danger");
       return prev.map(t => t.id === taskId ? { ...t, status: "devolvida", qaComment: comment } : t);
     });
-  }, []);
+  }, [notify]);
 
   const toggleChecklist = useCallback((taskId, index) => {
     setTasks(prev => prev.map(t => {
@@ -141,42 +160,47 @@ function AppProvider({ children }) {
   const addFeedback = useCallback((fb) => {
     const newFb = { ...fb, id: "f" + Date.now(), status: "pendente", assignedTaskId: null };
     setFeedbacks(prev => [...prev, newFb]);
-    setNotifications(prev => [{ id: "n" + Date.now(), text: `Novo feedback do cliente ${fb.clientName} sobre ${projects.find(p => p.id === fb.projectId)?.name}`, date: new Date().toISOString().split("T")[0], read: false }, ...prev]);
-  }, [projects]);
+    notify(`Novo feedback de ${fb.clientName}: "${fb.text.substring(0, 60)}..."`, "lider", "warning");
+  }, [notify]);
 
   const assignFeedbackAsTask = useCallback((feedbackId, taskData) => {
     setFeedbacks(prev => {
       const fb = prev.find(f => f.id === feedbackId);
       const newTask = { ...taskData, id: "tk" + Date.now(), status: "a_fazer", submittedLink: "", qaComment: "", feedbackOrigin: { type: fb.type, text: fb.text } };
       setTasks(t => [...t, newTask]);
-      setNotifications(n => [{ id: "n" + Date.now(), text: `Feedback convertido em tarefa: ${taskData.title}`, date: new Date().toISOString().split("T")[0], read: false }, ...n]);
+      notify(`Nova tarefa de feedback: "${taskData.title}"`, "executor:" + taskData.executor, "warning");
       return prev.map(f => f.id === feedbackId ? { ...f, status: "atribuido", assignedTaskId: newTask.id } : f);
     });
-  }, []);
+  }, [notify]);
 
   const addLearning = useCallback((learning) => {
     setLearnings(prev => [...prev, { ...learning, id: "l" + Date.now() }]);
   }, []);
 
   const resubmitTask = useCallback((taskId) => {
-    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: "em_execucao", qaComment: "" } : t));
-  }, []);
+    setTasks(prev => {
+      const task = prev.find(t => t.id === taskId);
+      notify(`"${task?.title}" retomada para execução por ${task?.executorName}`, "qa", "info");
+      return prev.map(t => t.id === taskId ? { ...t, status: "em_execucao", qaComment: "" } : t);
+    });
+  }, [notify]);
 
   const revertFromQA = useCallback((taskId) => {
     setTasks(prev => {
       const task = prev.find(t => t.id === taskId);
-      setNotifications(n => [{ id: "n" + Date.now(), text: `Tarefa '${task?.title}' retirada do QA pelo executor`, date: new Date().toISOString().split("T")[0], read: false }, ...n]);
+      notify(`"${task?.title}" retirada do QA por ${task?.executorName}`, "qa", "info");
       return prev.map(t => t.id === taskId ? { ...t, status: "em_execucao", submittedLink: "", submittedFiles: [] } : t);
     });
-  }, []);
+  }, [notify]);
 
   const revertFromCompleted = useCallback((taskId) => {
     setTasks(prev => {
       const task = prev.find(t => t.id === taskId);
-      setNotifications(n => [{ id: "n" + Date.now(), text: `Aprovação revertida: '${task?.title}' voltou para QA`, date: new Date().toISOString().split("T")[0], read: false }, ...n]);
+      notify(`Aprovação revertida: "${task?.title}" voltou para revisão`, "qa", "warning");
+      notify(`"${task?.title}" teve aprovação revertida — aguarde nova revisão`, "executor:" + task?.executor, "warning");
       return prev.map(t => t.id === taskId ? { ...t, status: "em_qa", qaComment: "" } : t);
     });
-  }, []);
+  }, [notify]);
 
   const dismissNotification = useCallback((notifId) => {
     setNotifications(prev => prev.filter(n => n.id !== notifId));
@@ -196,7 +220,7 @@ function AppProvider({ children }) {
   }, [team, tasks]);
 
   return (
-    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, resubmitTask, revertFromQA, revertFromCompleted, dismissNotification, getTeamWithLoad, setNotifications }}>
+    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, resubmitTask, revertFromQA, revertFromCompleted, dismissNotification, getTeamWithLoad, getSmartAlerts, setNotifications }}>
       {children}
     </AppContext.Provider>
   );
@@ -268,7 +292,7 @@ function Header({ currentView, setView, currentExecutor, setShowNotif, notifCoun
     : isLider
     ? "Portal Líder"
     : isProjectDetail ? "Detalhe do Projeto"
-    : "Jazz Side";
+    : "Synapse";
 
   const subtitle = isQA
     ? "Revise entregas, devolva com comentários claros e gere aprendizados para o time."
@@ -1391,12 +1415,12 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
         <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"><ArrowLeft size={16} /> Voltar</button>
         <Button variant="outline" size="sm" onClick={onBack}>Sair do portal</Button>
       </div>
-      <p className="text-sm text-gray-400 mb-1">Jazz Side · Portal do Cliente</p>
+      <p className="text-sm text-gray-400 mb-1">Synapse · Portal do Cliente</p>
       <h1 className="text-3xl font-bold mb-6">Bem-vindo, {client.name}</h1>
 
       {/* Account Info */}
       <Card className="p-6 mb-6 border-l-4 border-l-green-600">
-        <h3 className="font-bold mb-3">Sua conta na Jazz Side</h3>
+        <h3 className="font-bold mb-3">Sua conta na Synapse</h3>
         <div className="grid grid-cols-3 gap-6">
           <div>
             <p className="text-sm text-gray-500 mb-1">Seu gerente de conta</p>
@@ -1420,7 +1444,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
             <p className="text-sm font-medium mb-2">Sugerir novo horário</p>
             <div className="flex gap-2">
               <input type="datetime-local" className="border rounded-lg p-2 text-sm flex-1" />
-              <Button size="sm" onClick={() => { alert("Sugestão de reagendamento enviada para a Jazz Side!\n\nEm produção, notificaria o gerente de conta."); setShowSchedule(false); }}>Enviar sugestão</Button>
+              <Button size="sm" onClick={() => { alert("Sugestão de reagendamento enviada para a Synapse!\n\nEm produção, notificaria o gerente de conta."); setShowSchedule(false); }}>Enviar sugestão</Button>
             </div>
           </div>
         )}
@@ -1875,29 +1899,74 @@ function TrocarExecutorView({ currentId, onSelect, onBack }) {
 // ============================
 // NOTIFICAÇÕES
 // ============================
-function NotificationPanel({ onClose }) {
-  const { notifications, setNotifications, dismissNotification } = useContext(AppContext);
-  const markAllRead = () => setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-  const clearAll = () => setNotifications([]);
+function NotificationPanel({ onClose, context, executorId }) {
+  const { notifications, setNotifications, dismissNotification, getSmartAlerts } = useContext(AppContext);
+
+  // Filter notifications by current context
+  const targetFilter = context === "executor" ? "executor:" + executorId
+    : context === "qa" ? "qa"
+    : context === "lider" ? "lider"
+    : context === "client" ? "client"
+    : null;
+
+  const myNotifications = targetFilter
+    ? notifications.filter(n => n.target === targetFilter)
+    : notifications;
+
+  // Smart alerts for executors (computed from task state)
+  const smartAlerts = context === "executor" ? getSmartAlerts(executorId) : [];
+
+  const allItems = [...smartAlerts, ...myNotifications];
+
+  const markAllRead = () => setNotifications(prev => prev.map(n => n.target === targetFilter ? { ...n, read: true } : n));
+  const clearAll = () => setNotifications(prev => prev.filter(n => n.target !== targetFilter));
+
+  const priorityStyle = (p) => p === "danger" ? "bg-red-50 border-l-4 border-l-red-500 text-red-800"
+    : p === "warning" ? "bg-orange-50 border-l-4 border-l-orange-400 text-orange-800"
+    : "bg-blue-50 text-gray-700";
+
   return (
-    <div className="fixed top-16 right-6 w-96 bg-white rounded-xl shadow-xl border z-50 max-h-96 overflow-y-auto">
+    <div className="fixed top-16 right-6 w-[420px] bg-white rounded-xl shadow-xl border z-50 max-h-[480px] overflow-y-auto">
       <div className="flex items-center justify-between p-4 border-b">
         <h3 className="font-bold">Notificações</h3>
         <div className="flex gap-2">
-          <button onClick={markAllRead} className="text-xs text-gray-500 hover:text-gray-700">Marcar lidas</button>
-          <button onClick={clearAll} className="text-xs text-gray-500 hover:text-red-500">Limpar todas</button>
+          {myNotifications.length > 0 && <button onClick={markAllRead} className="text-xs text-gray-500 hover:text-gray-700">Marcar lidas</button>}
+          {myNotifications.length > 0 && <button onClick={clearAll} className="text-xs text-gray-500 hover:text-red-500">Limpar</button>}
           <button onClick={onClose}><X size={16} /></button>
         </div>
       </div>
-      {notifications.length === 0 ? <p className="p-4 text-sm text-gray-400">Sem notificações.</p> : notifications.map(n => (
-        <div key={n.id} className={`p-4 border-b text-sm flex items-start gap-3 ${n.read ? "text-gray-400" : "text-gray-700 bg-blue-50"}`}>
-          <div className="flex-1">
-            <p>{n.text}</p>
-            <p className="text-xs text-gray-400 mt-1">{n.date}</p>
-          </div>
-          <button onClick={() => dismissNotification(n.id)} className="text-gray-300 hover:text-red-400 flex-shrink-0 mt-0.5" title="Remover"><X size={14} /></button>
+
+      {smartAlerts.length > 0 && (
+        <div className="border-b">
+          <p className="px-4 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Alertas</p>
+          {smartAlerts.map(a => (
+            <div key={a.id} className={`px-4 py-3 text-sm ${priorityStyle(a.priority)}`}>
+              <div className="flex items-start gap-2">
+                {a.priority === "danger" && <AlertTriangle size={14} className="text-red-500 flex-shrink-0 mt-0.5" />}
+                {a.priority === "warning" && <Clock size={14} className="text-orange-500 flex-shrink-0 mt-0.5" />}
+                <p className="flex-1 font-medium">{a.text}</p>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      )}
+
+      {myNotifications.length > 0 && (
+        <div>
+          {smartAlerts.length > 0 && <p className="px-4 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Histórico</p>}
+          {myNotifications.map(n => (
+            <div key={n.id} className={`px-4 py-3 border-b text-sm flex items-start gap-3 ${n.read ? "text-gray-400" : priorityStyle(n.priority)}`}>
+              <div className="flex-1">
+                <p>{n.text}</p>
+                <p className="text-xs text-gray-400 mt-1">{n.date}</p>
+              </div>
+              <button onClick={() => dismissNotification(n.id)} className="text-gray-300 hover:text-red-400 flex-shrink-0 mt-0.5" title="Remover"><X size={14} /></button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {allItems.length === 0 && <p className="p-6 text-sm text-gray-400 text-center">Nenhuma notificação no momento.</p>}
     </div>
   );
 }
@@ -1910,7 +1979,7 @@ function App() {
   const [selectedTask, setSelectedTask] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
   const [executorId, setExecutorId] = useState("t1");
-  const [executorName, setExecutorName] = useState("Mel");
+  const [executorName, setExecutorName] = useState("Melissa Zambon");
   const [qaArea, setQaArea] = useState(null);
   const [liderArea, setLiderArea] = useState(null);
   const [showNotif, setShowNotif] = useState(false);
