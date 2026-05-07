@@ -261,6 +261,15 @@ function AppProvider({ children }) {
     });
   }, [notify]);
 
+  const revertFromDevolvida = useCallback((taskId) => {
+    setTasks(prev => {
+      const task = prev.find(t => t.id === taskId);
+      notify(`Devolução revertida: "${task?.title}" voltou para revisão QA`, "qa", "info");
+      notify(`"${task?.title}" retornou para QA — devolução cancelada`, "executor:" + task?.executor, "info");
+      return prev.map(t => t.id === taskId ? { ...t, status: "em_qa", qaComment: "" } : t);
+    });
+  }, [notify]);
+
   const clientApproveTask = useCallback((taskId) => {
     setTasks(prev => {
       const task = prev.find(t => t.id === taskId);
@@ -300,7 +309,7 @@ function AppProvider({ children }) {
   }, [team, tasks]);
 
   return (
-    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, createProject, updateProject, deleteTask, resubmitTask, revertFromQA, revertFromCompleted, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
+    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, createProject, updateProject, deleteTask, resubmitTask, revertFromQA, revertFromCompleted, revertFromDevolvida, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
       {children}
     </AppContext.Provider>
   );
@@ -768,7 +777,7 @@ function TaskDetailView({ taskId, onBack }) {
 // QASquadSelector removed — only eventos squad exists now
 
 function QAPortalView({ area, onBack, onViewErrors }) {
-  const { tasks, projects, clients, team, learnings, feedbacks, clientNotes, approveTask, rejectTask, revertFromCompleted, createProject, updateProject, addLearning, addClientNote, getTeamWithLoad } = useContext(AppContext);
+  const { tasks, projects, clients, team, learnings, feedbacks, clientNotes, approveTask, rejectTask, revertFromCompleted, revertFromDevolvida, createProject, updateProject, addLearning, addClientNote, getTeamWithLoad } = useContext(AppContext);
   const [comments, setComments] = useState({});
   const [expandedId, setExpandedId] = useState(null);
   const [section, setSection] = useState("visao_geral");
@@ -1216,7 +1225,10 @@ function QAPortalView({ area, onBack, onViewErrors }) {
                 <Card key={task.id} className="p-4 mb-2">
                   <div className="flex items-center justify-between">
                     <div><p className="font-medium text-sm">{task.title}</p><p className="text-xs text-gray-500 mt-0.5">{task.project} · {task.executorName}</p></div>
-                    <span className="text-xs px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 font-medium">Devolvida</span>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => revertFromDevolvida(task.id)} className="text-xs text-gray-400 hover:text-red-500 px-2 py-1 rounded border border-gray-200 hover:border-red-300 transition-colors">Reverter</button>
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 font-medium">Devolvida</span>
+                    </div>
                   </div>
                   {task.qaComment && <div className="mt-2 p-2.5 bg-red-50 rounded-lg border border-red-100"><p className="text-xs text-red-700">{task.qaComment}</p></div>}
                 </Card>
