@@ -213,10 +213,6 @@ function AppProvider({ children }) {
       const newTask = { ...taskData, id: "tk" + Date.now(), status: "a_fazer", submittedLink: "", qaComment: "", feedbackOrigin: { type: fb.type, text: fb.text } };
       setTasks(t => [...t, newTask]);
       notify(`Nova tarefa de feedback: "${taskData.title}"`, "executor:" + taskData.executor, "warning");
-      // Register in client history
-      if (fb?.clientId) {
-        addClientNote(fb.clientId, `[Feedback ${fb.type}] "${fb.text}" — Atribuído como tarefa para ${taskData.executorName}`);
-      }
       return prev.filter(f => f.id !== feedbackId);
     });
   }, [notify, addClientNote]);
@@ -653,8 +649,32 @@ function TaskDetailView({ taskId, onBack }) {
 
       <Card className="p-6 mb-6">
         <h3 className="font-bold mb-2">Contexto do job</h3>
-        <p className="text-sm text-gray-500 mb-1">Descrição</p>
-        <p className="text-sm text-gray-700">{task.description}</p>
+        {(() => {
+          const desc = task.description || "";
+          const hasLeaderInstructions = desc.includes("Instruções do líder:");
+          const hasFeedbackPrefix = desc.match(/^Feedback do cliente [^:]+:\s*/i);
+          if (hasLeaderInstructions || hasFeedbackPrefix) {
+            const feedbackText = hasFeedbackPrefix ? desc.split(/\n?\n?Instruções do líder:/i)[0].replace(/^Feedback do cliente [^:]+:\s*/i, "").trim() : desc.split(/\n?\n?Instruções do líder:/i)[0].trim();
+            const leaderText = hasLeaderInstructions ? desc.split(/Instruções do líder:\s*/i)[1]?.trim() : null;
+            return (
+              <div className="space-y-3">
+                {leaderText && (
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Instruções do líder</p>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-gray-700">{leaderText}</div>
+                  </div>
+                )}
+                {!leaderText && feedbackText && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Descrição</p>
+                    <p className="text-sm text-gray-700">{feedbackText}</p>
+                  </div>
+                )}
+              </div>
+            );
+          }
+          return <><p className="text-sm text-gray-500 mb-1">Descrição</p><p className="text-sm text-gray-700">{desc}</p></>;
+        })()}
       </Card>
 
       {task.attachments.length > 0 && (
@@ -832,11 +852,29 @@ function QAPortalView({ area, onBack, onViewErrors }) {
                       <div className="space-y-4">
                         <div>
                           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Instruções da tarefa</p>
-                          <Card className="p-4">
-                            <p className="text-sm text-gray-700 leading-relaxed">{task.description}</p>
+                          <Card className="p-4 space-y-3">
+                            {(() => {
+                              const desc = task.description || "";
+                              const hasLeader = desc.includes("Instruções do líder:");
+                              const hasFbPrefix = desc.match(/^Feedback do cliente [^:]+:\s*/i);
+                              if (hasLeader) {
+                                const leaderText = desc.split(/Instruções do líder:\s*/i)[1]?.trim();
+                                return leaderText ? (
+                                  <div>
+                                    <p className="text-xs font-semibold text-blue-600 mb-1">Instruções do líder</p>
+                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-gray-700">{leaderText}</div>
+                                  </div>
+                                ) : null;
+                              }
+                              if (hasFbPrefix) {
+                                const clean = desc.replace(/^Feedback do cliente [^:]+:\s*/i, "").trim();
+                                return clean ? <p className="text-sm text-gray-700 leading-relaxed">{clean}</p> : null;
+                              }
+                              return <p className="text-sm text-gray-700 leading-relaxed">{desc}</p>;
+                            })()}
                             {task.feedbackOrigin && (
-                              <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                                <p className="text-xs font-semibold text-green-700 mb-1">Originado de feedback do cliente</p>
+                              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                <p className="text-xs font-semibold text-green-700 mb-1">Feedback do cliente</p>
                                 <p className="text-sm text-gray-700">{task.feedbackOrigin.text}</p>
                               </div>
                             )}
@@ -1823,7 +1861,7 @@ function ClientHubView({ onBack }) {
                       <Badge variant={isActive ? "success" : "default"}>{isActive ? "Ativo" : "Inativo"}</Badge>
                       <Badge variant={rel.variant}>{rel.label}</Badge>
                     </div>
-                    <p className="text-sm text-gray-500">Contato: {c.contact} · Responsável: {c.responsible} · {data.allP.length} projetos · {data.clientFeedbacks.length} feedbacks · {data.notes.length} notas</p>
+                    <p className="text-sm text-gray-500">Contato: {c.contact} · Responsável: {c.responsible} · {data.allP.length} projetos · {data.notes.length} notas</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -1838,7 +1876,6 @@ function ClientHubView({ onBack }) {
                   <div className="flex border-b">
                     {[
                       { key: "projetos", label: "Projetos (" + data.allP.length + ")" },
-                      { key: "feedbacks", label: "Feedbacks (" + data.clientFeedbacks.length + ")" },
                       { key: "aprendizados", label: "Aprendizados (" + data.clientLearnings.length + ")" },
                       { key: "notas", label: "Notas internas (" + data.notes.length + ")" },
                     ].map(t => (
@@ -1882,22 +1919,6 @@ function ClientHubView({ onBack }) {
                             ))}
                           </>
                         )}
-                      </div>
-                    )}
-
-                    {clientTab === "feedbacks" && (
-                      <div className="space-y-3">
-                        {data.clientFeedbacks.length === 0 && <p className="text-sm text-gray-400">Nenhum feedback registrado deste cliente.</p>}
-                        {data.clientFeedbacks.map(f => (
-                          <div key={f.id} className={`p-4 rounded-lg border-l-4 ${f.type === "Elogio" ? "bg-green-50 border-l-green-500" : f.type === "Sugestão" ? "bg-blue-50 border-l-blue-500" : "bg-orange-50 border-l-orange-500"}`}>
-                            <div className="flex items-center justify-between mb-1">
-                              <Badge variant={f.type === "Elogio" ? "success" : f.type === "Sugestão" ? "info" : "warning"}>{f.type}</Badge>
-                              <span className="text-xs text-gray-400">{f.date}</span>
-                            </div>
-                            <p className="text-sm mt-1">{f.text}</p>
-                            {f.projectId && <p className="text-xs text-gray-400 mt-2">Projeto: {projects.find(p => p.id === f.projectId)?.name || historicProjects.find(p => p.id === f.projectId)?.name || f.projectId}</p>}
-                          </div>
-                        ))}
                       </div>
                     )}
 
