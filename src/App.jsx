@@ -583,10 +583,17 @@ function ExecutorView({ executorId, onTaskClick }) {
                           </div>
                         </div>
                         <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full border ${cfg.bg} ${cfg.text} ${cfg.border}`}>
-                            <span className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
-                            {cfg.label}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full border ${cfg.bg} ${cfg.text} ${cfg.border}`}>
+                              <span className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
+                              {cfg.label}
+                            </span>
+                            {task.status === "em_qa" && (
+                              <button onClick={e => { e.stopPropagation(); revertFromQA(task.id); }} className="p-1 rounded-md hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors" title="Cancelar envio ao QA">
+                                <X size={14} />
+                              </button>
+                            )}
+                          </div>
                           <div className="flex items-center gap-1 text-xs text-gray-500"><Clock size={12} />{formatDeadline(task.deadline)}</div>
                           {task.feedbackOrigin && <Badge variant="accent">Feedback do cliente</Badge>}
                           {task.status === "devolvida" && task.qaComment && <span className="text-xs text-red-500 max-w-[200px] truncate">{task.qaComment}</span>}
