@@ -1057,7 +1057,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
           {/* Tarefas em risco */}
           {atRisk.length > 0 && (
             <div className="mb-8">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-pink-500"></span>Tarefas em risco de atraso</h2>
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-red-500"></span>Tarefas em risco de atraso</h2>
               {atRisk.map(task => (
                 <Card key={task.id} className="p-4 mb-2 border-l-4 border-l-red-400">
                   <div className="flex items-center justify-between">
@@ -1246,7 +1246,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                           <div>
                             <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">Checklist</p>
                             <Card className="p-4">
-                              <div className="space-y-2">{task.checklist.map((item, i) => (<div key={i} className="flex items-center gap-2.5"><div className={`h-4 w-4 rounded flex items-center justify-center text-xs flex-shrink-0 ${item.done ? "bg-amber-500 text-white" : "border border-stone-300"}`}>{item.done ? "✓" : ""}</div><span className={`text-sm ${item.done ? "text-stone-400 line-through" : "text-stone-700"}`}>{item.text}</span></div>))}</div>
+                              <div className="space-y-2">{task.checklist.map((item, i) => (<div key={i} className="flex items-center gap-2.5"><div className={`h-4 w-4 rounded flex items-center justify-center text-xs flex-shrink-0 ${item.done ? "bg-emerald-500 text-white" : "border border-stone-300"}`}>{item.done ? "✓" : ""}</div><span className={`text-sm ${item.done ? "text-stone-400 line-through" : "text-stone-700"}`}>{item.text}</span></div>))}</div>
                               <div className="mt-3 pt-3 border-t border-stone-100"><div className="flex items-center justify-between"><span className="text-xs text-stone-500">{task.checklist.filter(c => c.done).length}/{task.checklist.length}</span><div className="w-20 bg-stone-200 rounded-full h-1.5"><div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${(task.checklist.filter(c => c.done).length / task.checklist.length) * 100}%` }} /></div></div></div>
                             </Card>
                           </div>
@@ -1913,7 +1913,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                           </div>
                           <div className="flex items-center gap-3">
                             <Badge variant={p.priority === "Alta" ? "danger" : "warning"}>{p.priority}</Badge>
-                            <div className="flex items-center gap-2 w-28"><div className="flex-1 bg-stone-100 rounded-full h-1.5"><div className="bg-stone-900 h-1.5 rounded-full" style={{ width: progress + "%" }} /></div><span className="text-xs text-stone-400">{progress}%</span></div>
+                            <div className="flex items-center gap-2 w-28"><div className="flex-1 bg-stone-100 rounded-full h-1.5"><div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: progress + "%" }} /></div><span className="text-xs text-stone-400">{progress}%</span></div>
                           </div>
                         </div>
                       </Card>
@@ -2388,7 +2388,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
             <p className="text-sm font-medium text-stone-700">Progresso geral</p>
             <p className="text-lg font-bold">{progress}%</p>
           </div>
-          <div className="w-full bg-stone-200 rounded-full h-2.5"><div className="bg-amber-500 h-2.5 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
+          <div className="w-full bg-stone-200 rounded-full h-2.5"><div className="bg-emerald-500 h-2.5 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
           <div className="flex gap-6 mt-3 text-sm">
             {pendingApproval.length > 0 && <span className="text-stone-700 font-medium">{pendingApproval.length} para revisar</span>}
             <span className="text-emerald-600 font-medium">{approved.length} aprovada{approved.length !== 1 ? "s" : ""}</span>
@@ -3317,7 +3317,7 @@ function OnboardingModal({ portal, onClose }) {
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden" onClick={e => e.stopPropagation()}>
           {/* Progress bar */}
           <div className="h-1 bg-stone-100">
-            <div className="h-1 bg-amber-500 transition-all duration-300 rounded-r" style={{ width: `${((step + 1) / total) * 100}%` }} />
+            <div className="h-1 bg-emerald-500 transition-all duration-300 rounded-r" style={{ width: `${((step + 1) / total) * 100}%` }} />
           </div>
 
           {/* Header */}
