@@ -1107,7 +1107,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                     <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${p.priority === "Alta" ? "bg-red-50 text-red-700 border-red-200" : p.priority === "Média" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"}`}>{p.priority}</span>
                   </div>
                   <div className="flex items-center gap-4 mb-3">
-                    <div className="flex-1 bg-stone-200 rounded-full h-2"><div className="bg-amber-500 h-2 rounded-full transition-all" style={{ width: `${pct}%` }} /></div>
+                    <div className="flex-1 bg-stone-200 rounded-full h-2"><div className="bg-emerald-500 h-2 rounded-full transition-all" style={{ width: `${pct}%` }} /></div>
                     <span className="text-sm font-medium text-stone-700">{pct}%</span>
                   </div>
                   <div className="flex gap-3 text-xs text-stone-500">
@@ -1173,7 +1173,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                   </div>
                   {p.briefing && <p className="text-xs text-stone-500 mb-3 line-clamp-2">{p.briefing}</p>}
                   <div className="flex items-center gap-4 mb-2">
-                    <div className="flex-1 bg-stone-200 rounded-full h-2"><div className="bg-amber-500 h-2 rounded-full" style={{ width: `${pct}%` }} /></div>
+                    <div className="flex-1 bg-stone-200 rounded-full h-2"><div className="bg-emerald-500 h-2 rounded-full" style={{ width: `${pct}%` }} /></div>
                     <span className="text-sm font-medium">{pct}%</span>
                   </div>
                   <div className="flex justify-between text-xs text-stone-500">
@@ -1247,7 +1247,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                             <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">Checklist</p>
                             <Card className="p-4">
                               <div className="space-y-2">{task.checklist.map((item, i) => (<div key={i} className="flex items-center gap-2.5"><div className={`h-4 w-4 rounded flex items-center justify-center text-xs flex-shrink-0 ${item.done ? "bg-amber-500 text-white" : "border border-stone-300"}`}>{item.done ? "✓" : ""}</div><span className={`text-sm ${item.done ? "text-stone-400 line-through" : "text-stone-700"}`}>{item.text}</span></div>))}</div>
-                              <div className="mt-3 pt-3 border-t border-stone-100"><div className="flex items-center justify-between"><span className="text-xs text-stone-500">{task.checklist.filter(c => c.done).length}/{task.checklist.length}</span><div className="w-20 bg-stone-200 rounded-full h-1.5"><div className="bg-amber-500 h-1.5 rounded-full" style={{ width: `${(task.checklist.filter(c => c.done).length / task.checklist.length) * 100}%` }} /></div></div></div>
+                              <div className="mt-3 pt-3 border-t border-stone-100"><div className="flex items-center justify-between"><span className="text-xs text-stone-500">{task.checklist.filter(c => c.done).length}/{task.checklist.length}</span><div className="w-20 bg-stone-200 rounded-full h-1.5"><div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${(task.checklist.filter(c => c.done).length / task.checklist.length) * 100}%` }} /></div></div></div>
                             </Card>
                           </div>
                         </div>
@@ -2616,7 +2616,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                   </div>
                   <ChevronLeft size={20} className="text-stone-300 rotate-180" />
                 </div>
-                <div className="w-full bg-stone-200 rounded-full h-2 mb-2"><div className="bg-amber-500 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
+                <div className="w-full bg-stone-200 rounded-full h-2 mb-2"><div className="bg-emerald-500 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
                 <div className="flex gap-4 text-xs text-stone-500">
                   <span>{progress}% concluído</span>
                   <span>{approvedCount} aprovada{approvedCount !== 1 ? "s" : ""}</span>
@@ -3026,7 +3026,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
         <Card className="p-4">
           <p className="text-sm text-stone-500">Progresso</p>
           <p className="text-2xl font-bold">{progress}%</p>
-          <div className="w-full bg-stone-200 rounded-full h-2 mt-2"><div className="bg-amber-500 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
+          <div className="w-full bg-stone-200 rounded-full h-2 mt-2"><div className="bg-emerald-500 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
         </Card>
         <Card className="p-4">
           <p className="text-sm text-stone-500">Em risco</p>
@@ -3133,7 +3133,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
                     {memberTasks.length > 0 ? (
                       <>
                         <p className="text-xs text-stone-500">{memberTasks.length} tarefa{memberTasks.length !== 1 ? "s" : ""} · {done} concluída{done !== 1 ? "s" : ""}</p>
-                        <div className="w-full bg-stone-200 rounded-full h-1.5 mt-2"><div className="bg-amber-500 h-1.5 rounded-full" style={{ width: `${memberTasks.length > 0 ? Math.round((done / memberTasks.length) * 100) : 0}%` }} /></div>
+                        <div className="w-full bg-stone-200 rounded-full h-1.5 mt-2"><div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${memberTasks.length > 0 ? Math.round((done / memberTasks.length) * 100) : 0}%` }} /></div>
                       </>
                     ) : (
                       <p className="text-xs text-stone-400 italic">Sem tarefas ainda</p>
