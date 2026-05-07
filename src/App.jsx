@@ -103,7 +103,7 @@ const AppContext = createContext(null);
 
 function AppProvider({ children }) {
   const [tasks, setTasks] = useState(initialTasks);
-  const [projects] = useState(initialProjects);
+  const [projects, setProjects] = useState(initialProjects);
   const [clients] = useState(initialClients);
   const [team] = useState(initialTeam);
   const [learnings, setLearnings] = useState(initialLearnings);
@@ -118,6 +118,17 @@ function AppProvider({ children }) {
     addClientNote(clientId, noteText, "elogio", clientName || "Cliente");
     setFeedbacks(prev => prev.filter(f => f.id !== feedbackId));
   }, [addClientNote]);
+
+  const createProject = useCallback((projectData) => {
+    const newProject = { ...projectData, id: "p" + Date.now(), status: "em_execucao", progress: 0, area: "eventos", type: "Evento" };
+    setProjects(prev => [...prev, newProject]);
+    return newProject;
+  }, []);
+
+  const updateProject = useCallback((projectId, updates) => {
+    setProjects(prev => prev.map(p => p.id === projectId ? { ...p, ...updates } : p));
+  }, []);
+
   // Notifications: target = "executor:t1", "qa", "lider", "client:c5"
   // priority = "info" | "warning" | "danger"
   const [notifications, setNotifications] = useState([]);
@@ -285,7 +296,7 @@ function AppProvider({ children }) {
   }, [team, tasks]);
 
   return (
-    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, resubmitTask, revertFromQA, revertFromCompleted, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
+    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, createProject, updateProject, resubmitTask, revertFromQA, revertFromCompleted, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
       {children}
     </AppContext.Provider>
   );
@@ -745,80 +756,357 @@ function TaskDetailView({ taskId, onBack }) {
 // QASquadSelector removed — only eventos squad exists now
 
 function QAPortalView({ area, onBack, onViewErrors }) {
-  const { tasks, approveTask, rejectTask, revertFromCompleted } = useContext(AppContext);
+  const { tasks, projects, clients, team, learnings, feedbacks, clientNotes, approveTask, rejectTask, revertFromCompleted, createProject, updateProject, addLearning, addClientNote, getTeamWithLoad } = useContext(AppContext);
   const [comments, setComments] = useState({});
   const [expandedId, setExpandedId] = useState(null);
-  const [tab, setTab] = useState("pendentes");
-  const pendingTasks = tasks.filter(t => t.area === area && t.status === "em_qa");
-  const historyTasks = tasks.filter(t => t.area === area && t.status === "concluida").slice(0, 5);
-  const rejectedTasks = tasks.filter(t => t.area === area && t.status === "devolvida").slice(0, 5);
-  const atRisk = tasks.filter(t => t.area === area && ["em_execucao", "a_fazer"].includes(t.status) && new Date(t.deadline) < new Date(Date.now() + 86400000));
+  const [section, setSection] = useState("visao_geral");
+  const [showCreateProject, setShowCreateProject] = useState(false);
+  const [projForm, setProjForm] = useState({ name: "", clientId: "", responsible: "Ana Gallotta", priority: "Alta", deadline: "", briefing: "" });
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [noteClient, setNoteClient] = useState("");
+  const [noteText, setNoteText] = useState("");
+  const [noteTag, setNoteTag] = useState("");
+  const [kbF, setKbF] = useState("todos");
 
-  const statusConfig = {
-    em_qa: { label: "Em QA", bg: "bg-purple-50", text: "text-purple-700", border: "border-purple-200", dot: "bg-purple-500" },
-    devolvida: { label: "Devolvida", bg: "bg-red-50", text: "text-red-700", border: "border-red-200", dot: "bg-red-500" },
-    concluida: { label: "Aprovada", bg: "bg-green-50", text: "text-green-700", border: "border-green-200", dot: "bg-green-500" },
+  const areaProjects = projects.filter(p => p.area === area);
+  const areaTasks = tasks.filter(t => t.area === area);
+  const pendingTasks = areaTasks.filter(t => t.status === "em_qa");
+  const allCompleted = areaTasks.filter(t => t.status === "concluida");
+  const allDevolvidas = areaTasks.filter(t => t.status === "devolvida");
+  const allActive = areaTasks.filter(t => ["a_fazer", "em_execucao", "em_qa"].includes(t.status));
+  const atRisk = areaTasks.filter(t => ["em_execucao", "a_fazer"].includes(t.status) && new Date(t.deadline) < new Date(Date.now() + 86400000));
+  const areaTeam = getTeamWithLoad().filter(m => m.area === area);
+
+  // Metrics
+  const retrabalhoCount = areaTasks.filter(t => t.status === "devolvida" || t.feedbackOrigin).length;
+  const totalTasks = areaTasks.length;
+  const retrabalhoRate = totalTasks > 0 ? Math.round((retrabalhoCount / totalTasks) * 100) : 0;
+  const avgTasksPerExecutor = areaTeam.length > 0 ? Math.round((allActive.length / areaTeam.length) * 10) / 10 : 0;
+  const pendingFeedbacks = feedbacks.filter(f => f.status === "pendente").length;
+
+  const handleCreateProject = () => {
+    if (!projForm.name.trim() || !projForm.clientId || !projForm.deadline) return;
+    const client = clients.find(c => c.id === projForm.clientId);
+    createProject({ name: projForm.name, clientId: projForm.clientId, client: client?.name || "", responsible: projForm.responsible, priority: projForm.priority, deadline: projForm.deadline, briefing: projForm.briefing });
+    setProjForm({ name: "", clientId: "", responsible: "Ana Gallotta", priority: "Alta", deadline: "", briefing: "" });
+    setShowCreateProject(false);
+  };
+
+  const tagConfig = {
+    gostou: { label: "Gostou", color: "bg-green-100 text-green-700 border-green-300" },
+    nao_gostou: { label: "Não gostou", color: "bg-red-100 text-red-700 border-red-300" },
+    comunicacao: { label: "Comunicação", color: "bg-blue-100 text-blue-700 border-blue-300" },
+    processo: { label: "Processo", color: "bg-purple-100 text-purple-700 border-purple-300" },
+    elogio: { label: "Elogio", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
+    erro: { label: "Erro", color: "bg-red-100 text-red-700 border-red-300" },
+    insight: { label: "Insight", color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
   };
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-6xl mx-auto">
+      <div className="flex items-center justify-between mb-2">
         <div>
-          <div className="flex items-center gap-3 mb-1">
-            <Calendar size={28} className="text-orange-600" />
-            <h1 className="text-3xl font-bold text-gray-900">QA Eventos</h1>
-          </div>
-          <p className="text-gray-500">Revise entregas, devolva com comentários claros e gere aprendizados para o time.</p>
+          <h1 className="text-3xl font-bold text-gray-900">QA Eventos</h1>
+          <p className="text-gray-500 mt-1">Gestão operacional da área de eventos — projetos, qualidade, métricas e conhecimento.</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={onViewErrors}><Sparkles size={14} /> Erros & aprendizados</Button>
-          <Button variant="outline" size="sm" onClick={onBack}><ArrowLeft size={14} /> Voltar</Button>
-        </div>
+        <Button variant="outline" size="sm" onClick={onBack}><ArrowLeft size={14} /> Voltar</Button>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <Card className="p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="h-9 w-9 rounded-lg bg-purple-50 flex items-center justify-center"><Clock size={18} className="text-purple-600" /></div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{pendingTasks.length}</p>
-          <p className="text-sm text-gray-500 mt-0.5">Pendentes de revisão</p>
-        </Card>
-        <Card className="p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="h-9 w-9 rounded-lg bg-red-50 flex items-center justify-center"><AlertTriangle size={18} className="text-red-500" /></div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{atRisk.length}</p>
-          <p className="text-sm text-gray-500 mt-0.5">Em risco de atraso</p>
-        </Card>
-        <Card className="p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="h-9 w-9 rounded-lg bg-green-50 flex items-center justify-center"><CheckCircle2 size={18} className="text-green-600" /></div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{historyTasks.length}</p>
-          <p className="text-sm text-gray-500 mt-0.5">Aprovados recentes</p>
-        </Card>
-      </div>
-
-      <div className="flex gap-2 mb-6">
+      {/* Navigation */}
+      <div className="flex gap-1 mb-8 border-b border-gray-200 mt-4">
         {[
-          ["pendentes", `Pendentes (${pendingTasks.length})`, "purple"],
-          ["devolvidos", `Devolvidos (${rejectedTasks.length})`, "red"],
-          ["aprovados", `Aprovados (${historyTasks.length})`, "green"],
-        ].map(([key, label, color]) => (
-          <button key={key} onClick={() => setTab(key)}
-            className={`px-4 py-2 text-sm font-medium rounded-lg border transition-colors ${tab === key
-              ? (color === "purple" ? "bg-purple-50 text-purple-700 border-purple-200" : color === "red" ? "bg-red-50 text-red-700 border-red-200" : "bg-green-50 text-green-700 border-green-200")
-              : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"}`}>
-            {label}
-          </button>
+          ["visao_geral", "Visão geral"],
+          ["projetos", "Projetos (" + areaProjects.length + ")"],
+          ["revisao", "Revisão (" + pendingTasks.length + ")"],
+          ["conhecimento", "Base de conhecimento"],
+        ].map(([key, label]) => (
+          <button key={key} onClick={() => setSection(key)} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${section === key ? "border-gray-900 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-700"}`}>{label}</button>
         ))}
       </div>
 
-      {tab === "pendentes" && (
+      {/* ===== VISÃO GERAL ===== */}
+      {section === "visao_geral" && (
         <div>
+          {/* Dashboard metrics */}
+          <div className="grid grid-cols-5 gap-3 mb-8">
+            <Card className="p-4 text-center">
+              <p className="text-2xl font-bold text-gray-900">{areaProjects.length}</p>
+              <p className="text-xs text-gray-500 mt-1">Projetos ativos</p>
+            </Card>
+            <Card className="p-4 text-center">
+              <p className="text-2xl font-bold text-gray-900">{allActive.length}</p>
+              <p className="text-xs text-gray-500 mt-1">Tarefas em andamento</p>
+            </Card>
+            <Card className="p-4 text-center">
+              <p className={`text-2xl font-bold ${pendingTasks.length > 0 ? "text-purple-600" : "text-gray-900"}`}>{pendingTasks.length}</p>
+              <p className="text-xs text-gray-500 mt-1">Aguardando revisão</p>
+            </Card>
+            <Card className="p-4 text-center">
+              <p className={`text-2xl font-bold ${retrabalhoRate > 30 ? "text-red-600" : retrabalhoRate > 15 ? "text-yellow-600" : "text-green-600"}`}>{retrabalhoRate}%</p>
+              <p className="text-xs text-gray-500 mt-1">Taxa de retrabalho</p>
+            </Card>
+            <Card className="p-4 text-center">
+              <p className={`text-2xl font-bold ${atRisk.length > 0 ? "text-red-600" : "text-green-600"}`}>{atRisk.length}</p>
+              <p className="text-xs text-gray-500 mt-1">Em risco de atraso</p>
+            </Card>
+          </div>
+
+          {/* Produtividade por executor */}
+          <h2 className="text-lg font-semibold mb-3">Produtividade do time</h2>
+          <div className="grid grid-cols-4 gap-3 mb-8">
+            {areaTeam.map(m => {
+              const mTasks = areaTasks.filter(t => t.executor === m.id);
+              const mActive = mTasks.filter(t => ["a_fazer", "em_execucao", "em_qa"].includes(t.status)).length;
+              const mDone = mTasks.filter(t => t.status === "concluida").length;
+              const mDevolvidas = mTasks.filter(t => t.status === "devolvida" || t.feedbackOrigin).length;
+              const mRate = mTasks.length > 0 ? Math.round((mDevolvidas / mTasks.length) * 100) : 0;
+              return (
+                <Card key={m.id} className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="font-medium text-sm">{m.name.split(" ")[0]}</p>
+                    <Badge variant={m.loadStatus === "Disponível" ? "success" : m.loadStatus === "Moderado" ? "warning" : "danger"}>{m.loadStatus}</Badge>
+                  </div>
+                  <div className="space-y-1.5 text-xs text-gray-500">
+                    <div className="flex justify-between"><span>Ativas</span><span className="font-medium text-gray-900">{mActive}</span></div>
+                    <div className="flex justify-between"><span>Concluídas</span><span className="font-medium text-gray-900">{mDone}</span></div>
+                    <div className="flex justify-between"><span>Retrabalho</span><span className={`font-medium ${mRate > 30 ? "text-red-600" : "text-gray-900"}`}>{mRate}%</span></div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Entregas pendentes de revisão — quick section */}
+          {pendingTasks.length > 0 && (
+            <>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-semibold">Entregas aguardando revisão</h2>
+                <button onClick={() => setSection("revisao")} className="text-sm text-gray-500 hover:text-gray-900">Ver todas</button>
+              </div>
+              <div className="space-y-2 mb-8">
+                {pendingTasks.slice(0, 3).map(task => (
+                  <Card key={task.id} className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-sm">{task.title}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{task.project} · {task.executorName}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${task.priority === "Alta" ? "bg-red-50 text-red-700 border-red-200" : task.priority === "Média" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : "bg-green-50 text-green-700 border-green-200"}`}>{task.priority}</span>
+                        <Button size="sm" onClick={() => { setSection("revisao"); setExpandedId(task.id); }}>Revisar</Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Tarefas em risco */}
+          {atRisk.length > 0 && (
+            <>
+              <h2 className="text-lg font-semibold mb-3">Tarefas em risco de atraso</h2>
+              <div className="space-y-2 mb-8">
+                {atRisk.map(task => (
+                  <Card key={task.id} className="p-4 border-l-4 border-l-red-400">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-sm">{task.title}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{task.project} · {task.executorName} · Prazo: {new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</p>
+                      </div>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 font-medium">{task.status === "a_fazer" ? "A fazer" : "Em execução"}</span>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Resumo projetos */}
+          <h2 className="text-lg font-semibold mb-3">Projetos da área</h2>
+          <div className="space-y-2 mb-8">
+            {areaProjects.map(p => {
+              const pTasks = areaTasks.filter(t => t.projectId === p.id);
+              const done = pTasks.filter(t => t.status === "concluida").length;
+              const total = pTasks.length;
+              return (
+                <Card key={p.id} className="p-4 cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => { setSection("projetos"); setSelectedProjectId(p.id); }}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-sm">{p.name}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">{p.client} · Líder: {p.responsible} · Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500">{done}/{total} tarefas</p>
+                        <div className="w-20 bg-gray-200 rounded-full h-1.5 mt-1"><div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${total > 0 ? (done / total) * 100 : 0}%` }} /></div>
+                      </div>
+                      <ChevronDown size={16} className="text-gray-400" />
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ===== PROJETOS ===== */}
+      {section === "projetos" && (
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold">Gerenciamento de projetos</h2>
+            <Button size="sm" onClick={() => setShowCreateProject(!showCreateProject)}><Plus size={14} /> Novo projeto</Button>
+          </div>
+
+          {showCreateProject && (
+            <Card className="p-5 mb-6">
+              <p className="text-sm font-semibold text-gray-700 mb-4">Criar novo projeto</p>
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">Nome do projeto / campanha</label>
+                    <input value={projForm.name} onChange={e => setProjForm(p => ({ ...p, name: e.target.value }))} placeholder="Ex: Festival de Música 2026" className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">Cliente</label>
+                    <select value={projForm.clientId} onChange={e => setProjForm(p => ({ ...p, clientId: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                      <option value="">Selecione</option>
+                      {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">Líder responsável</label>
+                    <select value={projForm.responsible} onChange={e => setProjForm(p => ({ ...p, responsible: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                      <option value="Ana Gallotta">Ana Gallotta</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">Prioridade</label>
+                    <select value={projForm.priority} onChange={e => setProjForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                      <option value="Alta">Alta</option>
+                      <option value="Média">Média</option>
+                      <option value="Baixa">Baixa</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">Prazo</label>
+                    <input type="date" value={projForm.deadline} onChange={e => setProjForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-600">Briefing</label>
+                  <textarea value={projForm.briefing} onChange={e => setProjForm(p => ({ ...p, briefing: e.target.value }))} placeholder="Descreva o escopo, objetivos, referências e expectativas do cliente..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" onClick={handleCreateProject} disabled={!projForm.name.trim() || !projForm.clientId || !projForm.deadline}>Criar projeto</Button>
+                  <Button size="sm" variant="outline" onClick={() => setShowCreateProject(false)}>Cancelar</Button>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {selectedProjectId ? (() => {
+            const proj = areaProjects.find(p => p.id === selectedProjectId);
+            if (!proj) { setSelectedProjectId(null); return null; }
+            const pTasks = areaTasks.filter(t => t.projectId === proj.id);
+            const done = pTasks.filter(t => t.status === "concluida").length;
+            return (
+              <div>
+                <button onClick={() => setSelectedProjectId(null)} className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 mb-4"><ArrowLeft size={14} /> Todos os projetos</button>
+                <Card className="p-6 mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h3 className="text-xl font-bold">{proj.name}</h3>
+                      <p className="text-sm text-gray-500 mt-1">{proj.client} · Líder: {proj.responsible} · Prazo: {new Date(proj.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}</p>
+                    </div>
+                    <span className={`text-xs px-3 py-1 rounded-full border font-medium ${proj.priority === "Alta" ? "bg-red-50 text-red-700 border-red-200" : proj.priority === "Média" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : "bg-green-50 text-green-700 border-green-200"}`}>{proj.priority}</span>
+                  </div>
+                  {proj.briefing && <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200"><p className="text-xs font-semibold text-gray-500 mb-1">BRIEFING</p><p className="text-sm text-gray-700">{proj.briefing}</p></div>}
+                  <div className="grid grid-cols-4 gap-3 mt-4">
+                    <div className="text-center p-3 bg-gray-50 rounded-lg"><p className="text-lg font-bold">{pTasks.length}</p><p className="text-xs text-gray-500">Total tarefas</p></div>
+                    <div className="text-center p-3 bg-gray-50 rounded-lg"><p className="text-lg font-bold text-green-600">{done}</p><p className="text-xs text-gray-500">Concluídas</p></div>
+                    <div className="text-center p-3 bg-gray-50 rounded-lg"><p className="text-lg font-bold text-purple-600">{pTasks.filter(t => t.status === "em_qa").length}</p><p className="text-xs text-gray-500">Em QA</p></div>
+                    <div className="text-center p-3 bg-gray-50 rounded-lg"><p className="text-lg font-bold text-red-600">{pTasks.filter(t => t.status === "devolvida").length}</p><p className="text-xs text-gray-500">Devolvidas</p></div>
+                  </div>
+                </Card>
+                <p className="text-sm font-medium text-gray-700 mb-3">Tarefas do projeto</p>
+                {pTasks.length === 0 ? (
+                  <Card className="p-8 text-center"><p className="text-gray-400 text-sm">Nenhuma tarefa criada ainda para este projeto. O líder cria e distribui tarefas pelo portal dele.</p></Card>
+                ) : (
+                  <div className="space-y-2">
+                    {pTasks.map(t => {
+                      const statusMap = { a_fazer: { label: "A fazer", color: "bg-gray-100 text-gray-600 border-gray-300" }, em_execucao: { label: "Em execução", color: "bg-blue-50 text-blue-700 border-blue-200" }, em_qa: { label: "Em QA", color: "bg-purple-50 text-purple-700 border-purple-200" }, devolvida: { label: "Devolvida", color: "bg-red-50 text-red-700 border-red-200" }, concluida: { label: "Concluída", color: "bg-green-50 text-green-700 border-green-200" } };
+                      const sc = statusMap[t.status] || statusMap.a_fazer;
+                      return (
+                        <Card key={t.id} className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-medium text-sm">{t.title}</p>
+                              <p className="text-xs text-gray-500 mt-0.5">{t.executorName} · Prazo: {new Date(t.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</p>
+                            </div>
+                            <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${sc.color}`}>{sc.label}</span>
+                          </div>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })() : (
+            <div className="space-y-2">
+              {areaProjects.length === 0 ? (
+                <Card className="p-12 text-center"><p className="text-gray-400">Nenhum projeto criado ainda.</p></Card>
+              ) : areaProjects.map(p => {
+                const pTasks = areaTasks.filter(t => t.projectId === p.id);
+                const done = pTasks.filter(t => t.status === "concluida").length;
+                return (
+                  <Card key={p.id} className="p-5 cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => setSelectedProjectId(p.id)}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-semibold text-gray-900">{p.name}</h3>
+                          <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${p.priority === "Alta" ? "bg-red-50 text-red-700 border-red-200" : p.priority === "Média" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : "bg-green-50 text-green-700 border-green-200"}`}>{p.priority}</span>
+                        </div>
+                        <p className="text-sm text-gray-500">{p.client} · Líder: {p.responsible} · Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="text-xs text-gray-500">{done}/{pTasks.length} tarefas</p>
+                          <div className="w-24 bg-gray-200 rounded-full h-1.5 mt-1"><div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${pTasks.length > 0 ? (done / pTasks.length) * 100 : 0}%` }} /></div>
+                        </div>
+                        <ChevronDown size={16} className="text-gray-400" />
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ===== REVISÃO ===== */}
+      {section === "revisao" && (
+        <div>
+          <div className="flex gap-2 mb-6">
+            {[
+              ["pendentes", `Pendentes (${pendingTasks.length})`, "purple"],
+              ["devolvidos", `Devolvidos (${allDevolvidas.length})`, "red"],
+              ["aprovados", `Aprovados (${allCompleted.length})`, "green"],
+            ].map(([key, label, color]) => (
+              <button key={key} onClick={() => setExpandedId(key === expandedId ? null : null) || setExpandedId(null)}
+                className="px-4 py-2 text-sm font-medium rounded-lg border transition-colors bg-white text-gray-600 border-gray-200 hover:border-gray-300 cursor-default">
+                {label}
+              </button>
+            ))}
+          </div>
+
           {pendingTasks.length === 0 ? (
-            <Card className="p-12 text-center"><p className="text-gray-400">Nenhuma tarefa pendente de QA nesta área.</p></Card>
+            <Card className="p-12 text-center"><p className="text-gray-400">Nenhuma entrega pendente de revisão.</p></Card>
           ) : pendingTasks.map(task => {
             const isExpanded = expandedId === task.id;
             return (
@@ -826,7 +1114,7 @@ function QAPortalView({ area, onBack, onViewErrors }) {
               <div className="p-5 cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => setExpandedId(isExpanded ? null : task.id)}>
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
-                    <div className={`h-3 w-3 rounded-full mt-1.5 flex-shrink-0 ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-orange-500" : "bg-green-500"}`} />
+                    <div className={`h-3 w-3 rounded-full mt-1.5 flex-shrink-0 ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-yellow-500" : "bg-green-500"}`} />
                     <div>
                       <h3 className="font-semibold text-gray-900 leading-tight">{task.title}</h3>
                       <div className="flex items-center gap-3 mt-1.5 text-sm text-gray-500">
@@ -837,14 +1125,11 @@ function QAPortalView({ area, onBack, onViewErrors }) {
                     </div>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full border ${task.priority === "Alta" ? "bg-red-50 text-red-700 border-red-200" : task.priority === "Média" ? "bg-orange-50 text-orange-600 border-orange-200" : "bg-green-50 text-green-700 border-green-200"}`}>
-                      {task.priority}
-                    </span>
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full border ${task.priority === "Alta" ? "bg-red-50 text-red-700 border-red-200" : task.priority === "Média" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : "bg-green-50 text-green-700 border-green-200"}`}>{task.priority}</span>
                     {isExpanded ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
                   </div>
                 </div>
               </div>
-
               {isExpanded && (
                 <div className="border-t border-gray-100 bg-gray-50">
                   <div className="p-6">
@@ -859,12 +1144,7 @@ function QAPortalView({ area, onBack, onViewErrors }) {
                               const hasFbPrefix = desc.match(/^Feedback do cliente [^:]+:\s*/i);
                               if (hasLeader) {
                                 const leaderText = desc.split(/Instruções do líder:\s*/i)[1]?.trim();
-                                return leaderText ? (
-                                  <div>
-                                    <p className="text-xs font-semibold text-blue-600 mb-1">Instruções do líder</p>
-                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-gray-700">{leaderText}</div>
-                                  </div>
-                                ) : null;
+                                return leaderText ? (<div><p className="text-xs font-semibold text-blue-600 mb-1">Instruções do líder</p><div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-gray-700">{leaderText}</div></div>) : null;
                               }
                               if (hasFbPrefix) {
                                 const clean = desc.replace(/^Feedback do cliente [^:]+:\s*/i, "").trim();
@@ -872,125 +1152,42 @@ function QAPortalView({ area, onBack, onViewErrors }) {
                               }
                               return <p className="text-sm text-gray-700 leading-relaxed">{desc}</p>;
                             })()}
-                            {task.feedbackOrigin && (
-                              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                                <p className="text-xs font-semibold text-green-700 mb-1">Feedback do cliente</p>
-                                <p className="text-sm text-gray-700">{task.feedbackOrigin.text}</p>
-                              </div>
-                            )}
+                            {task.feedbackOrigin && (<div className="p-3 bg-green-50 border border-green-200 rounded-lg"><p className="text-xs font-semibold text-green-700 mb-1">Feedback do cliente</p><p className="text-sm text-gray-700">{task.feedbackOrigin.text}</p></div>)}
                           </Card>
                         </div>
-
                         <div>
-                          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Checklist de execução</p>
+                          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Checklist</p>
                           <Card className="p-4">
-                            <div className="space-y-2">
-                              {task.checklist.map((item, i) => (
-                                <div key={i} className="flex items-center gap-2.5">
-                                  <div className={`h-4 w-4 rounded flex items-center justify-center text-xs flex-shrink-0 ${item.done ? "bg-green-600 text-white" : "border border-gray-300"}`}>{item.done ? "✓" : ""}</div>
-                                  <span className={`text-sm ${item.done ? "text-gray-400 line-through" : "text-gray-700"}`}>{item.text}</span>
-                                </div>
-                              ))}
-                            </div>
-                            <div className="mt-3 pt-3 border-t border-gray-100">
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs text-gray-500">{task.checklist.filter(c => c.done).length} de {task.checklist.length} concluídos</span>
-                                <div className="w-20 bg-gray-200 rounded-full h-1.5"><div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${(task.checklist.filter(c => c.done).length / task.checklist.length) * 100}%` }} /></div>
-                              </div>
-                            </div>
+                            <div className="space-y-2">{task.checklist.map((item, i) => (<div key={i} className="flex items-center gap-2.5"><div className={`h-4 w-4 rounded flex items-center justify-center text-xs flex-shrink-0 ${item.done ? "bg-green-600 text-white" : "border border-gray-300"}`}>{item.done ? "✓" : ""}</div><span className={`text-sm ${item.done ? "text-gray-400 line-through" : "text-gray-700"}`}>{item.text}</span></div>))}</div>
+                            <div className="mt-3 pt-3 border-t border-gray-100"><div className="flex items-center justify-between"><span className="text-xs text-gray-500">{task.checklist.filter(c => c.done).length}/{task.checklist.length}</span><div className="w-20 bg-gray-200 rounded-full h-1.5"><div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${(task.checklist.filter(c => c.done).length / task.checklist.length) * 100}%` }} /></div></div></div>
                           </Card>
                         </div>
                       </div>
-
                       <div className="space-y-4">
                         <div>
                           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Entrega do executor</p>
                           <Card className="p-4">
                             {(task.submittedFiles && task.submittedFiles.length > 0) ? (
                               <div className="space-y-2">
-                                {task.submittedFiles.map((f, i) => (
-                                  <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                                    <div className="h-8 w-8 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-purple-600" /></div>
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-sm font-medium text-gray-900 truncate">{f.name}</p>
-                                      <p className="text-xs text-gray-500">{f.type ? f.type + " · " : ""}{f.size}</p>
-                                    </div>
-                                    <a href={f.url} download={f.name} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 cursor-pointer flex-shrink-0" style={{textDecoration:"none"}}>
-                                      <ExternalLink size={12} /> Abrir
-                                    </a>
-                                  </div>
-                                ))}
-                                {task.submittedLink && task.submittedLink.trim() && (
-                                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                                    <div className="h-8 w-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0"><ExternalLink size={16} className="text-gray-500" /></div>
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-sm font-medium text-gray-900">Link de entrega</p>
-                                      <p className="text-xs text-gray-500 truncate">{task.submittedLink}</p>
-                                    </div>
-                                    <Button variant="outline" size="sm" onClick={() => { window.open(task.submittedLink, "_blank"); }}>Abrir</Button>
-                                  </div>
-                                )}
+                                {task.submittedFiles.map((f, i) => (<div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100"><div className="h-8 w-8 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-purple-600" /></div><div className="flex-1 min-w-0"><p className="text-sm font-medium text-gray-900 truncate">{f.name}</p><p className="text-xs text-gray-500">{f.type ? f.type + " · " : ""}{f.size}</p></div><a href={f.url} download={f.name} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 cursor-pointer flex-shrink-0" style={{textDecoration:"none"}}><ExternalLink size={12} /> Abrir</a></div>))}
+                                {task.submittedLink && task.submittedLink.trim() && (<div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100"><div className="h-8 w-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0"><ExternalLink size={16} className="text-gray-500" /></div><div className="flex-1 min-w-0"><p className="text-sm font-medium text-gray-900">Link</p><p className="text-xs text-gray-500 truncate">{task.submittedLink}</p></div><Button variant="outline" size="sm" onClick={() => window.open(task.submittedLink, "_blank")}>Abrir</Button></div>)}
                               </div>
                             ) : task.submittedLink && task.submittedLink.trim() ? (
-                              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                                <div className="h-8 w-8 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0"><ExternalLink size={16} className="text-purple-600" /></div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-gray-900">Link de entrega</p>
-                                  <p className="text-xs text-gray-500 truncate">{task.submittedLink}</p>
-                                </div>
-                                <Button variant="outline" size="sm" onClick={() => { window.open(task.submittedLink, "_blank"); }}>Abrir</Button>
-                              </div>
-                            ) : (
-                              <p className="text-sm text-gray-400 italic">Nenhum arquivo foi anexado pelo executor.</p>
-                            )}
+                              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100"><div className="h-8 w-8 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0"><ExternalLink size={16} className="text-purple-600" /></div><div className="flex-1 min-w-0"><p className="text-sm font-medium text-gray-900">Link</p><p className="text-xs text-gray-500 truncate">{task.submittedLink}</p></div><Button variant="outline" size="sm" onClick={() => window.open(task.submittedLink, "_blank")}>Abrir</Button></div>
+                            ) : (<p className="text-sm text-gray-400 italic">Nenhum arquivo anexado.</p>)}
                           </Card>
                         </div>
-
-                        {task.attachments.length > 0 && (
-                          <div>
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Insumos e referências</p>
-                            <Card className="p-4">
-                              <div className="space-y-2">
-                                {task.attachments.map((a, i) => (
-                                  <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <div className="h-8 w-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-gray-500" /></div>
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-sm font-medium text-gray-900">{a.name}</p>
-                                      <p className="text-xs text-gray-400">{a.type}{a.size ? ` · ${a.size}` : ""}</p>
-                                    </div>
-                                    <Button variant="ghost" size="sm" onClick={() => { if (a.url) { window.open(a.url, "_blank"); } else { alert("Arquivo de exemplo: " + a.name + "\nEm produção, abriria o arquivo real."); } }}>Abrir</Button>
-                                  </div>
-                                ))}
-                              </div>
-                            </Card>
-                          </div>
-                        )}
+                        {task.attachments.length > 0 && (<div><p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Referências</p><Card className="p-4"><div className="space-y-2">{task.attachments.map((a, i) => (<div key={i} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50"><div className="h-8 w-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-gray-500" /></div><div className="flex-1 min-w-0"><p className="text-sm font-medium text-gray-900">{a.name}</p><p className="text-xs text-gray-400">{a.type}{a.size ? ` · ${a.size}` : ""}</p></div><Button variant="ghost" size="sm" onClick={() => a.url ? window.open(a.url, "_blank") : alert("Arquivo: " + a.name)}>Abrir</Button></div>))}</div></Card></div>)}
                       </div>
                     </div>
-
                     <Card className="p-5">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Revisão e devolutiva</p>
                       <textarea value={comments[task.id] || ""} onChange={e => setComments(prev => ({ ...prev, [task.id]: e.target.value }))} placeholder="Escreva o que precisa ser ajustado, elogie o que ficou bom, ou aprove diretamente..." className="w-full border border-gray-200 rounded-lg p-3 text-sm min-h-[80px] mb-4 focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50" />
                       <div className="flex gap-3">
-                        <button className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg bg-green-700 text-white hover:bg-green-800 transition-colors"
-                          onClick={() => { approveTask(task.id, comments[task.id]); setComments(prev => { const n = { ...prev }; delete n[task.id]; return n; }); setExpandedId(null); }}>
-                          <CheckCircle2 size={16} /> Aprovar e concluir
-                        </button>
-                        <button
-                          className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${comments[task.id]?.trim() ? "border border-red-300 bg-red-50 text-red-700 hover:bg-red-100" : "border border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"}`}
-                          onClick={() => {
-                            if (!comments[task.id]?.trim()) {
-                              alert("Escreva um comentário antes de devolver a tarefa.");
-                              return;
-                            }
-                            rejectTask(task.id, comments[task.id]);
-                            setComments(prev => { const n = { ...prev }; delete n[task.id]; return n; });
-                            setExpandedId(null);
-                          }}>
-                          <ArrowLeft size={16} /> Devolver para execução
-                        </button>
+                        <button className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg bg-green-700 text-white hover:bg-green-800 transition-colors" onClick={() => { approveTask(task.id, comments[task.id]); setComments(prev => { const n = { ...prev }; delete n[task.id]; return n; }); setExpandedId(null); }}><CheckCircle2 size={16} /> Aprovar</button>
+                        <button className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${comments[task.id]?.trim() ? "border border-red-300 bg-red-50 text-red-700 hover:bg-red-100" : "border border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"}`} onClick={() => { if (!comments[task.id]?.trim()) return; rejectTask(task.id, comments[task.id]); setComments(prev => { const n = { ...prev }; delete n[task.id]; return n; }); setExpandedId(null); }}><ArrowLeft size={16} /> Devolver</button>
                       </div>
-                      {!comments[task.id]?.trim() && <p className="text-xs text-orange-500 mt-3 flex items-center gap-1"><AlertTriangle size={12} /> Escreva um comentário para poder devolver a tarefa ao executor.</p>}
+                      {!comments[task.id]?.trim() && <p className="text-xs text-gray-400 mt-3">Escreva um comentário para poder devolver a tarefa.</p>}
                     </Card>
                   </div>
                 </div>
@@ -998,56 +1195,127 @@ function QAPortalView({ area, onBack, onViewErrors }) {
             </Card>
             );
           })}
-        </div>
-      )}
 
-      {tab === "devolvidos" && (
-        <div>
-          {rejectedTasks.length === 0 ? (
-            <Card className="p-12 text-center"><p className="text-gray-400">Nenhuma tarefa devolvida recentemente.</p></Card>
-          ) : rejectedTasks.map(task => (
-            <Card key={task.id} className="p-5 mb-3">
-              <div className="flex items-start gap-3">
-                <div className="h-2.5 w-2.5 rounded-full bg-red-500 mt-2 flex-shrink-0" />
-                <div className="flex-1">
+          {/* Approved / Rejected lists below */}
+          {allDevolvidas.length > 0 && (
+            <div className="mt-8">
+              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Devolvidas recentemente</h3>
+              {allDevolvidas.slice(0, 5).map(task => (
+                <Card key={task.id} className="p-4 mb-2">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-semibold text-gray-900">{task.title}</h4>
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-red-50 text-red-700 border border-red-200">
-                      <span className="h-1.5 w-1.5 rounded-full bg-red-500" /> Devolvida
-                    </span>
+                    <div><p className="font-medium text-sm">{task.title}</p><p className="text-xs text-gray-500 mt-0.5">{task.project} · {task.executorName}</p></div>
+                    <span className="text-xs px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 font-medium">Devolvida</span>
                   </div>
-                  <p className="text-sm text-gray-500 mt-0.5">{task.project} · {task.executorName}</p>
-                  {task.qaComment && <div className="mt-2 p-3 bg-red-50 rounded-lg border border-red-100"><p className="text-sm text-red-700">{task.qaComment}</p></div>}
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
+                  {task.qaComment && <div className="mt-2 p-2.5 bg-red-50 rounded-lg border border-red-100"><p className="text-xs text-red-700">{task.qaComment}</p></div>}
+                </Card>
+              ))}
+            </div>
+          )}
 
-      {tab === "aprovados" && (
-        <div>
-          {historyTasks.length === 0 ? (
-            <Card className="p-12 text-center"><p className="text-gray-400">Nenhuma tarefa aprovada ainda.</p></Card>
-          ) : historyTasks.map(task => (
-            <Card key={task.id} className="p-5 mb-3">
-              <div className="flex items-start gap-3">
-                <div className="h-2.5 w-2.5 rounded-full bg-green-500 mt-2 flex-shrink-0" />
-                <div className="flex-1">
+          {allCompleted.length > 0 && (
+            <div className="mt-8">
+              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Aprovadas recentemente</h3>
+              {allCompleted.slice(0, 5).map(task => (
+                <Card key={task.id} className="p-4 mb-2">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-semibold text-gray-900">{task.title}</h4>
+                    <div><p className="font-medium text-sm">{task.title}</p><p className="text-xs text-gray-500 mt-0.5">{task.project} · {task.executorName}</p></div>
                     <div className="flex items-center gap-2">
-                      <button onClick={() => revertFromCompleted(task.id)} className="text-xs text-gray-400 hover:text-red-500 px-2 py-1 rounded border border-gray-200 hover:border-red-300 transition-colors">Reverter aprovação</button>
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-green-50 text-green-700 border border-green-200">
-                        <span className="h-1.5 w-1.5 rounded-full bg-green-500" /> Aprovada
-                      </span>
+                      <button onClick={() => revertFromCompleted(task.id)} className="text-xs text-gray-400 hover:text-red-500 px-2 py-1 rounded border border-gray-200 hover:border-red-300 transition-colors">Reverter</button>
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-green-50 text-green-700 border border-green-200 font-medium">Aprovada</span>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-500 mt-0.5">{task.project} · {task.executorName} · {new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</p>
-                </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ===== BASE DE CONHECIMENTO ===== */}
+      {section === "conhecimento" && (
+        <div>
+          {/* Annotation form for QA */}
+          <Card className="p-5 mb-6">
+            <p className="text-sm font-medium text-gray-700 mb-3">Nova anotação</p>
+            <div className="flex items-center gap-3 mb-3">
+              <select value={noteClient} onChange={e => setNoteClient(e.target.value)} className="border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 min-w-[180px]">
+                <option value="">Selecione cliente</option>
+                {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+              <input value={noteText} onChange={e => setNoteText(e.target.value)} placeholder="O que aprendemos sobre este cliente?" className="flex-1 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-gray-500 mr-1">Categoria:</span>
+              {Object.entries(tagConfig).map(([key, cfg]) => (
+                <button key={key} onClick={() => setNoteTag(noteTag === key ? "" : key)} className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${noteTag === key ? cfg.color + " ring-2 ring-offset-1 ring-gray-400" : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"}`}>{cfg.label}</button>
+              ))}
+              <div className="ml-auto">
+                <Button size="sm" onClick={() => { if (noteClient && noteText.trim() && noteTag) { addClientNote(noteClient, noteText.trim(), noteTag, "QA"); setNoteClient(""); setNoteText(""); setNoteTag(""); } }} disabled={!noteClient || !noteText.trim() || !noteTag}>Salvar</Button>
               </div>
-            </Card>
-          ))}
+            </div>
+          </Card>
+
+          {/* Show all notes across all clients */}
+          {(() => {
+            const allNotes = clientNotes.map(n => {
+              const c = clients.find(cl => cl.id === n.clientId);
+              const isElogio = n.tag === "elogio" || n.text.startsWith("[Elogio]");
+              return { ...n, clientName: c?.name || "—", _tag: isElogio ? "elogio" : (n.tag || "gostou"), _text: isElogio ? n.text.replace(/^\[Elogio\]\s*/, "") : n.text };
+            }).sort((a, b) => b.date.localeCompare(a.date));
+
+            const allLearnings = learnings.filter(l => l.area === area).map(l => ({
+              ...l, _tag: l.type === "erro" ? "erro" : "insight", _text: l.description, _title: l.title, clientName: l.client || "—", author: l.origin, _isLearning: true
+            }));
+
+            const combined = [...allNotes.map(n => ({ ...n, _sort: n.date })), ...allLearnings.map(l => ({ ...l, _sort: l.date }))].sort((a, b) => b._sort.localeCompare(a._sort));
+
+            const getTagInfo = (t) => tagConfig[t] || { label: t || "Geral", color: "bg-gray-100 text-gray-600 border-gray-300" };
+
+            const filterTags = ["todos", "gostou", "nao_gostou", "comunicacao", "processo", "elogio", "erro", "insight"];
+            const filtered = kbF === "todos" ? combined : combined.filter(e => e._tag === kbF);
+            const tagCounts = {};
+            combined.forEach(e => { tagCounts[e._tag] = (tagCounts[e._tag] || 0) + 1; });
+
+            return (
+              <div>
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {filterTags.map(t => {
+                    const cfg = t === "todos" ? { label: "Todos", color: "bg-gray-100 text-gray-700 border-gray-300" } : getTagInfo(t);
+                    const count = t === "todos" ? combined.length : (tagCounts[t] || 0);
+                    return (<button key={t} onClick={() => setKbF(t)} className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-all ${kbF === t ? (t === "todos" ? "bg-gray-900 text-white border-gray-900" : cfg.color + " border-current") : "bg-white text-gray-400 border-gray-200 hover:bg-gray-50"}`}>{cfg.label} ({count})</button>);
+                  })}
+                </div>
+                {filtered.length === 0 ? (
+                  <Card className="p-8 text-center"><p className="text-gray-400 text-sm">Nenhum registro encontrado.</p></Card>
+                ) : (
+                  <div className="space-y-2">
+                    {filtered.map((entry, i) => {
+                      const cfg = getTagInfo(entry._tag);
+                      const borderColors = { gostou: "border-l-green-500", nao_gostou: "border-l-red-500", comunicacao: "border-l-blue-500", processo: "border-l-purple-500", elogio: "border-l-emerald-500", erro: "border-l-red-500", insight: "border-l-yellow-500" };
+                      const bgColors = { gostou: "bg-green-50", nao_gostou: "bg-red-50", comunicacao: "bg-blue-50", processo: "bg-purple-50", elogio: "bg-emerald-50", erro: "bg-red-50", insight: "bg-yellow-50" };
+                      return (
+                        <div key={i} className={`p-4 rounded-lg border-l-4 ${borderColors[entry._tag] || "border-l-gray-300"} ${bgColors[entry._tag] || "bg-gray-50"}`}>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <div className="flex items-center gap-2">
+                              <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cfg.color}`}>{cfg.label}</span>
+                              <span className="text-xs text-gray-500">{entry.author || "—"}</span>
+                              <span className="text-xs text-gray-400">· {entry.clientName}</span>
+                            </div>
+                            <span className="text-xs text-gray-400">{entry._sort}</span>
+                          </div>
+                          {entry._title && <p className="font-medium text-sm">{entry._title}</p>}
+                          <p className="text-sm text-gray-700">{entry._text}</p>
+                          {entry._isLearning && entry.tags && entry.tags.filter(Boolean).length > 0 && (
+                            <div className="flex gap-1 mt-2">{entry.tags.filter(Boolean).map((tag, j) => <span key={j} className="text-xs px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 border border-gray-200">{tag}</span>)}</div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
       )}
     </div>
@@ -1055,67 +1323,8 @@ function QAPortalView({ area, onBack, onViewErrors }) {
 }
 
 function QAErrorsView({ area, onBack }) {
-  const { learnings, addLearning } = useContext(AppContext);
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ title: "", description: "", client: "", type: "erro", origin: "QA", tags: "" });
-  const areaLearnings = learnings.filter(l => l.area === area);
-
-  const handleAdd = () => {
-    addLearning({ ...form, tags: form.tags.split(",").map(t => t.trim()), date: new Date().toISOString().split("T")[0], area });
-    setForm({ title: "", description: "", client: "", type: "erro", origin: "QA", tags: "" });
-    setShowForm(false);
-  };
-
-  return (
-    <div className="max-w-5xl mx-auto">
-      <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-6"><ArrowLeft size={16} /> Voltar ao QA</button>
-      <div className="flex items-center gap-3 mb-1">
-        <Sparkles size={28} className="text-orange-500" />
-        <h1 className="text-3xl font-bold text-gray-900">Erros & Aprendizados</h1>
-      </div>
-      <p className="text-gray-500 mb-6">Base viva de aprendizados do squad de Eventos. Consulte antes de planejar, revisar ou entregar.</p>
-
-      <Card className="mb-6">
-        <button onClick={() => setShowForm(!showForm)} className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors rounded-xl">
-          <span className="flex items-center gap-2 font-semibold text-gray-900"><Plus size={18} /> Registrar novo aprendizado</span>
-          {showForm ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
-        </button>
-        {showForm && (
-          <div className="px-5 pb-5 space-y-4 border-t pt-4">
-            <div><label className="text-sm font-medium text-gray-700">Título</label><input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Ex: Roteiro sem informações de transfer..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
-            <div><label className="text-sm font-medium text-gray-700">Descrição</label><textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Descreva o erro ou aprendizado em detalhes..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
-            <div className="grid grid-cols-2 gap-4">
-              <div><label className="text-sm font-medium text-gray-700">Cliente</label><input value={form.client} onChange={e => setForm(p => ({ ...p, client: e.target.value }))} placeholder="Nome do cliente" className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
-              <div><label className="text-sm font-medium text-gray-700">Tags (separar por vírgula)</label><input value={form.tags} onChange={e => setForm(p => ({ ...p, tags: e.target.value }))} placeholder="roteiro, logística, prazo" className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
-            </div>
-            <div className="flex gap-2 pt-1">
-              <Button onClick={handleAdd}>Salvar aprendizado</Button>
-              <Button variant="outline" onClick={() => setShowForm(false)}>Cancelar</Button>
-            </div>
-          </div>
-        )}
-      </Card>
-
-      <p className="text-sm text-gray-500 mb-4">{areaLearnings.length} registro{areaLearnings.length !== 1 ? "s" : ""}</p>
-      {areaLearnings.map(l => (
-        <Card key={l.id} className="p-5 mb-3">
-          <div className="flex items-start gap-3">
-            <div className="h-9 w-9 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0 mt-0.5"><AlertTriangle size={18} className="text-orange-500" /></div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 mb-1">{l.title}</h3>
-              <p className="text-sm text-gray-600 leading-relaxed mb-3">{l.description}</p>
-              <div className="flex flex-wrap gap-1.5">
-                {l.client && <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-md bg-gray-100 text-gray-700 border border-gray-200">{l.client}</span>}
-                {l.date && <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-md bg-gray-100 text-gray-500 border border-gray-200">{l.date}</span>}
-                {l.tags.filter(Boolean).map((tag, i) => <span key={i} className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-md bg-orange-50 text-orange-600 border border-orange-200">{tag}</span>)}
-              </div>
-            </div>
-          </div>
-        </Card>
-      ))}
-      {areaLearnings.length === 0 && <Card className="p-12 text-center"><p className="text-gray-400">Nenhum aprendizado registrado ainda.</p></Card>}
-    </div>
-  );
+  // Kept for routing compatibility but redirects to QA knowledge base
+  return null;
 }
 
 // ============================
@@ -1229,8 +1438,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
         </div>
       </div>
       <div className="flex items-center gap-3 mb-1">
-        <Calendar size={28} className="text-orange-600" />
-        <h1 className="text-3xl font-bold">Portal Eventos</h1>
+        <h1 className="text-3xl font-bold">Líder Eventos</h1>
       </div>
       <p className="text-gray-500 mb-1">Gerencie projetos e distribua tarefas para o time.</p>
       <p className="text-sm text-gray-400 mb-6">Você está vendo todos os projetos de eventos.</p>
@@ -1401,7 +1609,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                             const noteText = elogioNotes[fb.id]?.trim()
                               ? `[Elogio] ${fb.text} — Anotação: ${elogioNotes[fb.id].trim()}`
                               : `[Elogio] ${fb.text}`;
-                            archiveElogio(fb.id, noteText, fb.clientId);
+                            archiveElogio(fb.id, noteText, fb.clientId, fb.clientName);
                             setElogioNotes(prev => { const n = { ...prev }; delete n[fb.id]; return n; });
                           }}>
                             <CheckCircle2 size={14} /> Registrar no histórico
@@ -1668,7 +1876,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                             <div className="mt-3 pt-3 border-t border-gray-100">
                               <textarea value={elogioNotes[fb.id] || ""} onChange={e => setElogioNotes(prev => ({ ...prev, [fb.id]: e.target.value }))} placeholder="O que aprendemos com esse elogio?" className="w-full border border-gray-200 rounded-lg p-2.5 text-sm min-h-[50px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50" />
                               <div className="flex justify-end mt-2">
-                                <Button size="sm" variant="outline" onClick={() => { const txt = elogioNotes[fb.id]?.trim() ? `[Elogio] ${fb.text} — ${elogioNotes[fb.id].trim()}` : `[Elogio] ${fb.text}`; archiveElogio(fb.id, txt, fb.clientId); setElogioNotes(prev => { const n = { ...prev }; delete n[fb.id]; return n; }); }}><CheckCircle2 size={14} /> Registrar no histórico</Button>
+                                <Button size="sm" variant="outline" onClick={() => { const txt = elogioNotes[fb.id]?.trim() ? `[Elogio] ${fb.text} — ${elogioNotes[fb.id].trim()}` : `[Elogio] ${fb.text}`; archiveElogio(fb.id, txt, fb.clientId, fb.clientName); setElogioNotes(prev => { const n = { ...prev }; delete n[fb.id]; return n; }); }}><CheckCircle2 size={14} /> Registrar no histórico</Button>
                               </div>
                             </div>
                           )}
@@ -1711,7 +1919,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                               {proj && <p className="text-xs text-gray-400 mb-3">Projeto: {proj.name} · {fb.date}</p>}
                               <textarea value={elogioNotes[fb.id] || ""} onChange={e => setElogioNotes(prev => ({ ...prev, [fb.id]: e.target.value }))} placeholder="O que aprendemos? Ex: 'Cliente valoriza agilidade — manter padrão'" className="w-full border border-gray-200 rounded-lg p-2.5 text-sm min-h-[50px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50" />
                               <div className="flex justify-end mt-2">
-                                <Button size="sm" variant="outline" onClick={() => { const txt = elogioNotes[fb.id]?.trim() ? `[Elogio] ${fb.text} — ${elogioNotes[fb.id].trim()}` : `[Elogio] ${fb.text}`; archiveElogio(fb.id, txt, fb.clientId); setElogioNotes(prev => { const n = { ...prev }; delete n[fb.id]; return n; }); }}><CheckCircle2 size={14} /> Registrar no histórico</Button>
+                                <Button size="sm" variant="outline" onClick={() => { const txt = elogioNotes[fb.id]?.trim() ? `[Elogio] ${fb.text} — ${elogioNotes[fb.id].trim()}` : `[Elogio] ${fb.text}`; archiveElogio(fb.id, txt, fb.clientId, fb.clientName); setElogioNotes(prev => { const n = { ...prev }; delete n[fb.id]; return n; }); }}><CheckCircle2 size={14} /> Registrar no histórico</Button>
                               </div>
                             </div>
                           </Card>
