@@ -3279,10 +3279,11 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   const isProjectDetail = view === "project_detail";
   const isQA = view.startsWith("qa") || projectOrigin === "qa";
   const isLider = view.startsWith("lider") || (projectOrigin === "lider");
-  const chatRole = isQA ? "qa" : "lider";
-  // Count unread: QA sees qa-lider only; Líder sees qa-lider + all lider-* + proj-* channels
+  const isExecutorView = view === "executor" || view === "trocar_executor";
+  const chatRole = isQA ? "qa" : isLider ? "lider" : executorId;
+  // Count unread per role
   const activeProjs = projects.filter(p => p.status === "em_execucao" && p.squad && p.squad.length > 0);
-  const chatUnread = isQA ? getChatUnread("qa-lider", "qa") : (getChatUnread("qa-lider", "lider") + team.reduce((s, t) => s + getChatUnread("lider-" + t.id, "lider"), 0) + activeProjs.reduce((s, p) => s + getChatUnread("proj-" + p.id, "lider"), 0));
+  const chatUnread = isQA ? getChatUnread("qa-lider", "qa") : isLider ? (getChatUnread("qa-lider", "lider") + team.reduce((s, t) => s + getChatUnread("lider-" + t.id, "lider"), 0) + activeProjs.reduce((s, p) => s + getChatUnread("proj-" + p.id, "lider"), 0)) : executorId ? (getChatUnread("lider-" + executorId, executorId) + activeProjs.filter(p => p.squad.includes(executorId)).reduce((s, p) => s + getChatUnread("proj-" + p.id, executorId), 0)) : 0;
 
   // Determine current notification context
   const notifContext = view.startsWith("qa") ? "qa" : view.startsWith("lider") ? "lider" : isClientPortal ? "client" : "executor";
@@ -3351,7 +3352,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
     );
   }
 
-  const showChatFab = view.startsWith("qa") || view.startsWith("lider");
+  const showChatFab = view.startsWith("qa") || view.startsWith("lider") || isExecutorView;
 
   return (
     <>
@@ -3360,7 +3361,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
       {chatPanel}
       {/* Floating chat button for QA and Líder */}
       {showChatFab && !showChat && (
-        <button onClick={() => setShowChat(true)} className="fixed bottom-6 right-6 z-30 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-all hover:scale-105 flex items-center gap-2" title={view.startsWith("qa") ? "Chat com Líder" : "Chat com QA"}>
+        <button onClick={() => setShowChat(true)} className="fixed bottom-6 right-6 z-30 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-all hover:scale-105 flex items-center gap-2" title={isQA ? "Chat com Líder" : isLider ? "Mensagens" : "Chat"}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           {chatUnread > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse">{chatUnread}</span>}
         </button>
