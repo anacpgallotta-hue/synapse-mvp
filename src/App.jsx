@@ -133,6 +133,11 @@ function AppProvider({ children }) {
   // priority = "info" | "warning" | "danger"
   const [notifications, setNotifications] = useState([]);
   const [dismissedAlerts, setDismissedAlerts] = useState(new Set());
+  const [qaAlerts, setQaAlerts] = useState([]);
+
+  const addQaAlert = useCallback((taskId, executorId, text) => {
+    setQaAlerts(prev => [...prev, { id: "qa-alert-" + Date.now(), taskId, executorId, text, date: new Date().toISOString().split("T")[0] }]);
+  }, []);
 
   const notify = useCallback((text, target, priority = "info") => {
     setNotifications(prev => [{ id: "n" + Date.now() + Math.random(), text, date: new Date().toISOString().split("T")[0], read: false, target, priority }, ...prev]);
@@ -159,8 +164,12 @@ function AppProvider({ children }) {
         alerts.push({ id: "smart-risk-" + t.id, text: `Em risco: "${t.title}" — prazo em ${Math.round(diffHours)}h`, priority: "warning", date: t.deadline });
       }
     });
+    // Inject manual QA alerts for this executor
+    qaAlerts.filter(qa => qa.executorId === executorId).forEach(qa => {
+      alerts.push({ id: qa.id, text: qa.text, priority: "warning", date: qa.date, isQaAlert: true });
+    });
     return alerts.filter(a => !dismissedAlerts.has(a.id)).sort((a, b) => (a.priority === "danger" ? 0 : 1) - (b.priority === "danger" ? 0 : 1));
-  }, [tasks, dismissedAlerts]);
+  }, [tasks, dismissedAlerts, qaAlerts]);
 
   const dismissSmartAlert = useCallback((alertId, alertText, target, priority) => {
     setDismissedAlerts(prev => new Set([...prev, alertId]));
@@ -309,7 +318,7 @@ function AppProvider({ children }) {
   }, [team, tasks]);
 
   return (
-    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, notify, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, createProject, updateProject, deleteTask, resubmitTask, revertFromQA, revertFromCompleted, revertFromDevolvida, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
+    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, notify, addQaAlert, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, createProject, updateProject, deleteTask, resubmitTask, revertFromQA, revertFromCompleted, revertFromDevolvida, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
       {children}
     </AppContext.Provider>
   );
@@ -777,7 +786,7 @@ function TaskDetailView({ taskId, onBack }) {
 // QASquadSelector removed — only eventos squad exists now
 
 function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
-  const { tasks, projects, clients, team, learnings, feedbacks, clientNotes, approveTask, rejectTask, revertFromCompleted, revertFromDevolvida, createProject, updateProject, addLearning, addClientNote, notify } = useContext(AppContext);
+  const { tasks, projects, clients, team, learnings, feedbacks, clientNotes, approveTask, rejectTask, revertFromCompleted, revertFromDevolvida, createProject, updateProject, addLearning, addClientNote, addQaAlert } = useContext(AppContext);
   const [comments, setComments] = useState({});
   const [expandedId, setExpandedId] = useState(null);
   const [tab, setTab] = useState("visao_geral");
@@ -790,11 +799,13 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
   const [reviewTab, setReviewTab] = useState("pendentes");
   const [alertTaskId, setAlertTaskId] = useState(null);
   const [alertMsg, setAlertMsg] = useState("");
+  const [sentAlerts, setSentAlerts] = useState(new Set());
 
   const sendRiskAlert = (task) => {
-    const baseMsg = `QA está te alertando: a tarefa "${task.title}" está em risco de atraso (prazo: ${new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}).`;
-    const fullMsg = alertMsg.trim() ? `${baseMsg} Mensagem: "${alertMsg.trim()}"` : baseMsg;
-    notify(fullMsg, "executor:" + task.executor, "warning");
+    const baseMsg = `QA está te alertando: "${task.title}" em risco de atraso (prazo: ${new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}).`;
+    const fullMsg = alertMsg.trim() ? `${baseMsg} — "${alertMsg.trim()}"` : baseMsg;
+    addQaAlert(task.id, task.executor, fullMsg);
+    setSentAlerts(prev => new Set([...prev, task.id]));
     setAlertTaskId(null);
     setAlertMsg("");
   };
@@ -918,8 +929,8 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant={task.status === "a_fazer" ? "default" : "info"}>{task.status === "a_fazer" ? "A fazer" : "Em execução"}</Badge>
-                      <button onClick={() => setAlertTaskId(alertTaskId === task.id ? null : task.id)} className={`p-2 rounded-lg border transition-all ${alertTaskId === task.id ? "bg-yellow-50 border-yellow-300 text-yellow-600" : "border-gray-200 text-gray-400 hover:text-yellow-600 hover:border-yellow-300 hover:bg-yellow-50"}`} title="Alertar executor">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                      <button onClick={() => { if (!sentAlerts.has(task.id)) setAlertTaskId(alertTaskId === task.id ? null : task.id); }} className={`p-2 rounded-lg border transition-all ${sentAlerts.has(task.id) ? "bg-yellow-100 border-yellow-400 text-yellow-600 cursor-default" : alertTaskId === task.id ? "bg-yellow-50 border-yellow-300 text-yellow-600" : "border-gray-200 text-gray-400 hover:text-yellow-600 hover:border-yellow-300 hover:bg-yellow-50"}`} title={sentAlerts.has(task.id) ? "Alerta enviado" : "Alertar executor"}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill={sentAlerts.has(task.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                       </button>
                     </div>
                   </div>
@@ -2926,7 +2937,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
     setSelectedTask(taskId);
   };
 
-  const notifPanel = showNotif && <NotificationPanel onClose={() => setShowNotif(false)} context={notifContext} executorId={executorId} />;
+  const notifPanel = showNotif && <NotificationPanel onClose={() => setShowNotif(false)} context={notifContext} executorId={executorId} onTaskClick={handleTaskClick} />;
 
   if (isProjectDetail && selectedProject) {
     return (
