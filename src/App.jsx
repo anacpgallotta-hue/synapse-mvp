@@ -393,7 +393,7 @@ function AppProvider({ children }) {
 // ============================
 function Badge({ children, variant = "default", className = "" }) {
   const variants = {
-    default: "bg-gray-100 text-gray-800 border-gray-200",
+    default: "bg-stone-100 text-stone-800 border-stone-200",
     success: "bg-green-50 text-green-700 border-green-200",
     warning: "bg-orange-50 text-orange-600 border-orange-200",
     danger: "bg-red-50 text-red-600 border-red-200",
@@ -406,10 +406,10 @@ function Badge({ children, variant = "default", className = "" }) {
 
 function Button({ children, variant = "default", size = "default", className = "", ...props }) {
   const variants = {
-    default: "bg-gray-900 text-white hover:bg-gray-800",
-    outline: "bg-white text-gray-900 border border-gray-300 hover:bg-gray-50",
-    ghost: "bg-transparent text-gray-700 hover:bg-gray-100",
-    nav: "bg-transparent text-gray-600 hover:bg-gray-100 text-sm",
+    default: "bg-stone-900 text-white hover:bg-stone-800",
+    outline: "bg-white text-stone-900 border border-stone-300 hover:bg-stone-50",
+    ghost: "bg-transparent text-stone-700 hover:bg-stone-100",
+    nav: "bg-transparent text-stone-600 hover:bg-stone-100 text-sm",
     navActive: "bg-green-700 text-white text-sm",
   };
   const sizes = {
@@ -421,7 +421,7 @@ function Button({ children, variant = "default", size = "default", className = "
 }
 
 function Card({ children, className = "", onClick }) {
-  return <div onClick={onClick} className={`bg-white rounded-xl border border-gray-200 shadow-sm ${onClick ? "cursor-pointer hover:shadow-md transition-shadow" : ""} ${className}`}>{children}</div>;
+  return <div onClick={onClick} className={`bg-white rounded-xl border border-stone-200 shadow-sm ${onClick ? "cursor-pointer hover:shadow-md transition-shadow" : ""} ${className}`}>{children}</div>;
 }
 
 // ============================
@@ -465,12 +465,12 @@ function Header({ currentView, setView, currentExecutor, setShowNotif, notifCoun
     : null;
 
   return (
-    <header className="border-b border-gray-200 bg-white sticky top-0 z-10">
+    <header className="border-b border-stone-200 bg-white sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{headerTitle}</h1>
-            {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+            <h1 className="text-2xl font-bold text-stone-900">{headerTitle}</h1>
+            {subtitle && <p className="text-sm text-stone-500">{subtitle}</p>}
           </div>
           <div className="flex items-center gap-2">
             {allNavItems.map(item => (
@@ -479,7 +479,7 @@ function Header({ currentView, setView, currentExecutor, setShowNotif, notifCoun
               </Button>
             ))}
             {onHelp && (
-              <Button variant="ghost" size="sm" onClick={onHelp} className="text-gray-400 hover:text-gray-700 gap-1">
+              <Button variant="ghost" size="sm" onClick={onHelp} className="text-stone-400 hover:text-stone-700 gap-1">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 <span className="text-xs">Ajuda</span>
               </Button>
@@ -516,7 +516,7 @@ function ExecutorView({ executorId, onTaskClick }) {
   const completedTasks = myTasks.filter(t => t.status === "concluida");
 
   const statusConfig = {
-    a_fazer: { label: "A Fazer", bg: "bg-gray-100", text: "text-gray-700", border: "border-gray-200", dot: "bg-gray-400", badge: "default" },
+    a_fazer: { label: "A Fazer", bg: "bg-stone-100", text: "text-stone-700", border: "border-stone-200", dot: "bg-stone-400", badge: "default" },
     em_execucao: { label: "Em execução", bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200", dot: "bg-blue-500", badge: "info" },
     em_qa: { label: "Em QA", bg: "bg-purple-50", text: "text-purple-700", border: "border-purple-200", dot: "bg-purple-500", badge: "purple" },
     devolvida: { label: "Devolvida", bg: "bg-red-50", text: "text-red-700", border: "border-red-200", dot: "bg-red-500", badge: "danger" },
@@ -571,7 +571,7 @@ function ExecutorView({ executorId, onTaskClick }) {
               <div className={`h-3 w-3 rounded-full ${priorityColor(task.priority)} flex-shrink-0 mt-1`} title={task.priority} />
               <div>
                 <h4 className="font-medium leading-tight mb-1">{task.title}</h4>
-                <p className="text-sm text-gray-500">{task.project}</p>
+                <p className="text-sm text-stone-500">{task.project}</p>
               </div>
             </div>
           </div>
@@ -582,12 +582,12 @@ function ExecutorView({ executorId, onTaskClick }) {
                 {cfg.label}
               </span>
               {showRevert && task.status === "em_qa" && (
-                <button onClick={e => { e.stopPropagation(); revertFromQA(task.id); }} className="p-1 rounded-md hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors" title="Cancelar envio ao QA">
+                <button onClick={e => { e.stopPropagation(); revertFromQA(task.id); }} className="p-1 rounded-md hover:bg-red-50 text-stone-400 hover:text-red-500 transition-colors" title="Cancelar envio ao QA">
                   <X size={14} />
                 </button>
               )}
             </div>
-            <div className="flex items-center gap-1 text-xs text-gray-500"><Clock size={12} />{formatDeadline(task.deadline)}</div>
+            <div className="flex items-center gap-1 text-xs text-stone-500"><Clock size={12} />{formatDeadline(task.deadline)}</div>
             {task.feedbackOrigin && <Badge variant="accent">Feedback do cliente</Badge>}
             {task.status === "devolvida" && task.qaComment && <span className="text-xs text-red-500 max-w-[200px] truncate">{task.qaComment}</span>}
           </div>
@@ -599,8 +599,8 @@ function ExecutorView({ executorId, onTaskClick }) {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="mb-2 text-3xl font-bold text-gray-900">Minhas tarefas</h1>
-        <p className="text-gray-500">Organize suas entregas e acompanhe o progresso</p>
+        <h1 className="mb-2 text-3xl font-bold text-stone-900">Minhas tarefas</h1>
+        <p className="text-stone-500">Organize suas entregas e acompanhe o progresso</p>
 
         <div className="mt-4 flex items-center justify-between">
           <div className="flex gap-2">
@@ -608,14 +608,14 @@ function ExecutorView({ executorId, onTaskClick }) {
               <Button key={key} variant={timeFilter === key ? "default" : "outline"} size="sm" onClick={() => setTimeFilter(key)}>{label}</Button>
             ))}
           </div>
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-            <button onClick={() => setViewMode("lista")} className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${viewMode === "lista" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>Lista</button>
-            <button onClick={() => setViewMode("kanban")} className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${viewMode === "kanban" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>Kanban</button>
+          <div className="flex gap-1 bg-stone-100 rounded-lg p-1">
+            <button onClick={() => setViewMode("lista")} className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${viewMode === "lista" ? "bg-white text-stone-900 shadow-sm" : "text-stone-500 hover:text-stone-700"}`}>Lista</button>
+            <button onClick={() => setViewMode("kanban")} className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${viewMode === "kanban" ? "bg-white text-stone-900 shadow-sm" : "text-stone-500 hover:text-stone-700"}`}>Kanban</button>
           </div>
         </div>
 
         <div className="mt-3 flex gap-2 flex-wrap">
-          <button onClick={() => setStatusFilter("todos")} className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${statusFilter === "todos" ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}>
+          <button onClick={() => setStatusFilter("todos")} className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${statusFilter === "todos" ? "bg-stone-900 text-white border-stone-900" : "bg-white text-stone-600 border-stone-200 hover:border-stone-400"}`}>
             Todos ({timeFiltered.length})
           </button>
           {activeStatuses.map(key => {
@@ -624,7 +624,7 @@ function ExecutorView({ executorId, onTaskClick }) {
             if (count === 0 && key !== "a_fazer" && key !== "em_execucao") return null;
             return (
               <button key={key} onClick={() => setStatusFilter(statusFilter === key ? "todos" : key)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors flex items-center gap-1.5 ${statusFilter === key ? cfg.bg + " " + cfg.text + " " + cfg.border : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}>
+                className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors flex items-center gap-1.5 ${statusFilter === key ? cfg.bg + " " + cfg.text + " " + cfg.border : "bg-white text-stone-600 border-stone-200 hover:border-stone-400"}`}>
                 <span className={`h-2 w-2 rounded-full ${cfg.dot}`} />
                 {cfg.label} ({count})
               </button>
@@ -647,7 +647,7 @@ function ExecutorView({ executorId, onTaskClick }) {
                 </div>
               </div>
             ))}
-            {filtered.length === 0 && <p className="text-center text-gray-400 py-12">Nenhuma tarefa pendente.</p>}
+            {filtered.length === 0 && <p className="text-center text-stone-400 py-12">Nenhuma tarefa pendente.</p>}
           </div>
 
           {/* Aguardando QA section */}
@@ -656,7 +656,7 @@ function ExecutorView({ executorId, onTaskClick }) {
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex items-center gap-2">
                   <div className="h-2.5 w-2.5 rounded-full bg-purple-500" />
-                  <h3 className="text-lg font-semibold text-gray-900">Aguardando QA</h3>
+                  <h3 className="text-lg font-semibold text-stone-900">Aguardando QA</h3>
                 </div>
                 <span className="text-xs font-medium bg-purple-100 text-purple-700 rounded-full px-2.5 py-0.5">{qaTasksList.length}</span>
               </div>
@@ -674,10 +674,10 @@ function ExecutorView({ executorId, onTaskClick }) {
               <button onClick={() => setShowHistory(!showHistory)} className="flex items-center gap-3 mb-4 group w-full text-left">
                 <div className="flex items-center gap-2">
                   <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
-                  <h3 className="text-lg font-semibold text-gray-900">Concluídas</h3>
+                  <h3 className="text-lg font-semibold text-stone-900">Concluídas</h3>
                 </div>
                 <span className="text-xs font-medium bg-green-100 text-green-700 rounded-full px-2.5 py-0.5">{completedTasks.length}</span>
-                <span className="ml-auto text-gray-400 group-hover:text-gray-600 transition-colors">
+                <span className="ml-auto text-stone-400 group-hover:text-stone-600 transition-colors">
                   {showHistory ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </span>
               </button>
@@ -699,7 +699,7 @@ function ExecutorView({ executorId, onTaskClick }) {
             const cfg = statusConfig[key];
             const colTasks = myTasks.filter(t => t.status === key).sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
             return (
-              <div key={key} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+              <div key={key} className="bg-stone-50 rounded-xl p-3 border border-stone-100">
                 <div className={`flex items-center gap-2 px-3 py-2 rounded-lg mb-3 ${cfg.bg}`}>
                   <div className={`h-2.5 w-2.5 rounded-full ${cfg.dot}`} />
                   <span className={`text-sm font-semibold ${cfg.text}`}>{cfg.label}</span>
@@ -710,21 +710,21 @@ function ExecutorView({ executorId, onTaskClick }) {
                     <Card key={task.id} className="p-3 group relative" onClick={() => onTaskClick(task.id)}>
                       {task.status === "em_qa" && (
                         <button onClick={(e) => { e.stopPropagation(); if (confirm(`Cancelar entrega de "${task.title}"? A tarefa voltará para execução.`)) revertFromQA(task.id); }} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-red-50" title="Cancelar entrega">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300 hover:text-red-500"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-300 hover:text-red-500"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
                         </button>
                       )}
                       <div className="flex items-start gap-2 mb-2">
                         <div className={`h-2.5 w-2.5 rounded-full mt-1 flex-shrink-0 ${priorityColor(task.priority)}`} />
                         <p className="text-sm font-medium leading-tight">{task.title}</p>
                       </div>
-                      <p className="text-xs text-gray-400 mb-1 truncate">{task.project}</p>
+                      <p className="text-xs text-stone-400 mb-1 truncate">{task.project}</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-400"><Clock size={10} className="inline" /> {new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
+                        <span className="text-xs text-stone-400"><Clock size={10} className="inline" /> {new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
                       </div>
                       {task.feedbackOrigin && <Badge variant="accent" className="mt-2 text-[10px]">Feedback</Badge>}
                     </Card>
                   ))}
-                  {colTasks.length === 0 && <p className="text-xs text-gray-300 text-center py-4">Nenhuma</p>}
+                  {colTasks.length === 0 && <p className="text-xs text-stone-300 text-center py-4">Nenhuma</p>}
                 </div>
               </div>
             );
@@ -777,12 +777,12 @@ function TaskDetailView({ taskId, onBack }) {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-6">← Voltar para minhas tarefas</button>
+      <button onClick={onBack} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 mb-6">← Voltar para minhas tarefas</button>
       <div className="flex items-start justify-between mb-2">
-        <h1 className="text-3xl font-bold text-gray-900">{task.title}</h1>
+        <h1 className="text-3xl font-bold text-stone-900">{task.title}</h1>
         <div className={`h-4 w-4 rounded-full mt-2 ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-orange-500" : "bg-green-500"}`} />
       </div>
-      <div className="flex items-center gap-3 text-sm text-gray-500 mb-4 flex-wrap">
+      <div className="flex items-center gap-3 text-sm text-stone-500 mb-4 flex-wrap">
         <span><strong>Projeto:</strong> {task.project}</span>
         <span><strong>Prazo:</strong> {new Date(task.deadline).toLocaleDateString("pt-BR")} – {new Date(task.deadline).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }).replace(":", "h")}</span>
         <Badge>{({ a_fazer: "A Fazer", em_execucao: "Em execução", em_qa: "Em QA", concluida: "Concluída", devolvida: "Devolvida" })[task.status]}</Badge>
@@ -792,7 +792,7 @@ function TaskDetailView({ taskId, onBack }) {
       {task.status === "devolvida" && task.qaComment && (
         <Card className="p-6 mb-6 border-l-4 border-l-red-500">
           <h3 className="font-bold text-red-700 mb-2">Devolvida pelo QA</h3>
-          <p className="text-sm text-gray-700 mb-4">{task.qaComment}</p>
+          <p className="text-sm text-stone-700 mb-4">{task.qaComment}</p>
           <Button size="sm" onClick={handleResubmit}>Retomar execução</Button>
         </Card>
       )}
@@ -800,10 +800,10 @@ function TaskDetailView({ taskId, onBack }) {
       {task.status === "em_qa" && (
         <Card className="p-6 mb-6 border-l-4 border-l-purple-500">
           <h3 className="font-bold text-purple-700 mb-2">Enviada para QA</h3>
-          <p className="text-sm text-gray-700 mb-4">Esta tarefa está aguardando revisão do QA. Se você precisa fazer ajustes, pode retirar do QA.</p>
+          <p className="text-sm text-stone-700 mb-4">Esta tarefa está aguardando revisão do QA. Se você precisa fazer ajustes, pode retirar do QA.</p>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => { revertFromQA(taskId); }}>← Retirar do QA e voltar a editar</Button>
-            <button onClick={() => { if (confirm("Tem certeza que deseja cancelar esta entrega? A tarefa voltará para 'A fazer' e os arquivos serão removidos.")) { revertFromQA(taskId); } }} className="text-xs text-gray-400 hover:text-red-500 px-3 py-1.5 rounded-lg border border-gray-200 hover:border-red-300 transition-colors">Cancelar entrega</button>
+            <button onClick={() => { if (confirm("Tem certeza que deseja cancelar esta entrega? A tarefa voltará para 'A fazer' e os arquivos serão removidos.")) { revertFromQA(taskId); } }} className="text-xs text-stone-400 hover:text-red-500 px-3 py-1.5 rounded-lg border border-stone-200 hover:border-red-300 transition-colors">Cancelar entrega</button>
           </div>
         </Card>
       )}
@@ -811,17 +811,17 @@ function TaskDetailView({ taskId, onBack }) {
       {task.status === "concluida" && (
         <Card className="p-6 mb-6 border-l-4 border-l-green-500">
           <h3 className="font-bold text-green-700 mb-2">Tarefa concluída</h3>
-          <p className="text-sm text-gray-700">{task.qaComment && `Comentário do QA: ${task.qaComment}`}</p>
+          <p className="text-sm text-stone-700">{task.qaComment && `Comentário do QA: ${task.qaComment}`}</p>
         </Card>
       )}
 
       {task.feedbackOrigin && (
         <Card className="p-6 mb-6 border-l-4 border-l-green-600">
           <h3 className="font-bold mb-2">Feedback original do cliente</h3>
-          <p className="text-sm text-gray-500 mb-1"><strong>Tipo</strong></p>
+          <p className="text-sm text-stone-500 mb-1"><strong>Tipo</strong></p>
           <Badge className="mb-3">{task.feedbackOrigin.type}</Badge>
-          <p className="text-sm text-gray-500 mb-1">Texto original</p>
-          <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-700">{task.feedbackOrigin.text}</div>
+          <p className="text-sm text-stone-500 mb-1">Texto original</p>
+          <div className="bg-stone-50 rounded-lg p-4 text-sm text-stone-700">{task.feedbackOrigin.text}</div>
         </Card>
       )}
 
@@ -838,20 +838,20 @@ function TaskDetailView({ taskId, onBack }) {
               <div className="space-y-3">
                 {leaderText && (
                   <div>
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Instruções do líder</p>
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-gray-700">{leaderText}</div>
+                    <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Instruções do líder</p>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-stone-700">{leaderText}</div>
                   </div>
                 )}
                 {!leaderText && feedbackText && (
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Descrição</p>
-                    <p className="text-sm text-gray-700">{feedbackText}</p>
+                    <p className="text-sm text-stone-500 mb-1">Descrição</p>
+                    <p className="text-sm text-stone-700">{feedbackText}</p>
                   </div>
                 )}
               </div>
             );
           }
-          return <><p className="text-sm text-gray-500 mb-1">Descrição</p><p className="text-sm text-gray-700">{desc}</p></>;
+          return <><p className="text-sm text-stone-500 mb-1">Descrição</p><p className="text-sm text-stone-700">{desc}</p></>;
         })()}
       </Card>
 
@@ -859,8 +859,8 @@ function TaskDetailView({ taskId, onBack }) {
         <Card className="p-6 mb-6">
           <h3 className="font-bold mb-4">Insumos e referências</h3>
           {task.attachments.map((a, i) => (
-            <div key={i} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
-              <div><p className="font-medium text-sm">{a.name}</p><p className="text-xs text-gray-400">{a.type}{a.size ? ` • ${a.size}` : ""}</p></div>
+            <div key={i} className="flex items-center justify-between py-3 border-b border-stone-100 last:border-0">
+              <div><p className="font-medium text-sm">{a.name}</p><p className="text-xs text-stone-400">{a.type}{a.size ? ` • ${a.size}` : ""}</p></div>
               <Button variant="ghost" size="sm" onClick={() => { if (a.url) { window.open(a.url, "_blank"); } else { alert("Arquivo de exemplo: " + a.name + "\nEm produção, abriria o arquivo real."); } }}>Abrir</Button>
             </div>
           ))}
@@ -871,8 +871,8 @@ function TaskDetailView({ taskId, onBack }) {
         <h3 className="font-bold mb-4">Checklist de execução</h3>
         {task.checklist.map((item, i) => (
           <label key={i} className="flex items-center gap-3 py-2 cursor-pointer">
-            <input type="checkbox" checked={item.done} onChange={() => toggleChecklist(taskId, i)} className="h-5 w-5 rounded border-gray-300 text-blue-600" />
-            <span className={item.done ? "line-through text-gray-400" : "text-gray-700"}>{item.text}</span>
+            <input type="checkbox" checked={item.done} onChange={() => toggleChecklist(taskId, i)} className="h-5 w-5 rounded border-stone-300 text-blue-600" />
+            <span className={item.done ? "line-through text-stone-400" : "text-stone-700"}>{item.text}</span>
           </label>
         ))}
       </Card>
@@ -880,7 +880,7 @@ function TaskDetailView({ taskId, onBack }) {
       {task.status !== "concluida" && task.status !== "em_qa" && (
         <Card className="p-6">
           <h3 className="font-bold mb-2">Enviar para QA</h3>
-          <p className="text-sm text-gray-500 mb-4">Anexe os arquivos da entrega e adicione observações antes de enviar para revisão.</p>
+          <p className="text-sm text-stone-500 mb-4">Anexe os arquivos da entrega e adicione observações antes de enviar para revisão.</p>
 
           <div className="mb-4">
             <label className="text-sm font-medium mb-2 block">Arquivos da entrega</label>
@@ -889,21 +889,21 @@ function TaskDetailView({ taskId, onBack }) {
                 <FolderOpen size={16} className="text-green-600" />
                 <div className="flex-1">
                   <p className="text-sm font-medium">{f.name}</p>
-                  <p className="text-xs text-gray-400">{f.type} · {f.size}</p>
+                  <p className="text-xs text-stone-400">{f.type} · {f.size}</p>
                 </div>
-                <button type="button" onClick={() => handleRemoveFile(i)} className="text-gray-400 hover:text-red-500"><X size={14} /></button>
+                <button type="button" onClick={() => handleRemoveFile(i)} className="text-stone-400 hover:text-red-500"><X size={14} /></button>
               </div>
             ))}
             <input type="file" ref={fileInputRef} onChange={handleFileSelect} multiple style={{display: "none"}} />
-            <button type="button" onClick={() => fileInputRef.current && fileInputRef.current.click()} className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors cursor-pointer">
+            <button type="button" onClick={() => fileInputRef.current && fileInputRef.current.click()} className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-stone-300 rounded-lg text-sm text-stone-500 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors cursor-pointer">
               <Plus size={18} /> Clique para selecionar arquivos
             </button>
-            <p className="text-xs text-gray-400 mt-1">Você pode selecionar vários arquivos de uma vez.</p>
+            <p className="text-xs text-stone-400 mt-1">Você pode selecionar vários arquivos de uma vez.</p>
           </div>
 
           <div className="mb-4">
             <label className="text-sm font-medium mb-2 block">Link da entrega ou observações</label>
-            <textarea value={link} onChange={e => setLink(e.target.value)} placeholder="Cole o link do Drive, Figma, ou descreva observações importantes sobre a entrega..." className="w-full border border-gray-300 rounded-lg p-3 text-sm min-h-[80px] focus:outline-none focus:ring-2 focus:ring-gray-900" />
+            <textarea value={link} onChange={e => setLink(e.target.value)} placeholder="Cole o link do Drive, Figma, ou descreva observações importantes sobre a entrega..." className="w-full border border-stone-300 rounded-lg p-3 text-sm min-h-[80px] focus:outline-none focus:ring-2 focus:ring-gray-900" />
           </div>
 
           <Button className={`w-full justify-center ${!canSubmit ? "opacity-50 cursor-not-allowed" : ""}`} onClick={handleSubmit}>
@@ -981,8 +981,8 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">QA Eventos</h1>
-          <p className="text-gray-500 mt-1">Gestão operacional — projetos, qualidade e conhecimento da área.</p>
+          <h1 className="text-3xl font-bold text-stone-900">QA Eventos</h1>
+          <p className="text-stone-500 mt-1">Gestão operacional — projetos, qualidade e conhecimento da área.</p>
         </div>
         <Button variant="outline" size="sm" onClick={onBack}><ArrowLeft size={14} /> Voltar</Button>
       </div>
@@ -990,32 +990,32 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
       {/* Metrics bar */}
       <div className="grid grid-cols-4 gap-4 mb-8">
         <Card className="p-5 cursor-pointer hover:shadow-md transition-shadow" onClick={() => setTab("projetos")}>
-          <p className="text-sm text-gray-500 mb-1">Projetos ativos</p>
-          <p className="text-3xl font-bold text-gray-900">{areaProjects.length}</p>
+          <p className="text-sm text-stone-500 mb-1">Projetos ativos</p>
+          <p className="text-3xl font-bold text-stone-900">{areaProjects.length}</p>
         </Card>
         <Card className={`p-5 cursor-pointer hover:shadow-md transition-shadow ${pendingTasks.length > 0 ? "border-l-4 border-l-purple-500" : ""}`} onClick={() => setTab("revisao")}>
-          <p className="text-sm text-gray-500 mb-1">Aguardando revisão</p>
-          <p className={`text-3xl font-bold ${pendingTasks.length > 0 ? "text-purple-600" : "text-gray-900"}`}>{pendingTasks.length}</p>
+          <p className="text-sm text-stone-500 mb-1">Aguardando revisão</p>
+          <p className={`text-3xl font-bold ${pendingTasks.length > 0 ? "text-purple-600" : "text-stone-900"}`}>{pendingTasks.length}</p>
         </Card>
         <Card className="p-5">
-          <p className="text-sm text-gray-500 mb-1">Taxa de retrabalho</p>
+          <p className="text-sm text-stone-500 mb-1">Taxa de retrabalho</p>
           <p className={`text-3xl font-bold ${retrabalhoRate > 30 ? "text-red-600" : retrabalhoRate > 15 ? "text-yellow-600" : "text-green-600"}`}>{retrabalhoRate}%</p>
         </Card>
         <Card className={`p-5 ${atRisk.length > 0 ? "border-l-4 border-l-red-500" : ""}`}>
-          <p className="text-sm text-gray-500 mb-1">Em risco de atraso</p>
+          <p className="text-sm text-stone-500 mb-1">Em risco de atraso</p>
           <p className={`text-3xl font-bold ${atRisk.length > 0 ? "text-red-600" : "text-green-600"}`}>{atRisk.length}</p>
         </Card>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 border-b border-gray-200">
+      <div className="flex gap-1 mb-6 border-b border-stone-200">
         {[
           ["visao_geral", "Visão geral"],
           ["projetos", "Projetos"],
           ["revisao", `Revisão${pendingTasks.length > 0 ? " (" + pendingTasks.length + ")" : ""}`],
           ["conhecimento", "Base de conhecimento"],
         ].map(([key, label]) => (
-          <button key={key} onClick={() => setTab(key)} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${tab === key ? "border-gray-900 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-700"}`}>{label}</button>
+          <button key={key} onClick={() => setTab(key)} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${tab === key ? "border-stone-900 text-stone-900" : "border-transparent text-stone-500 hover:text-stone-700"}`}>{label}</button>
         ))}
       </div>
 
@@ -1027,16 +1027,16 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Entregas aguardando sua revisão</h2>
-                {pendingTasks.length > 2 && <button onClick={() => setTab("revisao")} className="text-sm text-gray-500 hover:text-gray-900">Ver todas →</button>}
+                {pendingTasks.length > 2 && <button onClick={() => setTab("revisao")} className="text-sm text-stone-500 hover:text-stone-900">Ver todas →</button>}
               </div>
               {pendingTasks.slice(0, 3).map(task => (
                 <Card key={task.id} className="mb-3 overflow-hidden">
-                  <div className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => { setTab("revisao"); setExpandedId(task.id); }}>
+                  <div className="p-4 flex items-center justify-between cursor-pointer hover:bg-stone-50 transition-colors" onClick={() => { setTab("revisao"); setExpandedId(task.id); }}>
                     <div className="flex items-center gap-3">
                       <div className={`h-10 w-10 rounded-lg flex items-center justify-center text-white text-xs font-bold ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-yellow-500" : "bg-green-500"}`}>{task.priority[0]}</div>
                       <div>
                         <p className="font-medium">{task.title}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{task.project} · {task.executorName} · {new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</p>
+                        <p className="text-xs text-stone-500 mt-0.5">{task.project} · {task.executorName} · {new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</p>
                       </div>
                     </div>
                     <Button size="sm">Revisar</Button>
@@ -1062,20 +1062,20 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium text-sm">{task.title}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{task.project} · {task.executorName} · Prazo: {new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</p>
+                      <p className="text-xs text-stone-500 mt-0.5">{task.project} · {task.executorName} · Prazo: {new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant={task.status === "a_fazer" ? "default" : "info"}>{task.status === "a_fazer" ? "A fazer" : "Em execução"}</Badge>
-                      <button onClick={() => { if (!sentAlerts.has(task.id)) setAlertTaskId(alertTaskId === task.id ? null : task.id); }} className={`p-2 rounded-lg border transition-all ${sentAlerts.has(task.id) ? "bg-yellow-100 border-yellow-400 text-yellow-600 cursor-default" : alertTaskId === task.id ? "bg-yellow-50 border-yellow-300 text-yellow-600" : "border-gray-200 text-gray-400 hover:text-yellow-600 hover:border-yellow-300 hover:bg-yellow-50"}`} title={sentAlerts.has(task.id) ? "Alerta enviado" : "Alertar executor"}>
+                      <button onClick={() => { if (!sentAlerts.has(task.id)) setAlertTaskId(alertTaskId === task.id ? null : task.id); }} className={`p-2 rounded-lg border transition-all ${sentAlerts.has(task.id) ? "bg-yellow-100 border-yellow-400 text-yellow-600 cursor-default" : alertTaskId === task.id ? "bg-yellow-50 border-yellow-300 text-yellow-600" : "border-stone-200 text-stone-400 hover:text-yellow-600 hover:border-yellow-300 hover:bg-yellow-50"}`} title={sentAlerts.has(task.id) ? "Alerta enviado" : "Alertar executor"}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill={sentAlerts.has(task.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                       </button>
                     </div>
                   </div>
                   {alertTaskId === task.id && (
-                    <div className="mt-3 pt-3 border-t border-gray-100">
-                      <p className="text-xs text-gray-500 mb-2">Enviar alerta para <span className="font-medium text-gray-700">{task.executorName}</span></p>
+                    <div className="mt-3 pt-3 border-t border-stone-100">
+                      <p className="text-xs text-stone-500 mb-2">Enviar alerta para <span className="font-medium text-stone-700">{task.executorName}</span></p>
                       <div className="flex gap-2">
-                        <input value={alertMsg} onChange={e => setAlertMsg(e.target.value)} placeholder="Mensagem adicional (opcional)" className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400" onKeyDown={e => { if (e.key === "Enter") sendRiskAlert(task); }} />
+                        <input value={alertMsg} onChange={e => setAlertMsg(e.target.value)} placeholder="Mensagem adicional (opcional)" className="flex-1 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400" onKeyDown={e => { if (e.key === "Enter") sendRiskAlert(task); }} />
                         <button onClick={() => sendRiskAlert(task)} className="px-4 py-2 text-sm font-medium rounded-lg bg-yellow-500 text-white hover:bg-yellow-600 transition-colors flex items-center gap-1.5">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                           Alertar
@@ -1100,29 +1100,29 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                 <Card key={p.id} className="p-5 cursor-pointer hover:shadow-md transition-all" onClick={() => { if (onProjectClick) onProjectClick(p.id, "qa"); }}>
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <h3 className="font-semibold text-gray-900">{p.name}</h3>
-                      <p className="text-xs text-gray-500 mt-0.5">{p.client} · Líder: {p.responsible}</p>
+                      <h3 className="font-semibold text-stone-900">{p.name}</h3>
+                      <p className="text-xs text-stone-500 mt-0.5">{p.client} · Líder: {p.responsible}</p>
                     </div>
                     <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${p.priority === "Alta" ? "bg-red-50 text-red-700 border-red-200" : p.priority === "Média" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : "bg-green-50 text-green-700 border-green-200"}`}>{p.priority}</span>
                   </div>
                   <div className="flex items-center gap-4 mb-3">
-                    <div className="flex-1 bg-gray-200 rounded-full h-2"><div className="bg-green-600 h-2 rounded-full transition-all" style={{ width: `${pct}%` }} /></div>
-                    <span className="text-sm font-medium text-gray-700">{pct}%</span>
+                    <div className="flex-1 bg-stone-200 rounded-full h-2"><div className="bg-green-600 h-2 rounded-full transition-all" style={{ width: `${pct}%` }} /></div>
+                    <span className="text-sm font-medium text-stone-700">{pct}%</span>
                   </div>
-                  <div className="flex gap-3 text-xs text-gray-500">
+                  <div className="flex gap-3 text-xs text-stone-500">
                     <span>{pTasks.length} tarefas</span>
                     <span>{done} concluídas</span>
                     {inQa > 0 && <span className="text-purple-600 font-medium">{inQa} em QA</span>}
                   </div>
-                  <p className="text-xs text-gray-400 mt-2">Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })}</p>
+                  <p className="text-xs text-stone-400 mt-2">Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })}</p>
                 </Card>
               );
             })}
             {/* Add project card */}
-            <Card className="p-5 border-dashed border-2 border-gray-200 flex items-center justify-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-all" onClick={() => { setTab("projetos"); setShowCreateProject(true); }}>
+            <Card className="p-5 border-dashed border-2 border-stone-200 flex items-center justify-center cursor-pointer hover:border-stone-400 hover:bg-stone-50 transition-all" onClick={() => { setTab("projetos"); setShowCreateProject(true); }}>
               <div className="text-center">
-                <Plus size={24} className="text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-500 font-medium">Novo projeto</p>
+                <Plus size={24} className="text-stone-400 mx-auto mb-2" />
+                <p className="text-sm text-stone-500 font-medium">Novo projeto</p>
               </div>
             </Card>
           </div>
@@ -1139,18 +1139,18 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
 
           {showCreateProject && (
             <Card className="p-5 mb-6">
-              <p className="text-sm font-semibold text-gray-700 mb-4">Criar novo projeto</p>
+              <p className="text-sm font-semibold text-stone-700 mb-4">Criar novo projeto</p>
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <div><label className="text-xs font-medium text-gray-600">Nome do projeto / campanha</label><input value={projForm.name} onChange={e => setProjForm(p => ({ ...p, name: e.target.value }))} placeholder="Ex: Festival de Música 2026" className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
-                  <div><label className="text-xs font-medium text-gray-600">Cliente</label><select value={projForm.clientId} onChange={e => setProjForm(p => ({ ...p, clientId: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900"><option value="">Selecione</option>{clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
+                  <div><label className="text-xs font-medium text-stone-600">Nome do projeto / campanha</label><input value={projForm.name} onChange={e => setProjForm(p => ({ ...p, name: e.target.value }))} placeholder="Ex: Festival de Música 2026" className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
+                  <div><label className="text-xs font-medium text-stone-600">Cliente</label><select value={projForm.clientId} onChange={e => setProjForm(p => ({ ...p, clientId: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900"><option value="">Selecione</option>{clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
                 </div>
                 <div className="grid grid-cols-3 gap-3">
-                  <div><label className="text-xs font-medium text-gray-600">Líder responsável</label><select value={projForm.responsible} onChange={e => setProjForm(p => ({ ...p, responsible: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900"><option value="Ana Gallotta">Ana Gallotta</option></select></div>
-                  <div><label className="text-xs font-medium text-gray-600">Prioridade</label><select value={projForm.priority} onChange={e => setProjForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900"><option value="Alta">Alta</option><option value="Média">Média</option><option value="Baixa">Baixa</option></select></div>
-                  <div><label className="text-xs font-medium text-gray-600">Prazo</label><input type="date" value={projForm.deadline} onChange={e => setProjForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
+                  <div><label className="text-xs font-medium text-stone-600">Líder responsável</label><select value={projForm.responsible} onChange={e => setProjForm(p => ({ ...p, responsible: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900"><option value="Ana Gallotta">Ana Gallotta</option></select></div>
+                  <div><label className="text-xs font-medium text-stone-600">Prioridade</label><select value={projForm.priority} onChange={e => setProjForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900"><option value="Alta">Alta</option><option value="Média">Média</option><option value="Baixa">Baixa</option></select></div>
+                  <div><label className="text-xs font-medium text-stone-600">Prazo</label><input type="date" value={projForm.deadline} onChange={e => setProjForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
                 </div>
-                <div><label className="text-xs font-medium text-gray-600">Briefing</label><textarea value={projForm.briefing} onChange={e => setProjForm(p => ({ ...p, briefing: e.target.value }))} placeholder="Descreva o escopo, objetivos, referências e expectativas do cliente..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
+                <div><label className="text-xs font-medium text-stone-600">Briefing</label><textarea value={projForm.briefing} onChange={e => setProjForm(p => ({ ...p, briefing: e.target.value }))} placeholder="Descreva o escopo, objetivos, referências e expectativas do cliente..." className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
                 <div className="flex gap-2">
                   <Button size="sm" onClick={handleCreateProject} disabled={!projForm.name.trim() || !projForm.clientId || !projForm.deadline}>Criar projeto</Button>
                   <Button size="sm" variant="outline" onClick={() => setShowCreateProject(false)}>Cancelar</Button>
@@ -1167,15 +1167,15 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
               return (
                 <Card key={p.id} className="p-5 cursor-pointer hover:shadow-md transition-all" onClick={() => { if (onProjectClick) onProjectClick(p.id, "qa"); }}>
                   <div className="flex items-start justify-between mb-3">
-                    <div><h3 className="font-semibold text-gray-900">{p.name}</h3><p className="text-xs text-gray-500 mt-0.5">{p.client} · Líder: {p.responsible}</p></div>
+                    <div><h3 className="font-semibold text-stone-900">{p.name}</h3><p className="text-xs text-stone-500 mt-0.5">{p.client} · Líder: {p.responsible}</p></div>
                     <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${p.priority === "Alta" ? "bg-red-50 text-red-700 border-red-200" : p.priority === "Média" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : "bg-green-50 text-green-700 border-green-200"}`}>{p.priority}</span>
                   </div>
-                  {p.briefing && <p className="text-xs text-gray-500 mb-3 line-clamp-2">{p.briefing}</p>}
+                  {p.briefing && <p className="text-xs text-stone-500 mb-3 line-clamp-2">{p.briefing}</p>}
                   <div className="flex items-center gap-4 mb-2">
-                    <div className="flex-1 bg-gray-200 rounded-full h-2"><div className="bg-green-600 h-2 rounded-full" style={{ width: `${pct}%` }} /></div>
+                    <div className="flex-1 bg-stone-200 rounded-full h-2"><div className="bg-green-600 h-2 rounded-full" style={{ width: `${pct}%` }} /></div>
                     <span className="text-sm font-medium">{pct}%</span>
                   </div>
-                  <div className="flex justify-between text-xs text-gray-500">
+                  <div className="flex justify-between text-xs text-stone-500">
                     <span>{done}/{pTasks.length} tarefas</span>
                     <span>Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
                   </div>
@@ -1196,85 +1196,85 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
               ["devolvidas", `Devolvidas (${allDevolvidas.length})`, allDevolvidas.length > 0 ? "bg-red-50 text-red-700 border-red-200" : ""],
               ["aprovadas", `Aprovadas (${allCompleted.length})`, "bg-green-50 text-green-700 border-green-200"],
             ].map(([key, label, activeColor]) => (
-              <button key={key} onClick={() => setReviewTab(key)} className={`px-4 py-2 text-sm font-medium rounded-lg border transition-colors ${reviewTab === key ? (activeColor || "bg-gray-100 text-gray-700 border-gray-300") : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"}`}>{label}</button>
+              <button key={key} onClick={() => setReviewTab(key)} className={`px-4 py-2 text-sm font-medium rounded-lg border transition-colors ${reviewTab === key ? (activeColor || "bg-stone-100 text-stone-700 border-stone-300") : "bg-white text-stone-500 border-stone-200 hover:border-stone-300"}`}>{label}</button>
             ))}
           </div>
 
           {reviewTab === "pendentes" && (
             pendingTasks.length === 0 ? (
-              <Card className="p-12 text-center"><p className="text-gray-400">Nenhuma entrega pendente.</p></Card>
+              <Card className="p-12 text-center"><p className="text-stone-400">Nenhuma entrega pendente.</p></Card>
             ) : pendingTasks.map(task => {
               const isExpanded = expandedId === task.id;
               return (
               <Card key={task.id} className="mb-4 overflow-hidden">
-                <div className="p-5 cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => setExpandedId(isExpanded ? null : task.id)}>
+                <div className="p-5 cursor-pointer hover:bg-stone-50 transition-colors" onClick={() => setExpandedId(isExpanded ? null : task.id)}>
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
                       <div className={`h-10 w-10 rounded-lg flex items-center justify-center text-white text-xs font-bold flex-shrink-0 ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-yellow-500" : "bg-green-500"}`}>{task.priority[0]}</div>
                       <div>
-                        <h3 className="font-semibold text-gray-900">{task.title}</h3>
-                        <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
+                        <h3 className="font-semibold text-stone-900">{task.title}</h3>
+                        <div className="flex items-center gap-3 mt-1 text-sm text-stone-500">
                           <span>{task.project}</span>
                           <span>{task.executorName}</span>
                           <span>{new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
                         </div>
                       </div>
                     </div>
-                    {isExpanded ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+                    {isExpanded ? <ChevronUp size={20} className="text-stone-400" /> : <ChevronDown size={20} className="text-stone-400" />}
                   </div>
                 </div>
                 {isExpanded && (
-                  <div className="border-t border-gray-100 bg-gray-50">
+                  <div className="border-t border-stone-100 bg-stone-50">
                     <div className="p-6">
                       <div className="grid grid-cols-2 gap-6 mb-6">
                         <div className="space-y-4">
                           <div>
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Instruções da tarefa</p>
+                            <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">Instruções da tarefa</p>
                             <Card className="p-4 space-y-3">
                               {(() => {
                                 const desc = task.description || "";
                                 const hasLeader = desc.includes("Instruções do líder:");
                                 const hasFbPrefix = desc.match(/^Feedback do cliente [^:]+:\s*/i);
-                                if (hasLeader) { const lt = desc.split(/Instruções do líder:\s*/i)[1]?.trim(); return lt ? (<div><p className="text-xs font-semibold text-blue-600 mb-1">Instruções do líder</p><div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-gray-700">{lt}</div></div>) : null; }
-                                if (hasFbPrefix) { const cl = desc.replace(/^Feedback do cliente [^:]+:\s*/i, "").trim(); return cl ? <p className="text-sm text-gray-700">{cl}</p> : null; }
-                                return <p className="text-sm text-gray-700">{desc}</p>;
+                                if (hasLeader) { const lt = desc.split(/Instruções do líder:\s*/i)[1]?.trim(); return lt ? (<div><p className="text-xs font-semibold text-blue-600 mb-1">Instruções do líder</p><div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-stone-700">{lt}</div></div>) : null; }
+                                if (hasFbPrefix) { const cl = desc.replace(/^Feedback do cliente [^:]+:\s*/i, "").trim(); return cl ? <p className="text-sm text-stone-700">{cl}</p> : null; }
+                                return <p className="text-sm text-stone-700">{desc}</p>;
                               })()}
-                              {task.feedbackOrigin && (<div className="p-3 bg-green-50 border border-green-200 rounded-lg"><p className="text-xs font-semibold text-green-700 mb-1">Feedback do cliente</p><p className="text-sm text-gray-700">{task.feedbackOrigin.text}</p></div>)}
+                              {task.feedbackOrigin && (<div className="p-3 bg-green-50 border border-green-200 rounded-lg"><p className="text-xs font-semibold text-green-700 mb-1">Feedback do cliente</p><p className="text-sm text-stone-700">{task.feedbackOrigin.text}</p></div>)}
                             </Card>
                           </div>
                           <div>
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Checklist</p>
+                            <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">Checklist</p>
                             <Card className="p-4">
-                              <div className="space-y-2">{task.checklist.map((item, i) => (<div key={i} className="flex items-center gap-2.5"><div className={`h-4 w-4 rounded flex items-center justify-center text-xs flex-shrink-0 ${item.done ? "bg-green-600 text-white" : "border border-gray-300"}`}>{item.done ? "✓" : ""}</div><span className={`text-sm ${item.done ? "text-gray-400 line-through" : "text-gray-700"}`}>{item.text}</span></div>))}</div>
-                              <div className="mt-3 pt-3 border-t border-gray-100"><div className="flex items-center justify-between"><span className="text-xs text-gray-500">{task.checklist.filter(c => c.done).length}/{task.checklist.length}</span><div className="w-20 bg-gray-200 rounded-full h-1.5"><div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${(task.checklist.filter(c => c.done).length / task.checklist.length) * 100}%` }} /></div></div></div>
+                              <div className="space-y-2">{task.checklist.map((item, i) => (<div key={i} className="flex items-center gap-2.5"><div className={`h-4 w-4 rounded flex items-center justify-center text-xs flex-shrink-0 ${item.done ? "bg-green-600 text-white" : "border border-stone-300"}`}>{item.done ? "✓" : ""}</div><span className={`text-sm ${item.done ? "text-stone-400 line-through" : "text-stone-700"}`}>{item.text}</span></div>))}</div>
+                              <div className="mt-3 pt-3 border-t border-stone-100"><div className="flex items-center justify-between"><span className="text-xs text-stone-500">{task.checklist.filter(c => c.done).length}/{task.checklist.length}</span><div className="w-20 bg-stone-200 rounded-full h-1.5"><div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${(task.checklist.filter(c => c.done).length / task.checklist.length) * 100}%` }} /></div></div></div>
                             </Card>
                           </div>
                         </div>
                         <div className="space-y-4">
                           <div>
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Entrega</p>
+                            <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">Entrega</p>
                             <Card className="p-4">
                               {(task.submittedFiles && task.submittedFiles.length > 0) ? (
                                 <div className="space-y-2">
-                                  {task.submittedFiles.map((f, i) => (<div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100"><div className="h-8 w-8 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-purple-600" /></div><div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">{f.name}</p><p className="text-xs text-gray-500">{f.type ? f.type + " · " : ""}{f.size}</p></div><a href={f.url} download={f.name} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 cursor-pointer flex-shrink-0" style={{textDecoration:"none"}}><ExternalLink size={12} /> Abrir</a></div>))}
-                                  {task.submittedLink?.trim() && (<div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100"><ExternalLink size={16} className="text-gray-500 flex-shrink-0" /><p className="text-xs text-gray-500 truncate flex-1">{task.submittedLink}</p><Button variant="outline" size="sm" onClick={() => window.open(task.submittedLink, "_blank")}>Abrir</Button></div>)}
+                                  {task.submittedFiles.map((f, i) => (<div key={i} className="flex items-center gap-3 p-3 bg-stone-50 rounded-lg border border-stone-100"><div className="h-8 w-8 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-purple-600" /></div><div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">{f.name}</p><p className="text-xs text-stone-500">{f.type ? f.type + " · " : ""}{f.size}</p></div><a href={f.url} download={f.name} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 cursor-pointer flex-shrink-0" style={{textDecoration:"none"}}><ExternalLink size={12} /> Abrir</a></div>))}
+                                  {task.submittedLink?.trim() && (<div className="flex items-center gap-3 p-3 bg-stone-50 rounded-lg border border-stone-100"><ExternalLink size={16} className="text-stone-500 flex-shrink-0" /><p className="text-xs text-stone-500 truncate flex-1">{task.submittedLink}</p><Button variant="outline" size="sm" onClick={() => window.open(task.submittedLink, "_blank")}>Abrir</Button></div>)}
                                 </div>
                               ) : task.submittedLink?.trim() ? (
-                                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100"><ExternalLink size={16} className="text-purple-600 flex-shrink-0" /><p className="text-xs text-gray-500 truncate flex-1">{task.submittedLink}</p><Button variant="outline" size="sm" onClick={() => window.open(task.submittedLink, "_blank")}>Abrir</Button></div>
-                              ) : (<p className="text-sm text-gray-400 italic">Nenhum arquivo anexado.</p>)}
+                                <div className="flex items-center gap-3 p-3 bg-stone-50 rounded-lg border border-stone-100"><ExternalLink size={16} className="text-purple-600 flex-shrink-0" /><p className="text-xs text-stone-500 truncate flex-1">{task.submittedLink}</p><Button variant="outline" size="sm" onClick={() => window.open(task.submittedLink, "_blank")}>Abrir</Button></div>
+                              ) : (<p className="text-sm text-stone-400 italic">Nenhum arquivo anexado.</p>)}
                             </Card>
                           </div>
-                          {task.attachments.length > 0 && (<div><p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Referências</p><Card className="p-4"><div className="space-y-2">{task.attachments.map((a, i) => (<div key={i} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50"><FolderOpen size={16} className="text-gray-400 flex-shrink-0" /><div className="flex-1 min-w-0"><p className="text-sm font-medium">{a.name}</p><p className="text-xs text-gray-400">{a.type}{a.size ? ` · ${a.size}` : ""}</p></div><Button variant="ghost" size="sm" onClick={() => a.url ? window.open(a.url, "_blank") : alert("Arquivo: " + a.name)}>Abrir</Button></div>))}</div></Card></div>)}
+                          {task.attachments.length > 0 && (<div><p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">Referências</p><Card className="p-4"><div className="space-y-2">{task.attachments.map((a, i) => (<div key={i} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-stone-50"><FolderOpen size={16} className="text-stone-400 flex-shrink-0" /><div className="flex-1 min-w-0"><p className="text-sm font-medium">{a.name}</p><p className="text-xs text-stone-400">{a.type}{a.size ? ` · ${a.size}` : ""}</p></div><Button variant="ghost" size="sm" onClick={() => a.url ? window.open(a.url, "_blank") : alert("Arquivo: " + a.name)}>Abrir</Button></div>))}</div></Card></div>)}
                         </div>
                       </div>
                       <Card className="p-5">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Revisão e devolutiva</p>
-                        <textarea value={comments[task.id] || ""} onChange={e => setComments(prev => ({ ...prev, [task.id]: e.target.value }))} placeholder="Escreva o que precisa ser ajustado, elogie o que ficou bom, ou aprove diretamente..." className="w-full border border-gray-200 rounded-lg p-3 text-sm min-h-[80px] mb-4 focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50" />
+                        <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-3">Revisão e devolutiva</p>
+                        <textarea value={comments[task.id] || ""} onChange={e => setComments(prev => ({ ...prev, [task.id]: e.target.value }))} placeholder="Escreva o que precisa ser ajustado, elogie o que ficou bom, ou aprove diretamente..." className="w-full border border-stone-200 rounded-lg p-3 text-sm min-h-[80px] mb-4 focus:outline-none focus:ring-2 focus:ring-gray-900 bg-stone-50" />
                         <div className="flex gap-3">
                           <button className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg bg-green-700 text-white hover:bg-green-800 transition-colors" onClick={() => { approveTask(task.id, comments[task.id]); setComments(prev => { const n = { ...prev }; delete n[task.id]; return n; }); setExpandedId(null); }}><CheckCircle2 size={16} /> Aprovar</button>
-                          <button className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${comments[task.id]?.trim() ? "border border-red-300 bg-red-50 text-red-700 hover:bg-red-100" : "border border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"}`} onClick={() => { if (!comments[task.id]?.trim()) return; rejectTask(task.id, comments[task.id]); setComments(prev => { const n = { ...prev }; delete n[task.id]; return n; }); setExpandedId(null); }}><ArrowLeft size={16} /> Devolver</button>
+                          <button className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${comments[task.id]?.trim() ? "border border-red-300 bg-red-50 text-red-700 hover:bg-red-100" : "border border-stone-200 bg-stone-100 text-stone-400 cursor-not-allowed"}`} onClick={() => { if (!comments[task.id]?.trim()) return; rejectTask(task.id, comments[task.id]); setComments(prev => { const n = { ...prev }; delete n[task.id]; return n; }); setExpandedId(null); }}><ArrowLeft size={16} /> Devolver</button>
                         </div>
-                        {!comments[task.id]?.trim() && <p className="text-xs text-gray-400 mt-3">Escreva um comentário para poder devolver.</p>}
+                        {!comments[task.id]?.trim() && <p className="text-xs text-stone-400 mt-3">Escreva um comentário para poder devolver.</p>}
                       </Card>
                     </div>
                   </div>
@@ -1286,12 +1286,12 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
 
           {reviewTab === "devolvidas" && (
             allDevolvidas.length === 0 ? (
-              <Card className="p-12 text-center"><p className="text-gray-400">Nenhuma tarefa devolvida.</p></Card>
+              <Card className="p-12 text-center"><p className="text-stone-400">Nenhuma tarefa devolvida.</p></Card>
             ) : allDevolvidas.map(task => (
               <Card key={task.id} className="p-4 mb-3 border-l-4 border-l-red-400">
                 <div className="flex items-center justify-between">
-                  <div><p className="font-medium text-sm">{task.title}</p><p className="text-xs text-gray-500 mt-0.5">{task.project} · {task.executorName}</p></div>
-                  <button onClick={() => revertFromDevolvida(task.id)} className="text-xs text-gray-400 hover:text-red-500 px-3 py-1.5 rounded-lg border border-gray-200 hover:border-red-300 transition-colors">Reverter devolução</button>
+                  <div><p className="font-medium text-sm">{task.title}</p><p className="text-xs text-stone-500 mt-0.5">{task.project} · {task.executorName}</p></div>
+                  <button onClick={() => revertFromDevolvida(task.id)} className="text-xs text-stone-400 hover:text-red-500 px-3 py-1.5 rounded-lg border border-stone-200 hover:border-red-300 transition-colors">Reverter devolução</button>
                 </div>
                 {task.qaComment && <div className="mt-2 p-2.5 bg-red-50 rounded-lg border border-red-100"><p className="text-xs text-red-700">{task.qaComment}</p></div>}
               </Card>
@@ -1300,12 +1300,12 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
 
           {reviewTab === "aprovadas" && (
             allCompleted.length === 0 ? (
-              <Card className="p-12 text-center"><p className="text-gray-400">Nenhuma tarefa aprovada ainda.</p></Card>
+              <Card className="p-12 text-center"><p className="text-stone-400">Nenhuma tarefa aprovada ainda.</p></Card>
             ) : allCompleted.map(task => (
               <Card key={task.id} className="p-4 mb-3 border-l-4 border-l-green-400">
                 <div className="flex items-center justify-between">
-                  <div><p className="font-medium text-sm">{task.title}</p><p className="text-xs text-gray-500 mt-0.5">{task.project} · {task.executorName}</p></div>
-                  <button onClick={() => revertFromCompleted(task.id)} className="text-xs text-gray-400 hover:text-red-500 px-3 py-1.5 rounded-lg border border-gray-200 hover:border-red-300 transition-colors">Reverter aprovação</button>
+                  <div><p className="font-medium text-sm">{task.title}</p><p className="text-xs text-stone-500 mt-0.5">{task.project} · {task.executorName}</p></div>
+                  <button onClick={() => revertFromCompleted(task.id)} className="text-xs text-stone-400 hover:text-red-500 px-3 py-1.5 rounded-lg border border-stone-200 hover:border-red-300 transition-colors">Reverter aprovação</button>
                 </div>
               </Card>
             ))
@@ -1318,18 +1318,18 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
         <div>
           {/* Annotation form for QA */}
           <Card className="p-5 mb-6">
-            <p className="text-sm font-medium text-gray-700 mb-3">Nova anotação</p>
+            <p className="text-sm font-medium text-stone-700 mb-3">Nova anotação</p>
             <div className="flex items-center gap-3 mb-3">
-              <select value={noteClient} onChange={e => setNoteClient(e.target.value)} className="border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 min-w-[180px]">
+              <select value={noteClient} onChange={e => setNoteClient(e.target.value)} className="border border-stone-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 min-w-[180px]">
                 <option value="">Selecione cliente</option>
                 {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
-              <input value={noteText} onChange={e => setNoteText(e.target.value)} placeholder="O que aprendemos sobre este cliente?" className="flex-1 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+              <input value={noteText} onChange={e => setNoteText(e.target.value)} placeholder="O que aprendemos sobre este cliente?" className="flex-1 border border-stone-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-gray-500 mr-1">Categoria:</span>
+              <span className="text-xs text-stone-500 mr-1">Categoria:</span>
               {Object.entries(tagConfig).map(([key, cfg]) => (
-                <button key={key} onClick={() => setNoteTag(noteTag === key ? "" : key)} className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${noteTag === key ? cfg.color + " ring-2 ring-offset-1 ring-gray-400" : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"}`}>{cfg.label}</button>
+                <button key={key} onClick={() => setNoteTag(noteTag === key ? "" : key)} className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${noteTag === key ? cfg.color + " ring-2 ring-offset-1 ring-gray-400" : "bg-stone-50 text-stone-500 border-stone-200 hover:bg-stone-100"}`}>{cfg.label}</button>
               ))}
               <div className="ml-auto">
                 <Button size="sm" onClick={() => { if (noteClient && noteText.trim() && noteTag) { addClientNote(noteClient, noteText.trim(), noteTag, "QA"); setNoteClient(""); setNoteText(""); setNoteTag(""); } }} disabled={!noteClient || !noteText.trim() || !noteTag}>Salvar</Button>
@@ -1351,7 +1351,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
 
             const combined = [...allNotes.map(n => ({ ...n, _sort: n.date })), ...allLearnings.map(l => ({ ...l, _sort: l.date }))].sort((a, b) => b._sort.localeCompare(a._sort));
 
-            const getTagInfo = (t) => tagConfig[t] || { label: t || "Geral", color: "bg-gray-100 text-gray-600 border-gray-300" };
+            const getTagInfo = (t) => tagConfig[t] || { label: t || "Geral", color: "bg-stone-100 text-stone-600 border-stone-300" };
 
             const filterTags = ["todos", "gostou", "nao_gostou", "comunicacao", "processo", "elogio", "erro", "insight"];
             const filtered = kbF === "todos" ? combined : combined.filter(e => e._tag === kbF);
@@ -1362,13 +1362,13 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
               <div>
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {filterTags.map(t => {
-                    const cfg = t === "todos" ? { label: "Todos", color: "bg-gray-100 text-gray-700 border-gray-300" } : getTagInfo(t);
+                    const cfg = t === "todos" ? { label: "Todos", color: "bg-stone-100 text-stone-700 border-stone-300" } : getTagInfo(t);
                     const count = t === "todos" ? combined.length : (tagCounts[t] || 0);
-                    return (<button key={t} onClick={() => setKbF(t)} className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-all ${kbF === t ? (t === "todos" ? "bg-gray-900 text-white border-gray-900" : cfg.color + " border-current") : "bg-white text-gray-400 border-gray-200 hover:bg-gray-50"}`}>{cfg.label} ({count})</button>);
+                    return (<button key={t} onClick={() => setKbF(t)} className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-all ${kbF === t ? (t === "todos" ? "bg-stone-900 text-white border-stone-900" : cfg.color + " border-current") : "bg-white text-stone-400 border-stone-200 hover:bg-stone-50"}`}>{cfg.label} ({count})</button>);
                   })}
                 </div>
                 {filtered.length === 0 ? (
-                  <Card className="p-8 text-center"><p className="text-gray-400 text-sm">Nenhum registro encontrado.</p></Card>
+                  <Card className="p-8 text-center"><p className="text-stone-400 text-sm">Nenhum registro encontrado.</p></Card>
                 ) : (
                   <div className="space-y-2">
                     {filtered.map((entry, i) => {
@@ -1376,19 +1376,19 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                       const borderColors = { gostou: "border-l-green-500", nao_gostou: "border-l-red-500", comunicacao: "border-l-blue-500", processo: "border-l-purple-500", elogio: "border-l-emerald-500", erro: "border-l-red-500", insight: "border-l-yellow-500" };
                       const bgColors = { gostou: "bg-green-50", nao_gostou: "bg-red-50", comunicacao: "bg-blue-50", processo: "bg-purple-50", elogio: "bg-emerald-50", erro: "bg-red-50", insight: "bg-yellow-50" };
                       return (
-                        <div key={i} className={`p-4 rounded-lg border-l-4 ${borderColors[entry._tag] || "border-l-gray-300"} ${bgColors[entry._tag] || "bg-gray-50"}`}>
+                        <div key={i} className={`p-4 rounded-lg border-l-4 ${borderColors[entry._tag] || "border-l-gray-300"} ${bgColors[entry._tag] || "bg-stone-50"}`}>
                           <div className="flex items-center justify-between mb-1.5">
                             <div className="flex items-center gap-2">
                               <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cfg.color}`}>{cfg.label}</span>
-                              <span className="text-xs text-gray-500">{entry.author || "—"}</span>
-                              <span className="text-xs text-gray-400">· {entry.clientName}</span>
+                              <span className="text-xs text-stone-500">{entry.author || "—"}</span>
+                              <span className="text-xs text-stone-400">· {entry.clientName}</span>
                             </div>
-                            <span className="text-xs text-gray-400">{entry._sort}</span>
+                            <span className="text-xs text-stone-400">{entry._sort}</span>
                           </div>
                           {entry._title && <p className="font-medium text-sm">{entry._title}</p>}
-                          <p className="text-sm text-gray-700">{entry._text}</p>
+                          <p className="text-sm text-stone-700">{entry._text}</p>
                           {entry._isLearning && entry.tags && entry.tags.filter(Boolean).length > 0 && (
-                            <div className="flex gap-1 mt-2">{entry.tags.filter(Boolean).map((tag, j) => <span key={j} className="text-xs px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 border border-gray-200">{tag}</span>)}</div>
+                            <div className="flex gap-1 mt-2">{entry.tags.filter(Boolean).map((tag, j) => <span key={j} className="text-xs px-2 py-0.5 rounded-md bg-stone-100 text-stone-600 border border-stone-200">{tag}</span>)}</div>
                           )}
                         </div>
                       );
@@ -1516,7 +1516,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-2">
-        <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"><ArrowLeft size={16} /> Voltar ao modo executor</button>
+        <button onClick={onBack} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900"><ArrowLeft size={16} /> Voltar ao modo executor</button>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={onViewClients}><Users size={16} /> Clientes</Button>
           <Button variant="outline" size="sm" onClick={onSimulateClient}><Sparkles size={16} /> Simular visão do cliente</Button>
@@ -1525,8 +1525,8 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
       <div className="flex items-center gap-3 mb-1">
         <h1 className="text-3xl font-bold">Líder Eventos</h1>
       </div>
-      <p className="text-gray-500 mb-1">Gerencie projetos e distribua tarefas para o time.</p>
-      <p className="text-sm text-gray-400 mb-6">Você está vendo todos os projetos de eventos.</p>
+      <p className="text-stone-500 mb-1">Gerencie projetos e distribua tarefas para o time.</p>
+      <p className="text-sm text-stone-400 mb-6">Você está vendo todos os projetos de eventos.</p>
 
       <div className="flex gap-2 mb-6">
         <Button variant={tab === "geral" ? "outline" : "ghost"} size="sm" onClick={() => setTab("geral")} className={tab === "geral" ? "border-green-600 text-green-700" : ""}>Visão geral</Button>
@@ -1543,14 +1543,14 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                 {areaProjects.map(p => {
                   const projFeedbacks = feedbacks.filter(f => f.projectId === p.id && f.status === "pendente");
                   return (
-                    <tr key={p.id} className="border-b last:border-0 hover:bg-gray-50 cursor-pointer" onClick={() => onProjectClick && onProjectClick(p.id)}>
+                    <tr key={p.id} className="border-b last:border-0 hover:bg-stone-50 cursor-pointer" onClick={() => onProjectClick && onProjectClick(p.id)}>
                       <td className="p-4 font-medium">{p.name} {projFeedbacks.length > 0 && <Badge variant="success" className="ml-2">{projFeedbacks.length} feedback</Badge>}</td>
-                      <td className="p-4 text-gray-500">{p.client}</td>
+                      <td className="p-4 text-stone-500">{p.client}</td>
                       <td className="p-4"><Badge variant="info">{p.type}</Badge></td>
                       <td className="p-4"><Badge variant="purple">Projeto</Badge></td>
                       <td className="p-4"><span className="inline-flex items-center gap-1"><span className={`h-2 w-2 rounded-full ${p.priority === "Alta" ? "bg-red-500" : p.priority === "Média" ? "bg-orange-500" : "bg-green-500"}`} />{p.priority}</span></td>
-                      <td className="p-4 text-gray-500">{p.responsible}</td>
-                      <td className="p-4 text-gray-500"><Calendar className="inline" size={12} /> {new Date(p.deadline).toLocaleDateString("pt-BR")}</td>
+                      <td className="p-4 text-stone-500">{p.responsible}</td>
+                      <td className="p-4 text-stone-500"><Calendar className="inline" size={12} /> {new Date(p.deadline).toLocaleDateString("pt-BR")}</td>
                     </tr>
                   );
                 })}
@@ -1563,7 +1563,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
             <Button variant={feedFilter === "pendentes" ? "default" : "outline"} size="sm" onClick={() => setFeedFilter("pendentes")}>Pendentes ({pendingFeedbacks.length})</Button>
             <Button variant={feedFilter === "atribuidos" ? "default" : "outline"} size="sm" onClick={() => setFeedFilter("atribuidos")}>Atribuídos ({assignedFeedbacks.length})</Button>
           </div>
-          {feedFilter === "pendentes" && pendingFeedbacks.length === 0 && <Card className="p-8 text-center text-gray-400 mb-8">Nenhum feedback pendente de atribuição</Card>}
+          {feedFilter === "pendentes" && pendingFeedbacks.length === 0 && <Card className="p-8 text-center text-stone-400 mb-8">Nenhum feedback pendente de atribuição</Card>}
           {feedFilter === "pendentes" && pendingFeedbacks.map(fb => {
             const relatedTask = fb.relatedTaskId ? tasks.find(t => t.id === fb.relatedTaskId) : null;
             const proj = projects.find(p => p.id === fb.projectId);
@@ -1578,17 +1578,17 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                         <Badge variant={fb.type === "Ajuste" ? "danger" : fb.type === "Sugestão" ? "warning" : "success"}>{fb.type}</Badge>
                         {relatedTask ? <Badge variant="purple">Sobre entrega específica</Badge> : <Badge variant="info">Sobre o projeto</Badge>}
                       </div>
-                      <p className="text-sm text-gray-800 mb-2">{fb.text}</p>
-                      <div className="flex items-center gap-4 text-xs text-gray-400">
-                        <span>Cliente: <strong className="text-gray-600">{fb.clientName}</strong></span>
-                        <span>Projeto: <strong className="text-gray-600">{proj?.name || "—"}</strong></span>
+                      <p className="text-sm text-stone-800 mb-2">{fb.text}</p>
+                      <div className="flex items-center gap-4 text-xs text-stone-400">
+                        <span>Cliente: <strong className="text-stone-600">{fb.clientName}</strong></span>
+                        <span>Projeto: <strong className="text-stone-600">{proj?.name || "—"}</strong></span>
                         <span>{fb.date}</span>
                       </div>
                       {relatedTask && (
-                        <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Entrega relacionada</p>
+                        <div className="mt-3 p-3 bg-stone-50 rounded-lg border border-stone-100">
+                          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Entrega relacionada</p>
                           <p className="text-sm font-medium">{relatedTask.title}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">Executor: <strong>{relatedTask.executorName}</strong> · Status: {relatedTask.status === "concluida" ? "Concluída" : relatedTask.status === "em_qa" ? "Em QA" : relatedTask.status === "em_execucao" ? "Em execução" : relatedTask.status === "devolvida" ? "Devolvida" : "A fazer"}</p>
+                          <p className="text-xs text-stone-500 mt-0.5">Executor: <strong>{relatedTask.executorName}</strong> · Status: {relatedTask.status === "concluida" ? "Concluída" : relatedTask.status === "em_qa" ? "Em QA" : relatedTask.status === "em_execucao" ? "Em execução" : relatedTask.status === "devolvida" ? "Devolvida" : "A fazer"}</p>
                         </div>
                       )}
                     </div>
@@ -1597,17 +1597,17 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                 </div>
 
                 {isAssigning && (
-                  <div className="border-t bg-gray-50 p-5 space-y-3">
-                    <p className="text-sm font-bold text-gray-700">{relatedTask ? "Devolver tarefa com feedback" : "Atribuir como nova tarefa"}</p>
+                  <div className="border-t bg-stone-50 p-5 space-y-3">
+                    <p className="text-sm font-bold text-stone-700">{relatedTask ? "Devolver tarefa com feedback" : "Atribuir como nova tarefa"}</p>
                     {relatedTask && <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">A tarefa original será reaberta como "Devolvida" com o feedback do cliente anexado.</p>}
                     <div>
-                      <label className="text-xs font-medium text-gray-600">{relatedTask ? "Tarefa original" : "Título da tarefa"}</label>
-                      <input value={assignForm.title} onChange={e => setAssignForm(p => ({ ...p, title: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" readOnly={!!relatedTask} />
+                      <label className="text-xs font-medium text-stone-600">{relatedTask ? "Tarefa original" : "Título da tarefa"}</label>
+                      <input value={assignForm.title} onChange={e => setAssignForm(p => ({ ...p, title: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" readOnly={!!relatedTask} />
                     </div>
                     <div className="grid grid-cols-3 gap-3">
                       <div>
-                        <label className="text-xs font-medium text-gray-600">Atribuir para</label>
-                        <select value={assignForm.executor} onChange={e => setAssignForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                        <label className="text-xs font-medium text-stone-600">Atribuir para</label>
+                        <select value={assignForm.executor} onChange={e => setAssignForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                           <option value="">Selecione executor</option>
                           {(proj?.squad && proj.squad.length > 0 ? areaTeam.filter(m => proj.squad.includes(m.id)) : areaTeam).map(m => (
                             <option key={m.id} value={m.id}>
@@ -1615,22 +1615,22 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                             </option>
                           ))}
                         </select>
-                        {relatedTask && <p className="text-xs text-gray-400 mt-1">★ = executor que fez a entrega original</p>}
+                        {relatedTask && <p className="text-xs text-stone-400 mt-1">★ = executor que fez a entrega original</p>}
                       </div>
                       <div>
-                        <label className="text-xs font-medium text-gray-600">Prioridade</label>
-                        <select value={assignForm.priority} onChange={e => setAssignForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                        <label className="text-xs font-medium text-stone-600">Prioridade</label>
+                        <select value={assignForm.priority} onChange={e => setAssignForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                           <option>Alta</option><option>Média</option><option>Baixa</option>
                         </select>
                       </div>
                       <div>
-                        <label className="text-xs font-medium text-gray-600">Prazo</label>
-                        <input type="datetime-local" value={assignForm.deadline} onChange={e => setAssignForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                        <label className="text-xs font-medium text-stone-600">Prazo</label>
+                        <input type="datetime-local" value={assignForm.deadline} onChange={e => setAssignForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" />
                       </div>
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-gray-600">Instruções para o executor <span className="text-gray-400 font-normal">(opcional)</span></label>
-                      <textarea value={assignForm.instructions} onChange={e => setAssignForm(p => ({ ...p, instructions: e.target.value }))} placeholder="Dê contexto, orientações ou detalhes sobre como resolver este feedback..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 min-h-[60px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50" />
+                      <label className="text-xs font-medium text-stone-600">Instruções para o executor <span className="text-stone-400 font-normal">(opcional)</span></label>
+                      <textarea value={assignForm.instructions} onChange={e => setAssignForm(p => ({ ...p, instructions: e.target.value }))} placeholder="Dê contexto, orientações ou detalhes sobre como resolver este feedback..." className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 min-h-[60px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-stone-50" />
                     </div>
                     <div className="flex gap-2 pt-1">
                       <Button size="sm" onClick={handleAssignFeedback} disabled={!assignForm.executor || !assignForm.title.trim()}>{relatedTask ? "Devolver tarefa" : "Confirmar atribuição"}</Button>
@@ -1641,7 +1641,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
               </Card>
             );
           })}
-          {feedFilter === "atribuidos" && assignedFeedbacks.length === 0 && <Card className="p-8 text-center text-gray-400 mb-8">Nenhum feedback atribuído ainda</Card>}
+          {feedFilter === "atribuidos" && assignedFeedbacks.length === 0 && <Card className="p-8 text-center text-stone-400 mb-8">Nenhum feedback atribuído ainda</Card>}
           {feedFilter === "atribuidos" && assignedFeedbacks.map(fb => {
             const proj = projects.find(p => p.id === fb.projectId);
             const assignedTask = fb.assignedTaskId ? tasks.find(t => t.id === fb.assignedTaskId) : null;
@@ -1651,9 +1651,9 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                   <Badge variant="success">Atribuído</Badge>
                   <Badge variant={fb.type === "Ajuste" ? "danger" : fb.type === "Sugestão" ? "warning" : "success"}>{fb.type}</Badge>
                 </div>
-                <p className="text-sm text-gray-700 mb-1">{fb.text}</p>
-                <p className="text-xs text-gray-400">Cliente: {fb.clientName} · Projeto: {proj?.name || "—"} · {fb.date}</p>
-                {assignedTask && <p className="text-xs text-gray-500 mt-2">Tarefa criada: <strong>{assignedTask.title}</strong> → {assignedTask.executorName}</p>}
+                <p className="text-sm text-stone-700 mb-1">{fb.text}</p>
+                <p className="text-xs text-stone-400">Cliente: {fb.clientName} · Projeto: {proj?.name || "—"} · {fb.date}</p>
+                {assignedTask && <p className="text-xs text-stone-500 mt-2">Tarefa criada: <strong>{assignedTask.title}</strong> → {assignedTask.executorName}</p>}
               </Card>
             );
           })}
@@ -1663,15 +1663,15 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
               <h2 className="text-xl font-bold">Relacionamento com cliente</h2>
               {elogios.length > 0 && <Badge variant="success">{elogios.length} elogio{elogios.length > 1 ? "s" : ""}</Badge>}
             </div>
-            {showRelacionamento ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+            {showRelacionamento ? <ChevronUp size={20} className="text-stone-400" /> : <ChevronDown size={20} className="text-stone-400" />}
           </button>
 
           {showRelacionamento && <>
-          <p className="text-sm text-gray-500 mb-4">Elogios recebidos e anotações sobre preferências dos clientes. Ao registrar, a informação vai para o Histórico de Clientes.</p>
+          <p className="text-sm text-stone-500 mb-4">Elogios recebidos e anotações sobre preferências dos clientes. Ao registrar, a informação vai para o Histórico de Clientes.</p>
 
           {elogios.length > 0 && (
             <div className="mb-4">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Elogios recebidos</p>
+              <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-3">Elogios recebidos</p>
               {elogios.map(fb => {
                 const proj = projects.find(p => p.id === fb.projectId);
                 return (
@@ -1679,16 +1679,16 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                     <div className="p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Badge variant="success">Elogio</Badge>
-                        <span className="text-xs text-gray-400">{fb.clientName} · {fb.date}</span>
+                        <span className="text-xs text-stone-400">{fb.clientName} · {fb.date}</span>
                       </div>
-                      <p className="text-sm text-gray-800 mb-1">"{fb.text}"</p>
-                      {proj && <p className="text-xs text-gray-400">Projeto: {proj.name}</p>}
+                      <p className="text-sm text-stone-800 mb-1">"{fb.text}"</p>
+                      {proj && <p className="text-xs text-stone-400">Projeto: {proj.name}</p>}
                       <div className="mt-3">
                         <textarea
                           value={elogioNotes[fb.id] || ""}
                           onChange={e => setElogioNotes(prev => ({ ...prev, [fb.id]: e.target.value }))}
                           placeholder="Anote o que aprendemos com esse elogio... Ex: 'Cliente valoriza agilidade nas respostas — manter esse padrão'"
-                          className="w-full border border-gray-200 rounded-lg p-2.5 text-sm min-h-[60px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50"
+                          className="w-full border border-stone-200 rounded-lg p-2.5 text-sm min-h-[60px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-stone-50"
                         />
                         <div className="flex justify-end mt-2">
                           <Button size="sm" variant="outline" onClick={() => {
@@ -1710,11 +1710,11 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
           )}
 
           {elogios.length === 0 && (
-            <Card className="p-6 text-center text-gray-400 mb-4">Nenhum elogio pendente de registro</Card>
+            <Card className="p-6 text-center text-stone-400 mb-4">Nenhum elogio pendente de registro</Card>
           )}
 
           <Card className="p-5 mb-8">
-            <p className="text-sm font-medium text-gray-700 mb-3">Nova anotação sobre cliente</p>
+            <p className="text-sm font-medium text-stone-700 mb-3">Nova anotação sobre cliente</p>
             {(() => {
               const noteTagConfig = {
                 gostou: { label: "Gostou", color: "bg-green-100 text-green-700 border-green-300" },
@@ -1727,16 +1727,16 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
               };
               return (<>
                 <div className="flex items-center gap-3 mb-3">
-                  <select value={relNote.clientId} onChange={e => setRelNote(p => ({ ...p, clientId: e.target.value }))} className="border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 min-w-[180px]">
+                  <select value={relNote.clientId} onChange={e => setRelNote(p => ({ ...p, clientId: e.target.value }))} className="border border-stone-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 min-w-[180px]">
                     <option value="">Selecione cliente</option>
                     {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
-                  <input value={relNote.text} onChange={e => setRelNote(p => ({ ...p, text: e.target.value }))} onKeyDown={e => { if (e.key === "Enter" && relNote.clientId && relNote.text.trim() && relNote.tag) { addClientNote(relNote.clientId, relNote.text.trim(), relNote.tag); setRelNote({ clientId: "", text: "", tag: "" }); } }} placeholder="Ex: Cliente prefere reuniões curtas e objetivas..." className="flex-1 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                  <input value={relNote.text} onChange={e => setRelNote(p => ({ ...p, text: e.target.value }))} onKeyDown={e => { if (e.key === "Enter" && relNote.clientId && relNote.text.trim() && relNote.tag) { addClientNote(relNote.clientId, relNote.text.trim(), relNote.tag); setRelNote({ clientId: "", text: "", tag: "" }); } }} placeholder="Ex: Cliente prefere reuniões curtas e objetivas..." className="flex-1 border border-stone-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs text-gray-500 mr-1">Categoria:</span>
+                  <span className="text-xs text-stone-500 mr-1">Categoria:</span>
                   {Object.entries(noteTagConfig).map(([key, cfg]) => (
-                    <button key={key} onClick={() => setRelNote(p => ({ ...p, tag: p.tag === key ? "" : key }))} className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${relNote.tag === key ? cfg.color + " ring-2 ring-offset-1 ring-gray-400" : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"}`}>{cfg.label}</button>
+                    <button key={key} onClick={() => setRelNote(p => ({ ...p, tag: p.tag === key ? "" : key }))} className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${relNote.tag === key ? cfg.color + " ring-2 ring-offset-1 ring-gray-400" : "bg-stone-50 text-stone-500 border-stone-200 hover:bg-stone-100"}`}>{cfg.label}</button>
                   ))}
                   <div className="ml-auto">
                     <Button size="sm" onClick={() => { if (relNote.clientId && relNote.text.trim() && relNote.tag) { addClientNote(relNote.clientId, relNote.text.trim(), relNote.tag); setRelNote({ clientId: "", text: "", tag: "" }); } }} disabled={!relNote.clientId || !relNote.text.trim() || !relNote.tag}>Salvar nota</Button>
@@ -1753,10 +1753,10 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
               {areaTeam.map(m => (
                 <Card key={m.id} className="p-4 border">
                   <div className="flex justify-between items-start mb-1">
-                    <div><p className="font-medium">{m.name}</p><p className="text-sm text-gray-500">{m.role}</p></div>
+                    <div><p className="font-medium">{m.name}</p><p className="text-sm text-stone-500">{m.role}</p></div>
                     <Badge variant={m.loadStatus === "Disponível" ? "success" : m.loadStatus === "Moderado" ? "warning" : "danger"}>{m.loadStatus}</Badge>
                   </div>
-                  <p className="text-sm text-gray-500 flex items-center gap-1 mt-2"><Users size={12} /> {m.activeTasks} tarefas ativas</p>
+                  <p className="text-sm text-stone-500 flex items-center gap-1 mt-2"><Users size={12} /> {m.activeTasks} tarefas ativas</p>
                 </Card>
               ))}
             </div>
@@ -1770,70 +1770,70 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
             </button>
             {showCreate && (
               <div className="px-5 pb-5 space-y-4 border-t pt-4">
-                <div><label className="text-sm font-medium text-gray-700">Nome da tarefa</label><input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Ex: Criar roteiro detalhado..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
+                <div><label className="text-sm font-medium text-stone-700">Nome da tarefa</label><input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Ex: Criar roteiro detalhado..." className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div><label className="text-sm font-medium text-gray-700">Cliente</label>
-                    <select value={createClientFilter} onChange={e => { setCreateClientFilter(e.target.value); setForm(p => ({ ...p, projectId: "" })); }} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                  <div><label className="text-sm font-medium text-stone-700">Cliente</label>
+                    <select value={createClientFilter} onChange={e => { setCreateClientFilter(e.target.value); setForm(p => ({ ...p, projectId: "" })); }} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                       <option value="">Todos os clientes</option>
                       {[...new Set(areaProjects.map(p => p.client))].map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
-                  <div><label className="text-sm font-medium text-gray-700">Projeto</label>
-                    <select value={form.projectId} onChange={e => setForm(p => ({ ...p, projectId: e.target.value, executor: "" }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                  <div><label className="text-sm font-medium text-stone-700">Projeto</label>
+                    <select value={form.projectId} onChange={e => setForm(p => ({ ...p, projectId: e.target.value, executor: "" }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                       <option value="">Selecione um projeto</option>
                       {areaProjects.filter(p => !createClientFilter || p.client === createClientFilter).map(p => <option key={p.id} value={p.id}>{p.client} — {p.name}</option>)}
                     </select>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div><label className="text-sm font-medium text-gray-700">Responsável</label>
-                    <select value={form.executor} onChange={e => setForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                  <div><label className="text-sm font-medium text-stone-700">Responsável</label>
+                    <select value={form.executor} onChange={e => setForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                       <option value="">Selecione</option>
                       {(() => { const selProj = areaProjects.find(p => p.id === form.projectId); return selProj?.squad && selProj.squad.length > 0 ? areaTeam.filter(m => selProj.squad.includes(m.id)) : areaTeam; })().map(m => <option key={m.id} value={m.id}>{m.name} ({m.role} · {m.activeTasks} tarefas)</option>)}
                     </select>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div><label className="text-sm font-medium text-gray-700">Prazo</label><input type="datetime-local" value={form.deadline} onChange={e => setForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
-                  <div><label className="text-sm font-medium text-gray-700">Prioridade</label>
-                    <select value={form.priority} onChange={e => setForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                  <div><label className="text-sm font-medium text-stone-700">Prazo</label><input type="datetime-local" value={form.deadline} onChange={e => setForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
+                  <div><label className="text-sm font-medium text-stone-700">Prioridade</label>
+                    <select value={form.priority} onChange={e => setForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                       <option>Alta</option><option>Média</option><option>Baixa</option>
                     </select>
                   </div>
                 </div>
-                <div><label className="text-sm font-medium text-gray-700">Descrição</label><textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Descreva o que precisa ser feito..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
+                <div><label className="text-sm font-medium text-stone-700">Descrição</label><textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Descreva o que precisa ser feito..." className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Checklist de execução <span className="text-gray-400 font-normal">(opcional)</span></label>
-                  <p className="text-xs text-gray-400 mt-0.5 mb-2">Defina os passos que o executor deve seguir. Se deixar vazio, será gerado um checklist padrão.</p>
+                  <label className="text-sm font-medium text-stone-700">Checklist de execução <span className="text-stone-400 font-normal">(opcional)</span></label>
+                  <p className="text-xs text-stone-400 mt-0.5 mb-2">Defina os passos que o executor deve seguir. Se deixar vazio, será gerado um checklist padrão.</p>
                   {checkItems.map((item, i) => (
                     <div key={i} className="flex items-center gap-2 mb-1.5">
-                      <div className="h-4 w-4 rounded border border-gray-300 flex-shrink-0" />
-                      <span className="text-sm text-gray-700 flex-1">{item}</span>
-                      <button type="button" onClick={() => setCheckItems(prev => prev.filter((_, idx) => idx !== i))} className="text-gray-400 hover:text-red-500"><X size={14} /></button>
+                      <div className="h-4 w-4 rounded border border-stone-300 flex-shrink-0" />
+                      <span className="text-sm text-stone-700 flex-1">{item}</span>
+                      <button type="button" onClick={() => setCheckItems(prev => prev.filter((_, idx) => idx !== i))} className="text-stone-400 hover:text-red-500"><X size={14} /></button>
                     </div>
                   ))}
                   <div className="flex gap-2 mt-1">
-                    <input value={newCheckItem} onChange={e => setNewCheckItem(e.target.value)} onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleAddCheckItem(); } }} placeholder="Adicionar item..." className="flex-1 border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                    <input value={newCheckItem} onChange={e => setNewCheckItem(e.target.value)} onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleAddCheckItem(); } }} placeholder="Adicionar item..." className="flex-1 border border-stone-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
                     <Button variant="outline" size="sm" onClick={handleAddCheckItem}>Adicionar</Button>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Insumos e referências <span className="text-gray-400 font-normal">(opcional)</span></label>
-                  <p className="text-xs text-gray-400 mt-0.5 mb-2">Anexe briefings, manuais, referências visuais ou qualquer arquivo útil para o executor.</p>
+                  <label className="text-sm font-medium text-stone-700">Insumos e referências <span className="text-stone-400 font-normal">(opcional)</span></label>
+                  <p className="text-xs text-stone-400 mt-0.5 mb-2">Anexe briefings, manuais, referências visuais ou qualquer arquivo útil para o executor.</p>
                   {createFiles.map((f, i) => (
-                    <div key={i} className="flex items-center gap-3 p-2.5 bg-gray-50 border border-gray-100 rounded-lg mb-1.5">
+                    <div key={i} className="flex items-center gap-3 p-2.5 bg-stone-50 border border-stone-100 rounded-lg mb-1.5">
                       <div className="h-8 w-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-green-700" /></div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{f.name}</p>
-                        <p className="text-xs text-gray-400">{f.type} · {f.size}</p>
+                        <p className="text-sm font-medium text-stone-900 truncate">{f.name}</p>
+                        <p className="text-xs text-stone-400">{f.type} · {f.size}</p>
                       </div>
-                      <button type="button" onClick={() => setCreateFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-gray-400 hover:text-red-500"><X size={14} /></button>
+                      <button type="button" onClick={() => setCreateFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-stone-400 hover:text-red-500"><X size={14} /></button>
                     </div>
                   ))}
                   <input type="file" ref={createFileRef} onChange={handleCreateFileSelect} multiple style={{display: "none"}} />
-                  <button type="button" onClick={() => createFileRef.current && createFileRef.current.click()} className="w-full flex items-center justify-center gap-2 p-3 border-2 border-dashed border-gray-200 rounded-lg text-sm text-gray-400 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors cursor-pointer">
+                  <button type="button" onClick={() => createFileRef.current && createFileRef.current.click()} className="w-full flex items-center justify-center gap-2 p-3 border-2 border-dashed border-stone-200 rounded-lg text-sm text-stone-400 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors cursor-pointer">
                     <Plus size={16} /> Selecionar arquivos
                   </button>
                 </div>
@@ -1864,13 +1864,13 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
 
           return (
             <>
-              <button onClick={() => { setSelectedClient(null); setClientDetailTab("projetos"); }} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-4"><ArrowLeft size={16} /> Voltar</button>
+              <button onClick={() => { setSelectedClient(null); setClientDetailTab("projetos"); }} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 mb-4"><ArrowLeft size={16} /> Voltar</button>
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-gray-900 text-white flex items-center justify-center text-lg font-bold">{client.name.slice(0, 2).toUpperCase()}</div>
+                  <div className="w-12 h-12 rounded-xl bg-stone-900 text-white flex items-center justify-center text-lg font-bold">{client.name.slice(0, 2).toUpperCase()}</div>
                   <div>
                     <h2 className="text-2xl font-bold">{client.name}</h2>
-                    <p className="text-sm text-gray-500">Contato: {client.contact} · Responsável: {client.responsible}</p>
+                    <p className="text-sm text-stone-500">Contato: {client.contact} · Responsável: {client.responsible}</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -1880,10 +1880,10 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
               </div>
 
               <div className="grid grid-cols-4 gap-4 mb-6">
-                <Card className="p-4 text-center"><p className="text-2xl font-bold">{cProjects.length}</p><p className="text-xs text-gray-500">Projetos ativos</p></Card>
-                <Card className="p-4 text-center"><p className="text-2xl font-bold">{cDone.length}/{cTasks.length}</p><p className="text-xs text-gray-500">Tarefas concluídas</p></Card>
-                <Card className="p-4 text-center"><p className={`text-2xl font-bold ${cPendingFb.length > 0 ? "text-orange-600" : "text-green-600"}`}>{cPendingFb.length}</p><p className="text-xs text-gray-500">Feedbacks pendentes</p></Card>
-                <Card className="p-4 text-center"><p className="text-sm font-medium"><Calendar size={12} className="inline" /> {new Date(client.nextMeeting).toLocaleDateString("pt-BR")}</p><p className="text-xs text-gray-500 mt-1">Próxima reunião</p></Card>
+                <Card className="p-4 text-center"><p className="text-2xl font-bold">{cProjects.length}</p><p className="text-xs text-stone-500">Projetos ativos</p></Card>
+                <Card className="p-4 text-center"><p className="text-2xl font-bold">{cDone.length}/{cTasks.length}</p><p className="text-xs text-stone-500">Tarefas concluídas</p></Card>
+                <Card className="p-4 text-center"><p className={`text-2xl font-bold ${cPendingFb.length > 0 ? "text-orange-600" : "text-green-600"}`}>{cPendingFb.length}</p><p className="text-xs text-stone-500">Feedbacks pendentes</p></Card>
+                <Card className="p-4 text-center"><p className="text-sm font-medium"><Calendar size={12} className="inline" /> {new Date(client.nextMeeting).toLocaleDateString("pt-BR")}</p><p className="text-xs text-stone-500 mt-1">Próxima reunião</p></Card>
               </div>
 
               <div className="flex border-b mb-6">
@@ -1892,13 +1892,13 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                   { key: "feedbacks", label: `Feedbacks (${cFeedbacks.length})` },
                   { key: "relacionamento", label: `Relacionamento${cElogios.length > 0 ? " (" + cElogios.length + " elogio" + (cElogios.length > 1 ? "s" : "") + ")" : ""}` },
                 ].map(t => (
-                  <button key={t.key} onClick={() => setClientDetailTab(t.key)} className={`px-5 py-3 text-sm font-medium transition-colors ${clientDetailTab === t.key ? "border-b-2 border-gray-900 text-gray-900" : "text-gray-500 hover:text-gray-700"}`}>{t.label}</button>
+                  <button key={t.key} onClick={() => setClientDetailTab(t.key)} className={`px-5 py-3 text-sm font-medium transition-colors ${clientDetailTab === t.key ? "border-b-2 border-stone-900 text-stone-900" : "text-stone-500 hover:text-stone-700"}`}>{t.label}</button>
                 ))}
               </div>
 
               {clientDetailTab === "projetos" && (
                 <div className="space-y-3">
-                  {cProjects.length > 0 && <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Ativos</p>}
+                  {cProjects.length > 0 && <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide">Ativos</p>}
                   {cProjects.map(p => {
                     const pTasks = tasks.filter(t => t.projectId === p.id);
                     const pDone = pTasks.filter(t => t.status === "concluida").length;
@@ -1908,32 +1908,32 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                         <div className="flex items-center justify-between">
                           <div>
                             <p className="font-medium">{p.name}</p>
-                            <p className="text-xs text-gray-500 mt-0.5">Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")} · {pTasks.length} tarefas</p>
+                            <p className="text-xs text-stone-500 mt-0.5">Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")} · {pTasks.length} tarefas</p>
                           </div>
                           <div className="flex items-center gap-3">
                             <Badge variant={p.priority === "Alta" ? "danger" : "warning"}>{p.priority}</Badge>
-                            <div className="flex items-center gap-2 w-28"><div className="flex-1 bg-gray-100 rounded-full h-1.5"><div className="bg-gray-900 h-1.5 rounded-full" style={{ width: progress + "%" }} /></div><span className="text-xs text-gray-400">{progress}%</span></div>
+                            <div className="flex items-center gap-2 w-28"><div className="flex-1 bg-stone-100 rounded-full h-1.5"><div className="bg-stone-900 h-1.5 rounded-full" style={{ width: progress + "%" }} /></div><span className="text-xs text-stone-400">{progress}%</span></div>
                           </div>
                         </div>
                       </Card>
                     );
                   })}
-                  {cHistoric.length > 0 && <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-6">Concluídos</p>}
+                  {cHistoric.length > 0 && <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mt-6">Concluídos</p>}
                   {cHistoric.map(p => (
                     <Card key={p.id} className="p-4 opacity-70">
                       <div className="flex items-center justify-between">
-                        <div><p className="font-medium text-gray-600">{p.name}</p><p className="text-xs text-gray-400 mt-0.5">Concluído em: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p></div>
+                        <div><p className="font-medium text-stone-600">{p.name}</p><p className="text-xs text-stone-400 mt-0.5">Concluído em: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p></div>
                         <Badge variant="success">Concluído</Badge>
                       </div>
                     </Card>
                   ))}
-                  {cProjects.length === 0 && cHistoric.length === 0 && <p className="text-sm text-gray-400">Nenhum projeto registrado.</p>}
+                  {cProjects.length === 0 && cHistoric.length === 0 && <p className="text-sm text-stone-400">Nenhum projeto registrado.</p>}
                 </div>
               )}
 
               {clientDetailTab === "feedbacks" && (
                 <div className="space-y-3">
-                  {cFeedbacks.length === 0 && <p className="text-sm text-gray-400">Nenhum feedback registrado.</p>}
+                  {cFeedbacks.length === 0 && <p className="text-sm text-stone-400">Nenhum feedback registrado.</p>}
                   {cFeedbacks.map(fb => {
                     const relTask = fb.relatedTaskId ? tasks.find(t => t.id === fb.relatedTaskId) : null;
                     const fbProj = projects.find(p => p.id === fb.projectId);
@@ -1951,17 +1951,17 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                                 <Badge variant={fb.type === "Elogio" ? "success" : fb.type === "Ajuste" ? "danger" : "warning"}>{fb.type}</Badge>
                                 <Badge variant={fb.status === "pendente" ? "warning" : "success"}>{fb.status === "pendente" ? "Pendente" : "Atribuído"}</Badge>
                                 {relTask && <Badge variant="purple">Sobre entrega</Badge>}
-                                <span className="text-xs text-gray-400">{fb.date}</span>
+                                <span className="text-xs text-stone-400">{fb.date}</span>
                               </div>
-                              <p className="text-sm text-gray-800">{fb.text}</p>
-                              {relTask && <p className="text-xs text-gray-500 mt-1">Entrega: {relTask.title} (por {relTask.executorName})</p>}
+                              <p className="text-sm text-stone-800">{fb.text}</p>
+                              {relTask && <p className="text-xs text-stone-500 mt-1">Entrega: {relTask.title} (por {relTask.executorName})</p>}
                               {assignedTask && <p className="text-xs text-green-600 mt-1">Tarefa criada: {assignedTask.title} → {assignedTask.executorName}</p>}
                             </div>
                             {canAssign && !isAssigning && <Button size="sm" onClick={() => openAssign(fb)}>Atribuir</Button>}
                           </div>
                           {isElogio && (
-                            <div className="mt-3 pt-3 border-t border-gray-100">
-                              <textarea value={elogioNotes[fb.id] || ""} onChange={e => setElogioNotes(prev => ({ ...prev, [fb.id]: e.target.value }))} placeholder="O que aprendemos com esse elogio?" className="w-full border border-gray-200 rounded-lg p-2.5 text-sm min-h-[50px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50" />
+                            <div className="mt-3 pt-3 border-t border-stone-100">
+                              <textarea value={elogioNotes[fb.id] || ""} onChange={e => setElogioNotes(prev => ({ ...prev, [fb.id]: e.target.value }))} placeholder="O que aprendemos com esse elogio?" className="w-full border border-stone-200 rounded-lg p-2.5 text-sm min-h-[50px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-stone-50" />
                               <div className="flex justify-end mt-2">
                                 <Button size="sm" variant="outline" onClick={() => { const txt = elogioNotes[fb.id]?.trim() ? `[Elogio] ${fb.text} — ${elogioNotes[fb.id].trim()}` : `[Elogio] ${fb.text}`; archiveElogio(fb.id, txt, fb.clientId, fb.clientName); setElogioNotes(prev => { const n = { ...prev }; delete n[fb.id]; return n; }); }}><CheckCircle2 size={14} /> Registrar no histórico</Button>
                               </div>
@@ -1969,20 +1969,20 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                           )}
                         </div>
                         {isAssigning && (
-                          <div className="border-t bg-gray-50 p-4 space-y-3">
-                            <div><label className="text-xs font-medium text-gray-600">Título da tarefa</label><input value={assignForm.title} onChange={e => setAssignForm(p => ({ ...p, title: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
+                          <div className="border-t bg-stone-50 p-4 space-y-3">
+                            <div><label className="text-xs font-medium text-stone-600">Título da tarefa</label><input value={assignForm.title} onChange={e => setAssignForm(p => ({ ...p, title: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
                             <div className="grid grid-cols-3 gap-3">
                               <div>
-                                <label className="text-xs font-medium text-gray-600">Executor</label>
-                                <select value={assignForm.executor} onChange={e => setAssignForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                                <label className="text-xs font-medium text-stone-600">Executor</label>
+                                <select value={assignForm.executor} onChange={e => setAssignForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                                   <option value="">Selecione</option>
                                   {(fbProj?.squad && fbProj.squad.length > 0 ? areaTeam.filter(m => fbProj.squad.includes(m.id)) : areaTeam).map(m => <option key={m.id} value={m.id}>{m.name} ({m.activeTasks} tarefas){relTask && relTask.executor === m.id ? " ★" : ""}</option>)}
                                 </select>
                               </div>
-                              <div><label className="text-xs font-medium text-gray-600">Prioridade</label><select value={assignForm.priority} onChange={e => setAssignForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900"><option>Alta</option><option>Média</option><option>Baixa</option></select></div>
-                              <div><label className="text-xs font-medium text-gray-600">Prazo</label><input type="datetime-local" value={assignForm.deadline} onChange={e => setAssignForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
+                              <div><label className="text-xs font-medium text-stone-600">Prioridade</label><select value={assignForm.priority} onChange={e => setAssignForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900"><option>Alta</option><option>Média</option><option>Baixa</option></select></div>
+                              <div><label className="text-xs font-medium text-stone-600">Prazo</label><input type="datetime-local" value={assignForm.deadline} onChange={e => setAssignForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
                             </div>
-                            <div><label className="text-xs font-medium text-gray-600">Instruções para o executor <span className="text-gray-400 font-normal">(opcional)</span></label><textarea value={assignForm.instructions} onChange={e => setAssignForm(p => ({ ...p, instructions: e.target.value }))} placeholder="Contexto, orientações ou detalhes para o executor..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 min-h-[60px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-white" /></div>
+                            <div><label className="text-xs font-medium text-stone-600">Instruções para o executor <span className="text-stone-400 font-normal">(opcional)</span></label><textarea value={assignForm.instructions} onChange={e => setAssignForm(p => ({ ...p, instructions: e.target.value }))} placeholder="Contexto, orientações ou detalhes para o executor..." className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 min-h-[60px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-white" /></div>
                             <div className="flex gap-2"><Button size="sm" onClick={handleAssignFeedback} disabled={!assignForm.executor || !assignForm.title.trim()}>Confirmar</Button><Button variant="outline" size="sm" onClick={() => setAssigningFb(null)}>Cancelar</Button></div>
                           </div>
                         )}
@@ -1996,15 +1996,15 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                 <div>
                   {cElogios.length > 0 && (
                     <div className="mb-6">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Elogios para registrar</p>
+                      <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-3">Elogios para registrar</p>
                       {cElogios.map(fb => {
                         const proj = projects.find(p => p.id === fb.projectId);
                         return (
                           <Card key={fb.id} className="mb-3 border-l-4 border-l-green-500">
                             <div className="p-4">
-                              <p className="text-sm text-gray-800 mb-1">"{fb.text}"</p>
-                              {proj && <p className="text-xs text-gray-400 mb-3">Projeto: {proj.name} · {fb.date}</p>}
-                              <textarea value={elogioNotes[fb.id] || ""} onChange={e => setElogioNotes(prev => ({ ...prev, [fb.id]: e.target.value }))} placeholder="O que aprendemos? Ex: 'Cliente valoriza agilidade — manter padrão'" className="w-full border border-gray-200 rounded-lg p-2.5 text-sm min-h-[50px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50" />
+                              <p className="text-sm text-stone-800 mb-1">"{fb.text}"</p>
+                              {proj && <p className="text-xs text-stone-400 mb-3">Projeto: {proj.name} · {fb.date}</p>}
+                              <textarea value={elogioNotes[fb.id] || ""} onChange={e => setElogioNotes(prev => ({ ...prev, [fb.id]: e.target.value }))} placeholder="O que aprendemos? Ex: 'Cliente valoriza agilidade — manter padrão'" className="w-full border border-stone-200 rounded-lg p-2.5 text-sm min-h-[50px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-stone-50" />
                               <div className="flex justify-end mt-2">
                                 <Button size="sm" variant="outline" onClick={() => { const txt = elogioNotes[fb.id]?.trim() ? `[Elogio] ${fb.text} — ${elogioNotes[fb.id].trim()}` : `[Elogio] ${fb.text}`; archiveElogio(fb.id, txt, fb.clientId, fb.clientName); setElogioNotes(prev => { const n = { ...prev }; delete n[fb.id]; return n; }); }}><CheckCircle2 size={14} /> Registrar no histórico</Button>
                               </div>
@@ -2015,7 +2015,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                     </div>
                   )}
 
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Notas internas</p>
+                  <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-3">Notas internas</p>
                   {(() => {
                     const dTagCfg = {
                       gostou: { label: "Gostou", color: "bg-green-100 text-green-700 border-green-300" },
@@ -2029,22 +2029,22 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                     const activeTag = relNote.clientId === client.id ? relNote.tag : "";
                     return (<div className="mb-4">
                       <div className="flex gap-2 mb-2">
-                        <input value={relNote.clientId === client.id ? relNote.text : ""} onChange={e => setRelNote({ clientId: client.id, text: e.target.value, tag: relNote.clientId === client.id ? relNote.tag : "" })} onKeyDown={e => { if (e.key === "Enter" && relNote.text.trim() && activeTag) { addClientNote(client.id, relNote.text.trim(), activeTag); setRelNote({ clientId: "", text: "", tag: "" }); } }} placeholder="Adicionar anotação sobre este cliente..." className="flex-1 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                        <input value={relNote.clientId === client.id ? relNote.text : ""} onChange={e => setRelNote({ clientId: client.id, text: e.target.value, tag: relNote.clientId === client.id ? relNote.tag : "" })} onKeyDown={e => { if (e.key === "Enter" && relNote.text.trim() && activeTag) { addClientNote(client.id, relNote.text.trim(), activeTag); setRelNote({ clientId: "", text: "", tag: "" }); } }} placeholder="Adicionar anotação sobre este cliente..." className="flex-1 border border-stone-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
                       </div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xs text-gray-500">Categoria:</span>
+                        <span className="text-xs text-stone-500">Categoria:</span>
                         {Object.entries(dTagCfg).map(([key, cfg]) => (
-                          <button key={key} onClick={() => setRelNote(p => ({ ...p, clientId: client.id, tag: p.tag === key ? "" : key }))} className={`px-2.5 py-0.5 rounded-full text-xs font-medium border transition-all ${activeTag === key ? cfg.color + " ring-2 ring-offset-1 ring-gray-400" : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"}`}>{cfg.label}</button>
+                          <button key={key} onClick={() => setRelNote(p => ({ ...p, clientId: client.id, tag: p.tag === key ? "" : key }))} className={`px-2.5 py-0.5 rounded-full text-xs font-medium border transition-all ${activeTag === key ? cfg.color + " ring-2 ring-offset-1 ring-gray-400" : "bg-stone-50 text-stone-500 border-stone-200 hover:bg-stone-100"}`}>{cfg.label}</button>
                         ))}
                         <Button size="sm" className="ml-auto" onClick={() => { if (relNote.text.trim() && activeTag) { addClientNote(client.id, relNote.text.trim(), activeTag); setRelNote({ clientId: "", text: "", tag: "" }); } }} disabled={!relNote.text.trim() || !activeTag}>Salvar</Button>
                       </div>
                     </div>);
                   })()}
                   <div className="space-y-2">
-                    {cNotes.length === 0 && <p className="text-sm text-gray-400">Nenhuma nota ainda.</p>}
+                    {cNotes.length === 0 && <p className="text-sm text-stone-400">Nenhuma nota ainda.</p>}
                     {cNotes.map(n => (
-                      <div key={n.id} className="p-3 bg-gray-50 rounded-lg">
-                        <div className="flex justify-between"><span className="text-xs font-medium text-gray-500">{n.author}</span><span className="text-xs text-gray-400">{n.date}</span></div>
+                      <div key={n.id} className="p-3 bg-stone-50 rounded-lg">
+                        <div className="flex justify-between"><span className="text-xs font-medium text-stone-500">{n.author}</span><span className="text-xs text-stone-400">{n.date}</span></div>
                         <p className="text-sm mt-1">{n.text}</p>
                       </div>
                     ))}
@@ -2072,13 +2072,13 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                     </div>
                     <div>
                       <h3 className="font-bold text-lg">{client.name}</h3>
-                      <p className="text-xs text-gray-500">{cProjects.length} projetos ativos · Reunião: {new Date(client.nextMeeting).toLocaleDateString("pt-BR")}</p>
+                      <p className="text-xs text-stone-500">{cProjects.length} projetos ativos · Reunião: {new Date(client.nextMeeting).toLocaleDateString("pt-BR")}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     {cFb.length > 0 && <Badge variant="warning">{cFb.length} pendência{cFb.length > 1 ? "s" : ""}</Badge>}
                     {cFb.length === 0 && <Badge variant="success">Sem pendências</Badge>}
-                    <ChevronDown size={16} className="text-gray-400 -rotate-90" />
+                    <ChevronDown size={16} className="text-stone-400 -rotate-90" />
                   </div>
                 </div>
               </Card>
@@ -2102,16 +2102,16 @@ function ClientSelectorView({ onSelect, onBack }) {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-6"><ArrowLeft size={16} /> Voltar</button>
-      <p className="text-sm text-gray-400 mb-1">Synapse · Portal do Cliente</p>
+      <button onClick={onBack} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 mb-6"><ArrowLeft size={16} /> Voltar</button>
+      <p className="text-sm text-stone-400 mb-1">Synapse · Portal do Cliente</p>
       <h1 className="text-3xl font-bold mb-2">Acessar como cliente</h1>
-      <p className="text-gray-500 mb-8">Selecione o cliente para visualizar o portal com seus projetos.</p>
+      <p className="text-stone-500 mb-8">Selecione o cliente para visualizar o portal com seus projetos.</p>
       <div className="grid grid-cols-2 gap-6">
         {activeClients.map(c => (
-          <button key={c.id} onClick={() => onSelect(c.id)} className="group border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-900 hover:shadow-lg transition-all text-left">
-            <div className="w-14 h-14 rounded-xl bg-gray-900 text-white flex items-center justify-center text-xl font-bold mb-4 group-hover:scale-105 transition-transform">{c.logo}</div>
+          <button key={c.id} onClick={() => onSelect(c.id)} className="group border-2 border-stone-200 rounded-2xl p-8 hover:border-stone-900 hover:shadow-lg transition-all text-left">
+            <div className="w-14 h-14 rounded-xl bg-stone-900 text-white flex items-center justify-center text-xl font-bold mb-4 group-hover:scale-105 transition-transform">{c.logo}</div>
             <h2 className="text-xl font-bold mb-1">{c.name}</h2>
-            <p className="text-sm text-gray-500">Entrar no portal do cliente {c.name}</p>
+            <p className="text-sm text-stone-500">Entrar no portal do cliente {c.name}</p>
           </button>
         ))}
       </div>
@@ -2155,21 +2155,21 @@ function ClientHubView({ onBack }) {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-4"><ArrowLeft size={16} /> Voltar</button>
+      <button onClick={onBack} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 mb-4"><ArrowLeft size={16} /> Voltar</button>
       <div className="mb-2">
         <h1 className="text-3xl font-bold">Histórico de Clientes</h1>
       </div>
-      <p className="text-gray-500 mb-8">Base de conhecimento da agência — projetos, feedbacks, aprendizados e anotações internas de cada cliente.</p>
+      <p className="text-stone-500 mb-8">Base de conhecimento da agência — projetos, feedbacks, aprendizados e anotações internas de cada cliente.</p>
 
       <div className="grid grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Total de clientes", value: clients.length, icon: <Users size={20} className="text-gray-400" /> },
+          { label: "Total de clientes", value: clients.length, icon: <Users size={20} className="text-stone-400" /> },
           { label: "Clientes ativos", value: activeClientIds.size, icon: <CheckCircle2 size={20} className="text-green-400" /> },
           { label: "Projetos ativos", value: totalActive, icon: <FolderOpen size={20} className="text-blue-400" /> },
-          { label: "Projetos concluídos", value: totalDone, icon: <CheckCircle2 size={20} className="text-gray-400" /> },
+          { label: "Projetos concluídos", value: totalDone, icon: <CheckCircle2 size={20} className="text-stone-400" /> },
         ].map((s, i) => (
           <Card key={i} className="p-5">
-            <div className="flex items-center justify-between"><p className="text-sm text-gray-500">{s.label}</p>{s.icon}</div>
+            <div className="flex items-center justify-between"><p className="text-sm text-stone-500">{s.label}</p>{s.icon}</div>
             <p className="text-3xl font-bold mt-1">{s.value}</p>
           </Card>
         ))}
@@ -2184,9 +2184,9 @@ function ClientHubView({ onBack }) {
 
           return (
             <Card key={c.id} className="overflow-hidden">
-              <button onClick={() => handleExpand(c.id)} className="w-full p-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors">
+              <button onClick={() => handleExpand(c.id)} className="w-full p-5 flex items-center justify-between text-left hover:bg-stone-50 transition-colors">
                 <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold ${isActive ? "bg-gray-900 text-white" : "bg-gray-200 text-gray-500"}`}>
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold ${isActive ? "bg-stone-900 text-white" : "bg-stone-200 text-stone-500"}`}>
                     {c.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div>
@@ -2195,13 +2195,13 @@ function ClientHubView({ onBack }) {
                       <Badge variant={isActive ? "success" : "default"}>{isActive ? "Ativo" : "Inativo"}</Badge>
                       <Badge variant={rel.variant}>{rel.label}</Badge>
                     </div>
-                    <p className="text-sm text-gray-500">Contato: {c.contact} · Responsável: {c.responsible} · {data.allP.length} projetos · {data.clientLearnings.length + data.notes.length} registros</p>
+                    <p className="text-sm text-stone-500">Contato: {c.contact} · Responsável: {c.responsible} · {data.allP.length} projetos · {data.clientLearnings.length + data.notes.length} registros</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   {data.activeP.length > 0 && <Badge variant="info">{data.activeP.length} ativos</Badge>}
-                  {data.doneP.length > 0 && <span className="text-sm text-gray-400">{data.doneP.length} concluídos</span>}
-                  {isExpanded ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+                  {data.doneP.length > 0 && <span className="text-sm text-stone-400">{data.doneP.length} concluídos</span>}
+                  {isExpanded ? <ChevronUp size={20} className="text-stone-400" /> : <ChevronDown size={20} className="text-stone-400" />}
                 </div>
               </button>
 
@@ -2212,27 +2212,27 @@ function ClientHubView({ onBack }) {
                       { key: "projetos", label: "Projetos (" + data.allP.length + ")" },
                       { key: "conhecimento", label: "Base de conhecimento (" + (data.clientLearnings.length + data.notes.length) + ")" },
                     ].map(t => (
-                      <button key={t.key} onClick={() => setClientTab(t.key)} className={`px-5 py-3 text-sm font-medium transition-colors ${clientTab === t.key ? "border-b-2 border-gray-900 text-gray-900" : "text-gray-500 hover:text-gray-700"}`}>{t.label}</button>
+                      <button key={t.key} onClick={() => setClientTab(t.key)} className={`px-5 py-3 text-sm font-medium transition-colors ${clientTab === t.key ? "border-b-2 border-stone-900 text-stone-900" : "text-stone-500 hover:text-stone-700"}`}>{t.label}</button>
                     ))}
                   </div>
 
                   <div className="p-5">
                     {clientTab === "projetos" && (
                       <div className="space-y-3">
-                        {data.allP.length === 0 && <p className="text-sm text-gray-400">Nenhum projeto registrado.</p>}
+                        {data.allP.length === 0 && <p className="text-sm text-stone-400">Nenhum projeto registrado.</p>}
                         {data.activeP.length > 0 && (
                           <>
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Projetos ativos</p>
+                            <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">Projetos ativos</p>
                             {data.activeP.map(p => (
                               <div key={p.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                                 <div>
                                   <p className="font-medium">{p.name}</p>
-                                  <p className="text-sm text-gray-500">Responsável: {p.responsible} · Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
+                                  <p className="text-sm text-stone-500">Responsável: {p.responsible} · Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <Badge variant={p.priority === "Alta" ? "danger" : p.priority === "Média" ? "warning" : "success"}>{p.priority}</Badge>
-                                  <div className="w-24 bg-gray-200 rounded-full h-2"><div className="bg-blue-600 h-2 rounded-full" style={{ width: p.progress + "%" }} /></div>
-                                  <span className="text-xs text-gray-500 w-8">{p.progress}%</span>
+                                  <div className="w-24 bg-stone-200 rounded-full h-2"><div className="bg-blue-600 h-2 rounded-full" style={{ width: p.progress + "%" }} /></div>
+                                  <span className="text-xs text-stone-500 w-8">{p.progress}%</span>
                                 </div>
                               </div>
                             ))}
@@ -2240,12 +2240,12 @@ function ClientHubView({ onBack }) {
                         )}
                         {data.doneP.length > 0 && (
                           <>
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 mt-4">Projetos concluídos</p>
+                            <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2 mt-4">Projetos concluídos</p>
                             {data.doneP.map(p => (
-                              <div key={p.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                              <div key={p.id} className="flex items-center justify-between p-3 bg-stone-50 rounded-lg">
                                 <div>
-                                  <p className="font-medium text-gray-600">{p.name}</p>
-                                  <p className="text-sm text-gray-400">Responsável: {p.responsible} · Concluído em: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
+                                  <p className="font-medium text-stone-600">{p.name}</p>
+                                  <p className="text-sm text-stone-400">Responsável: {p.responsible} · Concluído em: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
                                 </div>
                                 <Badge variant="success">Concluído</Badge>
                               </div>
@@ -2265,7 +2265,7 @@ function ClientHubView({ onBack }) {
                         erro: { label: "Erro", color: "bg-red-100 text-red-700 border-red-300", border: "border-l-red-500", bg: "bg-red-50" },
                         insight: { label: "Insight", color: "bg-yellow-100 text-yellow-700 border-yellow-300", border: "border-l-yellow-500", bg: "bg-yellow-50" },
                       };
-                      const getTag = (t) => tagConfig[t] || { label: t || "Geral", color: "bg-gray-100 text-gray-600 border-gray-300", border: "border-l-gray-300", bg: "bg-gray-50" };
+                      const getTag = (t) => tagConfig[t] || { label: t || "Geral", color: "bg-stone-100 text-stone-600 border-stone-300", border: "border-l-gray-300", bg: "bg-stone-50" };
 
                       const entries = [
                         ...data.notes.map(n => {
@@ -2289,10 +2289,10 @@ function ClientHubView({ onBack }) {
                           {/* Filter */}
                           <div className="flex flex-wrap gap-1.5 mb-4">
                             {filterTags.map(t => {
-                              const cfg = t === "todos" ? { label: "Todos", color: "bg-gray-100 text-gray-700 border-gray-300" } : getTag(t);
+                              const cfg = t === "todos" ? { label: "Todos", color: "bg-stone-100 text-stone-700 border-stone-300" } : getTag(t);
                               const count = t === "todos" ? entries.length : (tagCounts[t] || 0);
                               return (
-                                <button key={t} onClick={() => setKbFilter(t)} className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-all ${kbFilter === t ? (t === "todos" ? "bg-gray-900 text-white border-gray-900" : cfg.color + " border-current") : "bg-white text-gray-400 border-gray-200 hover:bg-gray-50"}`}>
+                                <button key={t} onClick={() => setKbFilter(t)} className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-all ${kbFilter === t ? (t === "todos" ? "bg-stone-900 text-white border-stone-900" : cfg.color + " border-current") : "bg-white text-stone-400 border-stone-200 hover:bg-stone-50"}`}>
                                   {cfg.label} ({count})
                                 </button>
                               );
@@ -2301,7 +2301,7 @@ function ClientHubView({ onBack }) {
 
                           {/* Timeline */}
                           {filtered.length === 0 ? (
-                            <p className="text-sm text-gray-400 text-center py-6">Nenhum registro {kbFilter !== "todos" ? `com tag "${getTag(kbFilter).label}"` : ""} ainda.</p>
+                            <p className="text-sm text-stone-400 text-center py-6">Nenhum registro {kbFilter !== "todos" ? `com tag "${getTag(kbFilter).label}"` : ""} ainda.</p>
                           ) : (
                             <div className="space-y-2">
                               {filtered.map((entry, i) => {
@@ -2311,13 +2311,13 @@ function ClientHubView({ onBack }) {
                                     <div className="flex items-center justify-between mb-1.5">
                                       <div className="flex items-center gap-2">
                                         <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cfg.color}`}>{cfg.label}</span>
-                                        <span className="text-xs text-gray-500">{entry._author}</span>
+                                        <span className="text-xs text-stone-500">{entry._author}</span>
                                       </div>
-                                      <span className="text-xs text-gray-400">{entry._sort}</span>
+                                      <span className="text-xs text-stone-400">{entry._sort}</span>
                                     </div>
                                     {entry._title && <p className="font-medium text-sm">{entry._title}</p>}
-                                    <p className="text-sm text-gray-700">{entry._text}</p>
-                                    {entry._tags && entry._tags.length > 0 && <div className="flex gap-1 mt-2">{entry._tags.map((tag, ti) => <span key={ti} className="text-xs bg-white/60 text-gray-600 px-2 py-0.5 rounded-full border border-gray-200">{tag}</span>)}</div>}
+                                    <p className="text-sm text-stone-700">{entry._text}</p>
+                                    {entry._tags && entry._tags.length > 0 && <div className="flex gap-1 mt-2">{entry._tags.map((tag, ti) => <span key={ti} className="text-xs bg-white/60 text-stone-600 px-2 py-0.5 rounded-full border border-stone-200">{tag}</span>)}</div>}
                                   </div>
                                 );
                               })}
@@ -2374,30 +2374,30 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
 
     return (
       <div className="max-w-5xl mx-auto">
-        <button onClick={() => { setSelectedProject(null); setProjectTab("entregas"); setFeedbackTaskId(null); setFeedbackText(""); }} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-4"><ArrowLeft size={16} /> Voltar aos projetos</button>
-        <p className="text-sm text-gray-400 mb-1">Synapse · Portal do Cliente · {client.name}</p>
+        <button onClick={() => { setSelectedProject(null); setProjectTab("entregas"); setFeedbackTaskId(null); setFeedbackText(""); }} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 mb-4"><ArrowLeft size={16} /> Voltar aos projetos</button>
+        <p className="text-sm text-stone-400 mb-1">Synapse · Portal do Cliente · {client.name}</p>
         <h1 className="text-3xl font-bold mb-2">{p.name}</h1>
-        <p className="text-sm text-gray-500 mb-6">Responsável: {p.responsible} · Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
+        <p className="text-sm text-stone-500 mb-6">Responsável: {p.responsible} · Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
 
         {/* Progress bar */}
         <Card className="p-5 mb-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-gray-700">Progresso geral</p>
+            <p className="text-sm font-medium text-stone-700">Progresso geral</p>
             <p className="text-lg font-bold">{progress}%</p>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5"><div className="bg-green-600 h-2.5 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
+          <div className="w-full bg-stone-200 rounded-full h-2.5"><div className="bg-green-600 h-2.5 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
           <div className="flex gap-6 mt-3 text-sm">
-            {pendingApproval.length > 0 && <span className="text-gray-700 font-medium">{pendingApproval.length} para revisar</span>}
+            {pendingApproval.length > 0 && <span className="text-stone-700 font-medium">{pendingApproval.length} para revisar</span>}
             <span className="text-green-600 font-medium">{approved.length} aprovada{approved.length !== 1 ? "s" : ""}</span>
-            {inProgress > 0 && <span className="text-gray-400">{inProgress} em andamento</span>}
+            {inProgress > 0 && <span className="text-stone-400">{inProgress} em andamento</span>}
           </div>
         </Card>
 
         {/* Tabs */}
         <div className="flex gap-1 mb-6 border-b">
           {[{ key: "entregas", label: "Entregas", count: pendingApproval.length }, { key: "aprovadas", label: "Aprovadas", count: approved.length }, { key: "feedback", label: "Feedback", count: projectFeedbacks.length }].map(tab => (
-            <button key={tab.key} onClick={() => setProjectTab(tab.key)} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${projectTab === tab.key ? "border-gray-900 text-gray-900" : "border-transparent text-gray-400 hover:text-gray-600"}`}>
-              {tab.label} {tab.count > 0 && <span className={`ml-1 text-xs px-1.5 py-0.5 rounded-full ${projectTab === tab.key ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-500"}`}>{tab.count}</span>}
+            <button key={tab.key} onClick={() => setProjectTab(tab.key)} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${projectTab === tab.key ? "border-stone-900 text-stone-900" : "border-transparent text-stone-400 hover:text-stone-600"}`}>
+              {tab.label} {tab.count > 0 && <span className={`ml-1 text-xs px-1.5 py-0.5 rounded-full ${projectTab === tab.key ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-500"}`}>{tab.count}</span>}
             </button>
           ))}
         </div>
@@ -2408,8 +2408,8 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
             {pendingApproval.length === 0 ? (
               <Card className="p-8 text-center">
                 <CheckCircle2 size={32} className="text-green-400 mx-auto mb-3" />
-                <p className="text-gray-500">Todas as entregas foram revisadas.</p>
-                <p className="text-sm text-gray-400 mt-1">{inProgress > 0 ? `${inProgress} entrega${inProgress > 1 ? "s" : ""} ainda em andamento.` : "Nenhuma pendência no momento."}</p>
+                <p className="text-stone-500">Todas as entregas foram revisadas.</p>
+                <p className="text-sm text-stone-400 mt-1">{inProgress > 0 ? `${inProgress} entrega${inProgress > 1 ? "s" : ""} ainda em andamento.` : "Nenhuma pendência no momento."}</p>
               </Card>
             ) : (
               <div className="space-y-4">
@@ -2419,7 +2419,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                       <div className="flex items-start justify-between mb-3">
                         <div>
                           <p className="font-semibold text-lg">{clientTitle(task.title)}</p>
-                          <p className="text-sm text-gray-500 mt-0.5">Entregue em {new Date(task.deadline).toLocaleDateString("pt-BR")}</p>
+                          <p className="text-sm text-stone-500 mt-0.5">Entregue em {new Date(task.deadline).toLocaleDateString("pt-BR")}</p>
                         </div>
                         {task.submittedLink && task.submittedLink.trim() && (
                           <Button variant="outline" size="sm" onClick={() => window.open(task.submittedLink, "_blank")}>
@@ -2427,13 +2427,13 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                           </Button>
                         )}
                       </div>
-                      {clientDescription(task.description) && <p className="text-sm text-gray-600 mb-3">{clientDescription(task.description)}</p>}
+                      {clientDescription(task.description) && <p className="text-sm text-stone-600 mb-3">{clientDescription(task.description)}</p>}
                       {task.submittedFiles && task.submittedFiles.length > 0 && (
                         <div className="mb-4">
-                          <p className="text-xs text-gray-500 font-medium mb-1.5">Arquivos da entrega</p>
+                          <p className="text-xs text-stone-500 font-medium mb-1.5">Arquivos da entrega</p>
                           {task.submittedFiles.map((f, i) => (
-                            <div key={i} className="flex items-center gap-2 bg-gray-50 rounded-lg p-2.5 mb-1">
-                              <Copy size={14} className="text-gray-400" />
+                            <div key={i} className="flex items-center gap-2 bg-stone-50 rounded-lg p-2.5 mb-1">
+                              <Copy size={14} className="text-stone-400" />
                               <span className="text-sm flex-1 truncate">{f.name}</span>
                               {f.url && <a href={f.url} download={f.name} className="text-xs text-blue-600 hover:underline">Baixar</a>}
                             </div>
@@ -2442,28 +2442,28 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                       )}
 
                       {feedbackTaskId === task.id ? (
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-3">
-                          <p className="text-sm font-medium text-gray-700 mb-2">Seu feedback sobre esta entrega</p>
+                        <div className="bg-stone-50 border border-stone-200 rounded-lg p-4 mt-3">
+                          <p className="text-sm font-medium text-stone-700 mb-2">Seu feedback sobre esta entrega</p>
                           <textarea
                             value={feedbackText}
                             onChange={e => setFeedbackText(e.target.value)}
                             placeholder="Descreva o que gostaria de ajustar ou melhorar..."
-                            className="w-full border border-gray-200 rounded-lg p-2.5 text-sm min-h-[70px] focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white"
+                            className="w-full border border-stone-200 rounded-lg p-2.5 text-sm min-h-[70px] focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white"
                             autoFocus
                           />
                           <div className="flex gap-2 mt-2 justify-end">
                             <Button variant="outline" size="sm" onClick={() => { setFeedbackTaskId(null); setFeedbackText(""); }}>Cancelar</Button>
-                            <button type="button" disabled={!feedbackText.trim()} onClick={() => { clientRejectTask(task.id, feedbackText.trim(), client.id, client.name, p.id); setFeedbackTaskId(null); setFeedbackText(""); }} className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium ${feedbackText.trim() ? "bg-gray-900 text-white hover:bg-gray-800" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>
+                            <button type="button" disabled={!feedbackText.trim()} onClick={() => { clientRejectTask(task.id, feedbackText.trim(), client.id, client.name, p.id); setFeedbackTaskId(null); setFeedbackText(""); }} className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium ${feedbackText.trim() ? "bg-stone-900 text-white hover:bg-stone-800" : "bg-stone-200 text-stone-400 cursor-not-allowed"}`}>
                               <Send size={12} /> Enviar feedback
                             </button>
                           </div>
                         </div>
                       ) : (
-                        <div className="flex gap-3 mt-4 pt-4 border-t border-gray-100">
+                        <div className="flex gap-3 mt-4 pt-4 border-t border-stone-100">
                           <button type="button" onClick={() => clientApproveTask(task.id)} className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white hover:bg-green-700 rounded-lg font-medium text-sm">
                             <CheckCircle2 size={16} /> Aprovar
                           </button>
-                          <button type="button" onClick={() => setFeedbackTaskId(task.id)} className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg font-medium text-sm">
+                          <button type="button" onClick={() => setFeedbackTaskId(task.id)} className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-stone-700 border border-stone-300 hover:bg-stone-50 rounded-lg font-medium text-sm">
                             <MessageSquare size={16} /> Enviar feedback
                           </button>
                         </div>
@@ -2480,7 +2480,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
         {projectTab === "aprovadas" && (
           <div>
             {approved.length === 0 ? (
-              <Card className="p-8 text-center text-gray-400">Nenhuma entrega aprovada ainda.</Card>
+              <Card className="p-8 text-center text-stone-400">Nenhuma entrega aprovada ainda.</Card>
             ) : (
               <div className="space-y-2">
                 {approved.map(task => (
@@ -2490,7 +2490,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                         <CheckCircle2 size={18} className="text-green-500" />
                         <div>
                           <p className="font-medium text-sm">{clientTitle(task.title)}</p>
-                          <p className="text-xs text-gray-400">{new Date(task.deadline).toLocaleDateString("pt-BR")}</p>
+                          <p className="text-xs text-stone-400">{new Date(task.deadline).toLocaleDateString("pt-BR")}</p>
                         </div>
                       </div>
                       {task.submittedLink && task.submittedLink.trim() && (
@@ -2510,20 +2510,20 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
         {projectTab === "feedback" && (
           <div>
             <Card className="p-5 mb-4">
-              <p className="text-sm font-medium text-gray-700 mb-3">Enviar feedback geral sobre o projeto</p>
+              <p className="text-sm font-medium text-stone-700 mb-3">Enviar feedback geral sobre o projeto</p>
               <div className="flex gap-3 mb-3">
-                <select value={fbForm.type} onChange={e => setFbForm(prev => ({ ...prev, type: e.target.value }))} className="border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400">
+                <select value={fbForm.type} onChange={e => setFbForm(prev => ({ ...prev, type: e.target.value }))} className="border border-stone-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400">
                   <option>Sugestão</option><option>Ajuste</option><option>Elogio</option><option>Problema</option>
                 </select>
-                <input value={fbForm.text} onChange={e => setFbForm(prev => ({ ...prev, text: e.target.value }))} placeholder="Escreva seu feedback..." className="flex-1 border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400" />
-                <button type="button" disabled={!fbForm.text.trim()} onClick={() => { addFeedback({ projectId: p.id, clientId: client.id, clientName: client.name, date: new Date().toISOString().split("T")[0], type: fbForm.type, text: fbForm.text }); setFbForm({ type: "Sugestão", text: "" }); }} className={`inline-flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium ${fbForm.text.trim() ? "bg-gray-900 text-white hover:bg-gray-800" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>
+                <input value={fbForm.text} onChange={e => setFbForm(prev => ({ ...prev, text: e.target.value }))} placeholder="Escreva seu feedback..." className="flex-1 border border-stone-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400" />
+                <button type="button" disabled={!fbForm.text.trim()} onClick={() => { addFeedback({ projectId: p.id, clientId: client.id, clientName: client.name, date: new Date().toISOString().split("T")[0], type: fbForm.type, text: fbForm.text }); setFbForm({ type: "Sugestão", text: "" }); }} className={`inline-flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium ${fbForm.text.trim() ? "bg-stone-900 text-white hover:bg-stone-800" : "bg-stone-200 text-stone-400 cursor-not-allowed"}`}>
                   <Send size={14} /> Enviar
                 </button>
               </div>
             </Card>
 
             {projectFeedbacks.length === 0 ? (
-              <Card className="p-6 text-center text-gray-400">Nenhum feedback enviado para este projeto.</Card>
+              <Card className="p-6 text-center text-stone-400">Nenhum feedback enviado para este projeto.</Card>
             ) : (
               <div className="space-y-2">
                 {projectFeedbacks.map(fb => (
@@ -2531,9 +2531,9 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                     <div className="flex items-center gap-2 mb-1">
                       <Badge variant={fb.type === "Elogio" ? "success" : fb.type === "Problema" ? "danger" : "warning"}>{fb.type}</Badge>
                       <Badge variant={fb.status === "pendente" ? "default" : "success"}>{fb.status === "pendente" ? "Enviado" : "Em tratamento"}</Badge>
-                      <span className="text-xs text-gray-400">{fb.date}</span>
+                      <span className="text-xs text-stone-400">{fb.date}</span>
                     </div>
-                    <p className="text-sm text-gray-700">{fb.text}</p>
+                    <p className="text-sm text-stone-700">{fb.text}</p>
                   </Card>
                 ))}
               </div>
@@ -2548,10 +2548,10 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
   return (
     <div className="max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-2">
-        <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"><ArrowLeft size={16} /> Voltar</button>
+        <button onClick={onBack} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900"><ArrowLeft size={16} /> Voltar</button>
         <Button variant="outline" size="sm" onClick={onBack}>Sair do portal</Button>
       </div>
-      <p className="text-sm text-gray-400 mb-1">Synapse · Portal do Cliente</p>
+      <p className="text-sm text-stone-400 mb-1">Synapse · Portal do Cliente</p>
       <h1 className="text-3xl font-bold mb-6">Bem-vindo, {client.name}</h1>
 
       {/* Account Info */}
@@ -2559,19 +2559,19 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
         <h3 className="font-bold mb-3">Sua conta na Synapse</h3>
         <div className="grid grid-cols-3 gap-6">
           <div>
-            <p className="text-sm text-gray-500 mb-1">Seu gerente de conta</p>
+            <p className="text-sm text-stone-500 mb-1">Seu gerente de conta</p>
             <p className="font-medium text-lg">{client.responsible}</p>
             <Button variant="outline" size="sm" className="mt-2"><MessageSquare size={14} /> WhatsApp direto</Button>
           </div>
           <div>
-            <p className="text-sm text-gray-500 mb-1">Próxima reunião</p>
+            <p className="text-sm text-stone-500 mb-1">Próxima reunião</p>
             <p className="font-medium flex items-center gap-1"><Calendar size={16} /> {new Date(client.nextMeeting).toLocaleDateString("pt-BR")} às {new Date(client.nextMeeting).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }).replace(":", "h")}</p>
             <div className="flex gap-2 mt-2">
               <Button variant="outline" size="sm" onClick={() => setShowSchedule(!showSchedule)}>Reagendar</Button>
             </div>
           </div>
           <div>
-            <p className="text-sm text-gray-500 mb-1">Projetos ativos</p>
+            <p className="text-sm text-stone-500 mb-1">Projetos ativos</p>
             <p className="text-2xl font-bold text-green-600">{clientProjects.length}</p>
           </div>
         </div>
@@ -2604,21 +2604,21 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
           const progress = allTasks.length > 0 ? Math.round((approvedCount / allTasks.length) * 100) : p.progress;
 
           return (
-            <Card key={p.id} className="cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => { setSelectedProject(p); setProjectTab(pending > 0 ? "entregas" : "aprovadas"); }}>
+            <Card key={p.id} className="cursor-pointer hover:bg-stone-50 transition-colors" onClick={() => { setSelectedProject(p); setProjectTab(pending > 0 ? "entregas" : "aprovadas"); }}>
               <div className="p-5">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <h3 className="font-bold text-lg">{p.name}</h3>
                     {pending > 0 && <span className="text-xs font-medium bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">{pending} para revisar</span>}
                   </div>
-                  <ChevronLeft size={20} className="text-gray-300 rotate-180" />
+                  <ChevronLeft size={20} className="text-stone-300 rotate-180" />
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-2"><div className="bg-green-600 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
-                <div className="flex gap-4 text-xs text-gray-500">
+                <div className="w-full bg-stone-200 rounded-full h-2 mb-2"><div className="bg-green-600 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
+                <div className="flex gap-4 text-xs text-stone-500">
                   <span>{progress}% concluído</span>
                   <span>{approvedCount} aprovada{approvedCount !== 1 ? "s" : ""}</span>
                   {inProgress > 0 && <span>{inProgress} em andamento</span>}
-                  <span className="ml-auto text-gray-400">Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</span>
+                  <span className="ml-auto text-stone-400">Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</span>
                 </div>
               </div>
             </Card>
@@ -2683,60 +2683,60 @@ function KanbanCreateTask({ projectId, project, team, addTask }) {
   return (
     <div className="mt-8">
       <Card>
-        <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors rounded-xl">
-          <span className="flex items-center gap-2 font-semibold text-gray-900"><Plus size={18} /> Criar nova tarefa neste projeto</span>
-          {open ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+        <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-5 text-left hover:bg-stone-50 transition-colors rounded-xl">
+          <span className="flex items-center gap-2 font-semibold text-stone-900"><Plus size={18} /> Criar nova tarefa neste projeto</span>
+          {open ? <ChevronUp size={20} className="text-stone-400" /> : <ChevronDown size={20} className="text-stone-400" />}
         </button>
         {open && (
           <div className="px-5 pb-5 space-y-4 border-t pt-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2"><label className="text-sm font-medium text-gray-700">Nome da tarefa</label><input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Ex: Criar roteiro detalhado..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
-              <div><label className="text-sm font-medium text-gray-700">Responsável</label>
-                <select value={form.executor} onChange={e => setForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+              <div className="col-span-2"><label className="text-sm font-medium text-stone-700">Nome da tarefa</label><input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Ex: Criar roteiro detalhado..." className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
+              <div><label className="text-sm font-medium text-stone-700">Responsável</label>
+                <select value={form.executor} onChange={e => setForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                   <option value="">Selecione</option>
                   {areaTeam.map(m => <option key={m.id} value={m.id}>{m.name} ({m.role})</option>)}
                 </select>
               </div>
-              <div><label className="text-sm font-medium text-gray-700">Prazo</label><input type="datetime-local" value={form.deadline} onChange={e => setForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
-              <div><label className="text-sm font-medium text-gray-700">Prioridade</label>
-                <select value={form.priority} onChange={e => setForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+              <div><label className="text-sm font-medium text-stone-700">Prazo</label><input type="datetime-local" value={form.deadline} onChange={e => setForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
+              <div><label className="text-sm font-medium text-stone-700">Prioridade</label>
+                <select value={form.priority} onChange={e => setForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                   <option>Alta</option><option>Média</option><option>Baixa</option>
                 </select>
               </div>
-              <div className="col-span-2"><label className="text-sm font-medium text-gray-700">Descrição</label><textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Descreva o que precisa ser feito..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
+              <div className="col-span-2"><label className="text-sm font-medium text-stone-700">Descrição</label><textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Descreva o que precisa ser feito..." className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-700">Checklist de execução <span className="text-gray-400 font-normal">(opcional)</span></label>
-              <p className="text-xs text-gray-400 mt-0.5 mb-2">Defina os passos que o executor deve seguir. Se deixar vazio, será gerado um checklist padrão.</p>
+              <label className="text-sm font-medium text-stone-700">Checklist de execução <span className="text-stone-400 font-normal">(opcional)</span></label>
+              <p className="text-xs text-stone-400 mt-0.5 mb-2">Defina os passos que o executor deve seguir. Se deixar vazio, será gerado um checklist padrão.</p>
               {kbCheckItems.map((item, i) => (
                 <div key={i} className="flex items-center gap-2 mb-1.5">
-                  <div className="h-4 w-4 rounded border border-gray-300 flex-shrink-0" />
-                  <span className="text-sm text-gray-700 flex-1">{item}</span>
-                  <button type="button" onClick={() => setKbCheckItems(prev => prev.filter((_, idx) => idx !== i))} className="text-gray-400 hover:text-red-500"><X size={14} /></button>
+                  <div className="h-4 w-4 rounded border border-stone-300 flex-shrink-0" />
+                  <span className="text-sm text-stone-700 flex-1">{item}</span>
+                  <button type="button" onClick={() => setKbCheckItems(prev => prev.filter((_, idx) => idx !== i))} className="text-stone-400 hover:text-red-500"><X size={14} /></button>
                 </div>
               ))}
               <div className="flex gap-2 mt-1">
-                <input value={kbNewCheck} onChange={e => setKbNewCheck(e.target.value)} onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleKbAddCheck(); } }} placeholder="Adicionar item..." className="flex-1 border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                <input value={kbNewCheck} onChange={e => setKbNewCheck(e.target.value)} onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleKbAddCheck(); } }} placeholder="Adicionar item..." className="flex-1 border border-stone-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
                 <Button variant="outline" size="sm" onClick={handleKbAddCheck}>Adicionar</Button>
               </div>
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-700">Insumos e referências <span className="text-gray-400 font-normal">(opcional)</span></label>
-              <p className="text-xs text-gray-400 mt-0.5 mb-2">Anexe briefings, manuais ou referências úteis para o executor.</p>
+              <label className="text-sm font-medium text-stone-700">Insumos e referências <span className="text-stone-400 font-normal">(opcional)</span></label>
+              <p className="text-xs text-stone-400 mt-0.5 mb-2">Anexe briefings, manuais ou referências úteis para o executor.</p>
               {kbFiles.map((f, i) => (
-                <div key={i} className="flex items-center gap-3 p-2.5 bg-gray-50 border border-gray-100 rounded-lg mb-1.5">
+                <div key={i} className="flex items-center gap-3 p-2.5 bg-stone-50 border border-stone-100 rounded-lg mb-1.5">
                   <div className="h-8 w-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-green-700" /></div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{f.name}</p>
-                    <p className="text-xs text-gray-400">{f.type} · {f.size}</p>
+                    <p className="text-sm font-medium text-stone-900 truncate">{f.name}</p>
+                    <p className="text-xs text-stone-400">{f.type} · {f.size}</p>
                   </div>
-                  <button type="button" onClick={() => setKbFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-gray-400 hover:text-red-500"><X size={14} /></button>
+                  <button type="button" onClick={() => setKbFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-stone-400 hover:text-red-500"><X size={14} /></button>
                 </div>
               ))}
               <input type="file" ref={kbFileRef} onChange={handleKbFileSelect} multiple style={{display: "none"}} />
-              <button type="button" onClick={() => kbFileRef.current && kbFileRef.current.click()} className="w-full flex items-center justify-center gap-2 p-3 border-2 border-dashed border-gray-200 rounded-lg text-sm text-gray-400 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors cursor-pointer">
+              <button type="button" onClick={() => kbFileRef.current && kbFileRef.current.click()} className="w-full flex items-center justify-center gap-2 p-3 border-2 border-dashed border-stone-200 rounded-lg text-sm text-stone-400 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors cursor-pointer">
                 <Plus size={16} /> Selecionar arquivos
               </button>
             </div>
@@ -2833,15 +2833,15 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
     const unread = getChatUnread(ch.id, myRole);
     const lastMsg = (chatMessages[ch.id] || []).slice(-1)[0];
     return (
-      <button onClick={() => selectChannel(ch.id)} className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left ${activeChannel === ch.id && !showChannelList ? "bg-gray-50" : ""}`}>
+      <button onClick={() => selectChannel(ch.id)} className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-stone-50 transition-colors text-left ${activeChannel === ch.id && !showChannelList ? "bg-stone-50" : ""}`}>
         <div className={`h-10 w-10 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${ch.color}`}>{ch.avatar}</div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-900 truncate">{ch.label}</span>
-            {lastMsg && <span className="text-[10px] text-gray-400 flex-shrink-0 ml-2">{lastMsg.time}</span>}
+            <span className="text-sm font-medium text-stone-900 truncate">{ch.label}</span>
+            {lastMsg && <span className="text-[10px] text-stone-400 flex-shrink-0 ml-2">{lastMsg.time}</span>}
           </div>
           <div className="flex items-center justify-between mt-0.5">
-            <span className="text-xs text-gray-400 truncate">{lastMsg ? `${lastMsg.author}: ${lastMsg.text}` : ch.subtitle}</span>
+            <span className="text-xs text-stone-400 truncate">{lastMsg ? `${lastMsg.author}: ${lastMsg.text}` : ch.subtitle}</span>
             {unread > 0 && <span className="flex-shrink-0 ml-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-5 min-w-[20px] flex items-center justify-center px-1.5">{unread}</span>}
           </div>
         </div>
@@ -2856,13 +2856,13 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
         {/* Channel list view */}
         {showChannelList ? (
           <>
-            <div className="border-b border-gray-200 px-5 py-4 flex items-center justify-between flex-shrink-0">
-              <h3 className="font-semibold text-gray-900">Mensagens</h3>
-              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><X size={18} className="text-gray-400" /></button>
+            <div className="border-b border-stone-200 px-5 py-4 flex items-center justify-between flex-shrink-0">
+              <h3 className="font-semibold text-stone-900">Mensagens</h3>
+              <button onClick={onClose} className="p-2 hover:bg-stone-100 rounded-lg transition-colors"><X size={18} className="text-stone-400" /></button>
             </div>
             <div className="flex-1 overflow-y-auto">
               {/* Direct messages section */}
-              <div className="px-4 pt-4 pb-1"><p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Direto</p></div>
+              <div className="px-4 pt-4 pb-1"><p className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider">Direto</p></div>
               <div className="divide-y divide-gray-100">
                 {directChannels.map(ch => <ChannelRow key={ch.id} ch={ch} />)}
               </div>
@@ -2870,7 +2870,7 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
               {/* Project channels section */}
               {projectChannels.length > 0 && (
                 <>
-                  <div className="px-4 pt-5 pb-1"><p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Projetos</p></div>
+                  <div className="px-4 pt-5 pb-1"><p className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider">Projetos</p></div>
                   <div className="divide-y divide-gray-100">
                     {projectChannels.map(ch => <ChannelRow key={ch.id} ch={ch} isProject />)}
                   </div>
@@ -2881,51 +2881,51 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
         ) : (
           <>
             {/* Conversation header */}
-            <div className="border-b border-gray-200 px-4 py-3 flex items-center gap-3 flex-shrink-0">
+            <div className="border-b border-stone-200 px-4 py-3 flex items-center gap-3 flex-shrink-0">
               {allChannels.length > 1 && (
-                <button onClick={() => setShowChannelList(true)} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors -ml-1">
+                <button onClick={() => setShowChannelList(true)} className="p-1.5 hover:bg-stone-100 rounded-lg transition-colors -ml-1">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
               )}
-              <div className={`h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold ${activeInfo?.color || "bg-gray-100 text-gray-700"}`}>
+              <div className={`h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold ${activeInfo?.color || "bg-stone-100 text-stone-700"}`}>
                 {activeInfo?.avatar || "?"}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-gray-900 text-sm truncate">{activeInfo?.label || "Chat"}</h3>
-                <p className="text-xs text-gray-400 truncate">{activeInfo?.members ? activeInfo.members.map(m => m.name.split(" ")[0]).join(", ") : activeInfo?.subtitle || ""}</p>
+                <h3 className="font-semibold text-stone-900 text-sm truncate">{activeInfo?.label || "Chat"}</h3>
+                <p className="text-xs text-stone-400 truncate">{activeInfo?.members ? activeInfo.members.map(m => m.name.split(" ")[0]).join(", ") : activeInfo?.subtitle || ""}</p>
               </div>
-              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><X size={18} className="text-gray-400" /></button>
+              <button onClick={onClose} className="p-2 hover:bg-stone-100 rounded-lg transition-colors"><X size={18} className="text-stone-400" /></button>
             </div>
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
               {msgs.length === 0 && (
                 <div className="text-center py-12">
-                  <div className={`h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-3 ${activeInfo?.color || "bg-gray-100"}`}>
+                  <div className={`h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-3 ${activeInfo?.color || "bg-stone-100"}`}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="opacity-60"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                   </div>
-                  <p className="text-sm text-gray-500 font-medium">Conversa com {activeInfo?.label}</p>
-                  <p className="text-xs text-gray-400 mt-1">Envie a primeira mensagem.</p>
+                  <p className="text-sm text-stone-500 font-medium">Conversa com {activeInfo?.label}</p>
+                  <p className="text-xs text-stone-400 mt-1">Envie a primeira mensagem.</p>
                 </div>
               )}
               {grouped.map((item, i) => {
                 if (item.type === "date") {
-                  return <div key={"d" + i} className="flex items-center gap-3 py-3"><div className="flex-1 h-px bg-gray-200" /><span className="text-[10px] text-gray-400 font-medium uppercase">{item.date === new Date().toISOString().split("T")[0] ? "Hoje" : item.date}</span><div className="flex-1 h-px bg-gray-200" /></div>;
+                  return <div key={"d" + i} className="flex items-center gap-3 py-3"><div className="flex-1 h-px bg-stone-200" /><span className="text-[10px] text-stone-400 font-medium uppercase">{item.date === new Date().toISOString().split("T")[0] ? "Hoje" : item.date}</span><div className="flex-1 h-px bg-stone-200" /></div>;
                 }
                 const isMe = item.from === myRole;
                 return (
                   <div key={item.id} className={`flex ${isMe ? "justify-end" : "justify-start"} mb-1`}>
                     <div className={`max-w-[80%] ${isMe ? "" : "flex gap-2"}`}>
                       {!isMe && (
-                        <div className={`h-7 w-7 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0 mt-1 ${activeInfo?.color || "bg-gray-100 text-gray-600"}`}>
+                        <div className={`h-7 w-7 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0 mt-1 ${activeInfo?.color || "bg-stone-100 text-stone-600"}`}>
                           {item.author.split(" ").map(n => n[0]).join("").substring(0, 2)}
                         </div>
                       )}
                       <div>
-                        <div className={`px-3.5 py-2.5 rounded-2xl text-sm ${isMe ? "bg-blue-600 text-white rounded-br-md" : "bg-gray-100 text-gray-800 rounded-bl-md"}`}>
+                        <div className={`px-3.5 py-2.5 rounded-2xl text-sm ${isMe ? "bg-blue-600 text-white rounded-br-md" : "bg-stone-100 text-stone-800 rounded-bl-md"}`}>
                           <p>{item.text}</p>
                         </div>
-                        <p className={`text-[10px] mt-0.5 px-1 ${isMe ? "text-right text-gray-400" : "text-gray-400"}`}>{item.author} · {item.time}</p>
+                        <p className={`text-[10px] mt-0.5 px-1 ${isMe ? "text-right text-stone-400" : "text-stone-400"}`}>{item.author} · {item.time}</p>
                       </div>
                     </div>
                   </div>
@@ -2935,10 +2935,10 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
             </div>
 
             {/* Input */}
-            <div className="border-t border-gray-200 p-4 flex-shrink-0">
+            <div className="border-t border-stone-200 p-4 flex-shrink-0">
               <div className="flex gap-2">
-                <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={`Mensagem para ${activeInfo?.label || ""}...`} className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
-                <button onClick={send} disabled={!input.trim()} className={`p-2.5 rounded-xl transition-colors ${input.trim() ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}>
+                <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={`Mensagem para ${activeInfo?.label || ""}...`} className="flex-1 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
+                <button onClick={send} disabled={!input.trim()} className={`p-2.5 rounded-xl transition-colors ${input.trim() ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-stone-100 text-stone-400 cursor-not-allowed"}`}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                 </button>
               </div>
@@ -2953,7 +2953,7 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
 function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = false, isQAView = false, onOpenChat }) {
   const { projects, tasks, clients, team, addTask, deleteTask, addQaAlert, updateProject, chatMessages, chatLastRead, getChatUnread } = useContext(AppContext);
   const project = projects.find(p => p.id === projectId);
-  if (!project) return <div className="text-center py-12 text-gray-400">Projeto não encontrado.</div>;
+  if (!project) return <div className="text-center py-12 text-stone-400">Projeto não encontrado.</div>;
 
   const client = clients.find(c => c.id === project.clientId);
   const projectTasks = tasks.filter(t => t.projectId === projectId);
@@ -2975,7 +2975,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
   };
 
   const columns = [
-    { key: "a_fazer", label: "A Fazer", headerColor: "bg-gray-100 text-gray-700", dotColor: "bg-gray-400" },
+    { key: "a_fazer", label: "A Fazer", headerColor: "bg-stone-100 text-stone-700", dotColor: "bg-stone-400" },
     { key: "em_execucao", label: "Em Execução", headerColor: "bg-blue-50 text-blue-700", dotColor: "bg-blue-500" },
     { key: "em_qa", label: "Em QA", headerColor: "bg-purple-50 text-purple-700", dotColor: "bg-purple-500" },
     { key: "devolvida", label: "Devolvida", headerColor: "bg-red-50 text-red-700", dotColor: "bg-red-500" },
@@ -2984,23 +2984,23 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
 
   return (
     <div className="max-w-7xl mx-auto">
-      <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-6"><ArrowLeft size={16} /> Voltar</button>
+      <button onClick={onBack} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 mb-6"><ArrowLeft size={16} /> Voltar</button>
 
       <div className="flex items-start justify-between mb-6">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-3xl font-bold text-gray-900">{project.name}</h1>
+            <h1 className="text-3xl font-bold text-stone-900">{project.name}</h1>
             <Badge variant="purple">Evento</Badge>
             {isQAView && <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200 font-medium">Visão QA</span>}
           </div>
-          <p className="text-gray-500">Cliente: <strong>{project.client}</strong> · Responsável: <strong>{project.responsible}</strong> · Prazo: <strong>{new Date(project.deadline).toLocaleDateString("pt-BR")}</strong></p>
+          <p className="text-stone-500">Cliente: <strong>{project.client}</strong> · Responsável: <strong>{project.responsible}</strong> · Prazo: <strong>{new Date(project.deadline).toLocaleDateString("pt-BR")}</strong></p>
         </div>
         <div className="flex items-center gap-2">
           {(isQAView || !isClientView) && onOpenChat && (() => {
             const r = isQAView ? "qa" : "lider";
             const unread = getChatUnread("qa-lider", r);
             return (
-              <button onClick={onOpenChat} className="px-3 py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-600 hover:border-blue-300 hover:bg-blue-50 transition-all flex items-center gap-2 relative">
+              <button onClick={onOpenChat} className="px-3 py-2 text-sm font-medium rounded-lg border border-stone-200 text-stone-600 hover:border-blue-300 hover:bg-blue-50 transition-all flex items-center gap-2 relative">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 {isQAView ? "Chat com Líder" : "Mensagens"}
                 {unread > 0 && <span className="bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5 font-bold animate-pulse">{unread}</span>}
@@ -3013,20 +3013,20 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
 
       <div className="grid grid-cols-4 gap-4 mb-8">
         <Card className="p-4">
-          <p className="text-sm text-gray-500">Total de tarefas</p>
+          <p className="text-sm text-stone-500">Total de tarefas</p>
           <p className="text-2xl font-bold">{projectTasks.length}</p>
         </Card>
         <Card className="p-4">
-          <p className="text-sm text-gray-500">Concluídas</p>
+          <p className="text-sm text-stone-500">Concluídas</p>
           <p className="text-2xl font-bold text-green-600">{doneCount}</p>
         </Card>
         <Card className="p-4">
-          <p className="text-sm text-gray-500">Progresso</p>
+          <p className="text-sm text-stone-500">Progresso</p>
           <p className="text-2xl font-bold">{progress}%</p>
-          <div className="w-full bg-gray-200 rounded-full h-2 mt-2"><div className="bg-green-600 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
+          <div className="w-full bg-stone-200 rounded-full h-2 mt-2"><div className="bg-green-600 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
         </Card>
         <Card className="p-4">
-          <p className="text-sm text-gray-500">Em risco</p>
+          <p className="text-sm text-stone-500">Em risco</p>
           <p className="text-2xl font-bold text-red-600">{projectTasks.filter(t => !["concluida"].includes(t.status) && new Date(t.deadline) < new Date(Date.now() + 86400000)).length}</p>
         </Card>
       </div>
@@ -3039,7 +3039,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
         {columns.map(col => {
           const colTasks = projectTasks.filter(t => t.status === col.key);
           return (
-            <div key={col.key} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+            <div key={col.key} className="bg-stone-50 rounded-xl p-3 border border-stone-100">
               <div className={`flex items-center gap-2 px-3 py-2 rounded-lg mb-3 ${col.headerColor}`}>
                 <div className={`h-2.5 w-2.5 rounded-full ${col.dotColor}`} />
                 <span className="text-sm font-semibold">{col.label}</span>
@@ -3051,12 +3051,12 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
                     {/* Líder: trash icon */}
                     {!isClientView && !isQAView && (
                       <button onClick={(e) => { e.stopPropagation(); if (confirm(`Excluir tarefa "${task.title}"?`)) deleteTask(task.id); }} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-red-50" title="Excluir tarefa">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300 hover:text-red-500"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-300 hover:text-red-500"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                       </button>
                     )}
                     {/* QA: bell icon */}
                     {isQAView && task.status !== "concluida" && (
-                      <button onClick={(e) => { e.stopPropagation(); if (qaBellSent.has(task.id)) return; setQaBellTask(qaBellTask === task.id ? null : task.id); }} className={`absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all p-1 rounded ${qaBellSent.has(task.id) ? "opacity-100 text-yellow-500" : "hover:bg-yellow-50 text-gray-300 hover:text-yellow-500"}`} title={qaBellSent.has(task.id) ? "Alerta enviado" : "Alertar executor"}>
+                      <button onClick={(e) => { e.stopPropagation(); if (qaBellSent.has(task.id)) return; setQaBellTask(qaBellTask === task.id ? null : task.id); }} className={`absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all p-1 rounded ${qaBellSent.has(task.id) ? "opacity-100 text-yellow-500" : "hover:bg-yellow-50 text-stone-300 hover:text-yellow-500"}`} title={qaBellSent.has(task.id) ? "Alerta enviado" : "Alertar executor"}>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill={qaBellSent.has(task.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                       </button>
                     )}
@@ -3065,15 +3065,15 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
                       <p className="text-sm font-medium leading-tight">{task.title}</p>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500 flex items-center gap-1"><Users size={10} /> {task.executorName}</span>
-                      <span className="text-xs text-gray-400"><Clock size={10} className="inline" /> {new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
+                      <span className="text-xs text-stone-500 flex items-center gap-1"><Users size={10} /> {task.executorName}</span>
+                      <span className="text-xs text-stone-400"><Clock size={10} className="inline" /> {new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
                     </div>
                     {task.feedbackOrigin && <Badge variant="accent" className="mt-2 text-[10px]">Feedback</Badge>}
                     {/* QA bell inline input */}
                     {isQAView && qaBellTask === task.id && (
-                      <div className="mt-2 pt-2 border-t border-gray-100" onClick={e => e.stopPropagation()}>
+                      <div className="mt-2 pt-2 border-t border-stone-100" onClick={e => e.stopPropagation()}>
                         <div className="flex gap-1.5">
-                          <input value={qaBellMsg} onChange={e => setQaBellMsg(e.target.value)} placeholder="Msg (opcional)" className="flex-1 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-400" onKeyDown={e => { if (e.key === "Enter") sendQaBell(task); }} />
+                          <input value={qaBellMsg} onChange={e => setQaBellMsg(e.target.value)} placeholder="Msg (opcional)" className="flex-1 border border-stone-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-400" onKeyDown={e => { if (e.key === "Enter") sendQaBell(task); }} />
                           <button onClick={() => sendQaBell(task)} className="px-2 py-1 text-xs font-medium rounded bg-yellow-500 text-white hover:bg-yellow-600">
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                           </button>
@@ -3082,7 +3082,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
                     )}
                   </Card>
                 ))}
-                {colTasks.length === 0 && <p className="text-xs text-gray-300 text-center py-4">Nenhuma</p>}
+                {colTasks.length === 0 && <p className="text-xs text-stone-300 text-center py-4">Nenhuma</p>}
               </div>
             </div>
           );
@@ -3107,7 +3107,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
           <>
             <div className="flex items-center justify-between mt-8 mb-4">
               <h2 className="text-xl font-bold">Squad do projeto</h2>
-              <span className="text-sm text-gray-500">{squadMembers.length} de {team.length} executores</span>
+              <span className="text-sm text-stone-500">{squadMembers.length} de {team.length} executores</span>
             </div>
 
             {/* Squad members */}
@@ -3118,22 +3118,22 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
                 return (
                   <Card key={member.id} className="p-4 relative group border-2 border-green-200 bg-green-50/30">
                     <button onClick={() => { if (confirm(`Remover ${member.name} do squad?`)) toggleSquadMember(member.id); }} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-red-50" title="Remover do squad">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300 hover:text-red-500"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-300 hover:text-red-500"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
                     </button>
                     <div className="flex items-center gap-2.5 mb-2">
                       <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-xs font-bold text-green-700">{member.name.split(" ").map(n => n[0]).join("").substring(0, 2)}</div>
                       <div>
                         <p className="font-medium text-sm">{member.name}</p>
-                        <p className="text-[10px] text-gray-500">{member.role}</p>
+                        <p className="text-[10px] text-stone-500">{member.role}</p>
                       </div>
                     </div>
                     {memberTasks.length > 0 ? (
                       <>
-                        <p className="text-xs text-gray-500">{memberTasks.length} tarefa{memberTasks.length !== 1 ? "s" : ""} · {done} concluída{done !== 1 ? "s" : ""}</p>
-                        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2"><div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${memberTasks.length > 0 ? Math.round((done / memberTasks.length) * 100) : 0}%` }} /></div>
+                        <p className="text-xs text-stone-500">{memberTasks.length} tarefa{memberTasks.length !== 1 ? "s" : ""} · {done} concluída{done !== 1 ? "s" : ""}</p>
+                        <div className="w-full bg-stone-200 rounded-full h-1.5 mt-2"><div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${memberTasks.length > 0 ? Math.round((done / memberTasks.length) * 100) : 0}%` }} /></div>
                       </>
                     ) : (
-                      <p className="text-xs text-gray-400 italic">Sem tarefas ainda</p>
+                      <p className="text-xs text-stone-400 italic">Sem tarefas ainda</p>
                     )}
                   </Card>
                 );
@@ -3142,21 +3142,21 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
               {/* Add member button */}
               {availableMembers.length > 0 && (
                 <div className="relative">
-                  <Card className="p-4 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-all min-h-[120px]" onClick={() => {
+                  <Card className="p-4 border-2 border-dashed border-stone-200 flex flex-col items-center justify-center cursor-pointer hover:border-stone-400 hover:bg-stone-50 transition-all min-h-[120px]" onClick={() => {
                     const el = document.getElementById("squad-dropdown-" + projectId);
                     if (el) el.classList.toggle("hidden");
                   }}>
-                    <Plus size={20} className="text-gray-400 mb-1" />
-                    <p className="text-xs text-gray-500 font-medium">Adicionar</p>
+                    <Plus size={20} className="text-stone-400 mb-1" />
+                    <p className="text-xs text-stone-500 font-medium">Adicionar</p>
                   </Card>
-                  <div id={"squad-dropdown-" + projectId} className="hidden absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-20 py-1">
-                    <p className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Executores disponíveis</p>
+                  <div id={"squad-dropdown-" + projectId} className="hidden absolute top-full left-0 mt-1 w-56 bg-white border border-stone-200 rounded-xl shadow-lg z-20 py-1">
+                    <p className="px-3 py-2 text-[10px] font-semibold text-stone-400 uppercase tracking-wide">Executores disponíveis</p>
                     {availableMembers.map(m => (
-                      <button key={m.id} onClick={() => { toggleSquadMember(m.id); const el = document.getElementById("squad-dropdown-" + projectId); if (el) el.classList.add("hidden"); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-gray-50 transition-colors text-left">
-                        <div className="h-7 w-7 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600">{m.name.split(" ").map(n => n[0]).join("").substring(0, 2)}</div>
+                      <button key={m.id} onClick={() => { toggleSquadMember(m.id); const el = document.getElementById("squad-dropdown-" + projectId); if (el) el.classList.add("hidden"); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-stone-50 transition-colors text-left">
+                        <div className="h-7 w-7 rounded-full bg-stone-100 flex items-center justify-center text-[10px] font-bold text-stone-600">{m.name.split(" ").map(n => n[0]).join("").substring(0, 2)}</div>
                         <div>
                           <p className="text-sm font-medium">{m.name}</p>
-                          <p className="text-[10px] text-gray-400">{m.role}</p>
+                          <p className="text-[10px] text-stone-400">{m.role}</p>
                         </div>
                       </button>
                     ))}
@@ -3166,10 +3166,10 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
             </div>
 
             {squadMembers.length === 0 && (
-              <Card className="p-6 text-center border-dashed border-2 border-gray-200 mb-4">
-                <Users size={24} className="text-gray-300 mx-auto mb-2" />
-                <p className="text-sm text-gray-500 font-medium">Nenhum executor no squad</p>
-                <p className="text-xs text-gray-400 mt-1">Adicione membros do time para começar a atribuir tarefas.</p>
+              <Card className="p-6 text-center border-dashed border-2 border-stone-200 mb-4">
+                <Users size={24} className="text-stone-300 mx-auto mb-2" />
+                <p className="text-sm text-stone-500 font-medium">Nenhum executor no squad</p>
+                <p className="text-xs text-stone-400 mt-1">Adicione membros do time para começar a atribuir tarefas.</p>
               </Card>
             )}
           </>
@@ -3187,16 +3187,16 @@ function TrocarExecutorView({ currentId, onSelect, onBack }) {
   const executors = team.filter(m => m.role === "Executor");
   return (
     <div className="max-w-3xl mx-auto">
-      <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-4"><ArrowLeft size={16} /> Voltar</button>
+      <button onClick={onBack} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 mb-4"><ArrowLeft size={16} /> Voltar</button>
       <h1 className="text-3xl font-bold mb-2">Trocar executor</h1>
-      <p className="text-gray-500 mb-6">Selecione qual executor você quer simular para ver suas tarefas.</p>
+      <p className="text-stone-500 mb-6">Selecione qual executor você quer simular para ver suas tarefas.</p>
       <div className="space-y-3">
         {executors.map(e => {
           const taskCount = tasks.filter(t => t.executor === e.id && t.status !== "concluida").length;
           return (
             <Card key={e.id} className={`p-5 cursor-pointer ${e.id === currentId ? "ring-2 ring-gray-900" : ""}`} onClick={() => onSelect(e.id, e.name)}>
               <div className="flex justify-between items-center">
-                <div><p className="font-bold">{e.name}</p><p className="text-sm text-gray-500">{e.role} · Eventos</p></div>
+                <div><p className="font-bold">{e.name}</p><p className="text-sm text-stone-500">{e.role} · Eventos</p></div>
                 <div className="text-right"><p className="text-sm font-medium">{taskCount} tarefas ativas</p><Badge variant={taskCount === 0 ? "success" : taskCount <= 3 ? "warning" : "danger"}>{taskCount === 0 ? "Disponível" : taskCount <= 3 ? "Moderado" : "Sobrecarregado"}</Badge></div>
               </div>
             </Card>
@@ -3313,40 +3313,40 @@ function OnboardingModal({ portal, onClose }) {
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden" onClick={e => e.stopPropagation()}>
           {/* Progress bar */}
-          <div className="h-1 bg-gray-100">
-            <div className="h-1 bg-gray-900 transition-all duration-300 rounded-r" style={{ width: `${((step + 1) / total) * 100}%` }} />
+          <div className="h-1 bg-stone-100">
+            <div className="h-1 bg-stone-900 transition-all duration-300 rounded-r" style={{ width: `${((step + 1) / total) * 100}%` }} />
           </div>
 
           {/* Header */}
           <div className="flex items-center justify-between px-6 pt-5 pb-2">
-            <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{data.title} · Passo {step + 1} de {total}</p>
-            <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-lg transition-colors"><X size={16} className="text-gray-400" /></button>
+            <p className="text-xs font-medium text-stone-400 uppercase tracking-wider">{data.title} · Passo {step + 1} de {total}</p>
+            <button onClick={onClose} className="p-1 hover:bg-stone-100 rounded-lg transition-colors"><X size={16} className="text-stone-400" /></button>
           </div>
 
           {/* Content */}
           <div className="px-6 py-6 text-center">
-            <div className="h-16 w-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-5 text-gray-700">
+            <div className="h-16 w-16 rounded-2xl bg-stone-100 flex items-center justify-center mx-auto mb-5 text-stone-700">
               {iconMap[slide.icon] || iconMap.clipboard}
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3">{slide.title}</h3>
-            <p className="text-sm text-gray-600 leading-relaxed max-w-sm mx-auto">{slide.desc}</p>
+            <h3 className="text-xl font-bold text-stone-900 mb-3">{slide.title}</h3>
+            <p className="text-sm text-stone-600 leading-relaxed max-w-sm mx-auto">{slide.desc}</p>
           </div>
 
           {/* Navigation */}
           <div className="px-6 pb-6 flex items-center justify-between">
-            <button onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0} className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${step === 0 ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:bg-gray-100"}`}>
+            <button onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0} className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${step === 0 ? "text-stone-300 cursor-not-allowed" : "text-stone-600 hover:bg-stone-100"}`}>
               Anterior
             </button>
 
             {/* Dots */}
             <div className="flex gap-1.5">
               {data.slides.map((_, i) => (
-                <button key={i} onClick={() => setStep(i)} className={`h-2 rounded-full transition-all ${i === step ? "w-6 bg-gray-900" : "w-2 bg-gray-200 hover:bg-gray-400"}`} />
+                <button key={i} onClick={() => setStep(i)} className={`h-2 rounded-full transition-all ${i === step ? "w-6 bg-stone-900" : "w-2 bg-stone-200 hover:bg-stone-400"}`} />
               ))}
             </div>
 
             {step < total - 1 ? (
-              <button onClick={() => setStep(s => s + 1)} className="px-4 py-2 text-sm font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors">
+              <button onClick={() => setStep(s => s + 1)} className="px-4 py-2 text-sm font-medium rounded-lg bg-stone-900 text-white hover:bg-stone-800 transition-colors">
                 Próximo
               </button>
             ) : (
@@ -3397,20 +3397,20 @@ function NotificationPanel({ onClose, context, executorId, onTaskClick }) {
       <div className="flex items-center justify-between p-4 border-b">
         <h3 className="font-bold">Notificações</h3>
         <div className="flex gap-2">
-          {smartAlerts.length > 0 && <button onClick={markAllRead} className="text-xs text-gray-500 hover:text-gray-700">Resolver todas</button>}
+          {smartAlerts.length > 0 && <button onClick={markAllRead} className="text-xs text-stone-500 hover:text-stone-700">Resolver todas</button>}
           <button onClick={onClose}><X size={16} /></button>
         </div>
       </div>
 
       {smartAlerts.length > 0 && (
         <div className="border-b">
-          <p className="px-4 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Alertas</p>
+          <p className="px-4 pt-3 pb-1 text-xs font-semibold text-stone-500 uppercase tracking-wide">Alertas</p>
           {smartAlerts.map(a => (
             <div key={a.id} className={`px-4 py-3 text-sm ${priorityStyle(a.priority)} ${a.taskId && onTaskClick ? "cursor-pointer hover:brightness-95 transition-all" : ""}`} onClick={() => { if (a.taskId && onTaskClick) { onTaskClick(a.taskId); onClose(); } }}>
               <div className="flex items-start gap-2">
                 {a.priority === "danger" && <AlertTriangle size={14} className="text-red-500 flex-shrink-0 mt-0.5" />}
                 {a.priority === "warning" && <Clock size={14} className="text-orange-500 flex-shrink-0 mt-0.5" />}
-                <p className={`flex-1 text-gray-900 ${a.taskId && onTaskClick ? "cursor-pointer" : ""}`}>
+                <p className={`flex-1 text-stone-900 ${a.taskId && onTaskClick ? "cursor-pointer" : ""}`}>
                   {(() => {
                     const match = a.text.match(/^([^:]+):\s*(.+?)(\s*[—–-]\s*.+)?$/);
                     if (match) {
@@ -3419,7 +3419,7 @@ function NotificationPanel({ onClose, context, executorId, onTaskClick }) {
                     return a.text;
                   })()}
                 </p>
-                <button onClick={(e) => { e.stopPropagation(); dismissSmartAlert(a.id, a.text, targetFilter, a.priority); }} className="text-gray-400 hover:text-green-600 flex-shrink-0 mt-0.5" title="Resolver alerta"><CheckCircle2 size={16} /></button>
+                <button onClick={(e) => { e.stopPropagation(); dismissSmartAlert(a.id, a.text, targetFilter, a.priority); }} className="text-stone-400 hover:text-green-600 flex-shrink-0 mt-0.5" title="Resolver alerta"><CheckCircle2 size={16} /></button>
               </div>
             </div>
           ))}
@@ -3428,23 +3428,23 @@ function NotificationPanel({ onClose, context, executorId, onTaskClick }) {
 
       {historyNotifications.length > 0 && (
         <div>
-          <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-500 hover:bg-gray-50 transition-colors">
+          <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center justify-between px-4 py-3 text-sm text-stone-500 hover:bg-stone-50 transition-colors">
             <span className="font-medium">Histórico ({historyNotifications.length})</span>
             {showHistory ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
           {showHistory && historyNotifications.map(n => (
-            <div key={n.id} className="px-4 py-2.5 border-t text-sm flex items-start gap-3 text-gray-400">
+            <div key={n.id} className="px-4 py-2.5 border-t text-sm flex items-start gap-3 text-stone-400">
               <div className="flex-1">
                 <p>{n.text}</p>
-                <p className="text-xs text-gray-300 mt-0.5">{n.date}</p>
+                <p className="text-xs text-stone-300 mt-0.5">{n.date}</p>
               </div>
-              <button onClick={() => dismissNotification(n.id)} className="text-gray-300 hover:text-red-400 flex-shrink-0 mt-0.5" title="Remover"><X size={14} /></button>
+              <button onClick={() => dismissNotification(n.id)} className="text-stone-300 hover:text-red-400 flex-shrink-0 mt-0.5" title="Remover"><X size={14} /></button>
             </div>
           ))}
         </div>
       )}
 
-      {!hasContent && <p className="p-6 text-sm text-gray-400 text-center">Nenhuma notificação no momento.</p>}
+      {!hasContent && <p className="p-6 text-sm text-stone-400 text-center">Nenhuma notificação no momento.</p>}
     </div>
   );
 }
@@ -3507,7 +3507,7 @@ function App() {
 
   return (
     <AppProvider>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-stone-50">
         <div className="h-1 bg-red-400 w-full" />
         <AppInner
           view={view} setView={handleSetView} goBack={goBack}
