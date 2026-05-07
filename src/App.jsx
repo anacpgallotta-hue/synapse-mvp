@@ -110,12 +110,12 @@ function AppProvider({ children }) {
   const [feedbacks, setFeedbacks] = useState(initialFeedbacks);
   const [clientNotes, setClientNotes] = useState(initialClientNotes);
 
-  const addClientNote = useCallback((clientId, text, tag = null) => {
-    setClientNotes(prev => [{ id: "cn" + Date.now(), clientId, author: "Ana Gallotta", date: new Date().toISOString().split("T")[0], text, tag: tag || null }, ...prev]);
+  const addClientNote = useCallback((clientId, text, tag = null, author = "Ana Gallotta") => {
+    setClientNotes(prev => [{ id: "cn" + Date.now(), clientId, author, date: new Date().toISOString().split("T")[0], text, tag: tag || null }, ...prev]);
   }, []);
 
-  const archiveElogio = useCallback((feedbackId, noteText, clientId) => {
-    addClientNote(clientId, noteText, "elogio");
+  const archiveElogio = useCallback((feedbackId, noteText, clientId, clientName) => {
+    addClientNote(clientId, noteText, "elogio", clientName || "Cliente");
     setFeedbacks(prev => prev.filter(f => f.id !== feedbackId));
   }, [addClientNote]);
   // Notifications: target = "executor:t1", "qa", "lider", "client:c5"
