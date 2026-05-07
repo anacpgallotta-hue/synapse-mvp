@@ -87,13 +87,13 @@ const initialFeedbacks = [
 
 // Notas internas por cliente — preferências, observações da equipe
 const initialClientNotes = [
-  { id: "cn1", clientId: "c5", author: "Ana Gallotta", date: "2026-03-15", text: "XP prefere comunicação via e-mail formal. Evitar WhatsApp para aprovações — sempre documentar por escrito." },
-  { id: "cn2", clientId: "c5", author: "Ana Gallotta", date: "2026-04-01", text: "Ricardo (contato principal) viaja muito. Agendar reuniões com 1 semana de antecedência mínima." },
-  { id: "cn3", clientId: "c3", author: "Ana Gallotta", date: "2026-02-10", text: "Red Bull gosta de propostas ousadas e criativas. Não ter medo de sugerir ideias fora do convencional." },
-  { id: "cn4", clientId: "c3", author: "Ana Gallotta", date: "2026-03-20", text: "Lucas (contato) é muito visual — sempre levar mockups e referências nas reuniões. Evitar só texto." },
-  { id: "cn5", clientId: "c1", author: "Ana Gallotta", date: "2026-01-08", text: "Ambev tem processo de aprovação interno demorado. Sempre enviar materiais com pelo menos 10 dias de antecedência." },
-  { id: "cn6", clientId: "c2", author: "Ana Gallotta", date: "2026-01-20", text: "Hotmart prefere reuniões rápidas de 15min. Ir direto ao ponto, sem muita contextualização." },
-  { id: "cn7", clientId: "c4", author: "Ana Gallotta", date: "2025-12-05", text: "Seara exige que toda comunicação visual passe pelo jurídico. Incluir esse passo no cronograma sempre." },
+  { id: "cn1", clientId: "c5", author: "Ana Gallotta", date: "2026-03-15", tag: "comunicacao", text: "XP prefere comunicação via e-mail formal. Evitar WhatsApp para aprovações — sempre documentar por escrito." },
+  { id: "cn2", clientId: "c5", author: "Ana Gallotta", date: "2026-04-01", tag: "processo", text: "Ricardo (contato principal) viaja muito. Agendar reuniões com 1 semana de antecedência mínima." },
+  { id: "cn3", clientId: "c3", author: "Ana Gallotta", date: "2026-02-10", tag: "gostou", text: "Red Bull gosta de propostas ousadas e criativas. Não ter medo de sugerir ideias fora do convencional." },
+  { id: "cn4", clientId: "c3", author: "Ana Gallotta", date: "2026-03-20", tag: "comunicacao", text: "Lucas (contato) é muito visual — sempre levar mockups e referências nas reuniões. Evitar só texto." },
+  { id: "cn5", clientId: "c1", author: "Ana Gallotta", date: "2026-01-08", tag: "processo", text: "Ambev tem processo de aprovação interno demorado. Sempre enviar materiais com pelo menos 10 dias de antecedência." },
+  { id: "cn6", clientId: "c2", author: "Ana Gallotta", date: "2026-01-20", tag: "comunicacao", text: "Hotmart prefere reuniões rápidas de 15min. Ir direto ao ponto, sem muita contextualização." },
+  { id: "cn7", clientId: "c4", author: "Ana Gallotta", date: "2025-12-05", tag: "nao_gostou", text: "Seara exige que toda comunicação visual passe pelo jurídico. Incluir esse passo no cronograma sempre." },
 ];
 
 // ============================
@@ -110,12 +110,12 @@ function AppProvider({ children }) {
   const [feedbacks, setFeedbacks] = useState(initialFeedbacks);
   const [clientNotes, setClientNotes] = useState(initialClientNotes);
 
-  const addClientNote = useCallback((clientId, text) => {
-    setClientNotes(prev => [{ id: "cn" + Date.now(), clientId, author: "Ana Gallotta", date: new Date().toISOString().split("T")[0], text }, ...prev]);
+  const addClientNote = useCallback((clientId, text, tag = null) => {
+    setClientNotes(prev => [{ id: "cn" + Date.now(), clientId, author: "Ana Gallotta", date: new Date().toISOString().split("T")[0], text, tag: tag || null }, ...prev]);
   }, []);
 
   const archiveElogio = useCallback((feedbackId, noteText, clientId) => {
-    addClientNote(clientId, noteText);
+    addClientNote(clientId, noteText, "elogio");
     setFeedbacks(prev => prev.filter(f => f.id !== feedbackId));
   }, [addClientNote]);
   // Notifications: target = "executor:t1", "qa", "lider", "client:c5"
@@ -1792,6 +1792,8 @@ function ClientHubView({ onBack }) {
   const [expandedClient, setExpandedClient] = useState(null);
   const [clientTab, setClientTab] = useState("projetos");
   const [newNote, setNewNote] = useState("");
+  const [noteTag, setNoteTag] = useState("gostou");
+  const [kbFilter, setKbFilter] = useState("todos");
 
   const totalActive = projects.filter(p => p.status === "em_execucao").length;
   const totalDone = historicProjects.length;
@@ -1813,7 +1815,7 @@ function ClientHubView({ onBack }) {
 
   const handleAddNote = (clientId) => {
     if (!newNote.trim()) return;
-    addClientNote(clientId, newNote.trim());
+    addClientNote(clientId, newNote.trim(), noteTag);
     setNewNote("");
   };
 
@@ -1922,71 +1924,87 @@ function ClientHubView({ onBack }) {
                     )}
 
                     {clientTab === "conhecimento" && (() => {
-                      const [kbFilter, setKbFilter] = [clientTab + "_filter", null]; // use inline state workaround
-                      // Build unified timeline
+                      const tagConfig = {
+                        gostou: { label: "Gostou", color: "bg-green-100 text-green-700 border-green-300", border: "border-l-green-500", bg: "bg-green-50" },
+                        nao_gostou: { label: "Não gostou", color: "bg-red-100 text-red-700 border-red-300", border: "border-l-red-500", bg: "bg-red-50" },
+                        comunicacao: { label: "Comunicação", color: "bg-blue-100 text-blue-700 border-blue-300", border: "border-l-blue-500", bg: "bg-blue-50" },
+                        processo: { label: "Processo", color: "bg-purple-100 text-purple-700 border-purple-300", border: "border-l-purple-500", bg: "bg-purple-50" },
+                        elogio: { label: "Elogio", color: "bg-emerald-100 text-emerald-700 border-emerald-300", border: "border-l-emerald-500", bg: "bg-emerald-50" },
+                        erro: { label: "Erro", color: "bg-red-100 text-red-700 border-red-300", border: "border-l-red-500", bg: "bg-red-50" },
+                        insight: { label: "Insight", color: "bg-yellow-100 text-yellow-700 border-yellow-300", border: "border-l-yellow-500", bg: "bg-yellow-50" },
+                      };
+                      const getTag = (t) => tagConfig[t] || { label: t || "Geral", color: "bg-gray-100 text-gray-600 border-gray-300", border: "border-l-gray-300", bg: "bg-gray-50" };
+
                       const entries = [
-                        ...data.notes.filter(n => n.text.startsWith("[Elogio]")).map(n => ({ ...n, _type: "elogio", _sort: n.date })),
-                        ...data.notes.filter(n => !n.text.startsWith("[Elogio]")).map(n => ({ ...n, _type: "anotacao", _sort: n.date })),
-                        ...data.clientLearnings.map(l => ({ ...l, _type: l.type === "erro" ? "erro" : "insight", _sort: l.date })),
+                        ...data.notes.map(n => {
+                          const isElogio = n.tag === "elogio" || n.text.startsWith("[Elogio]");
+                          return { ...n, _type: "nota", _tag: isElogio ? "elogio" : (n.tag || "gostou"), _text: isElogio ? n.text.replace(/^\[Elogio\]\s*/, "") : n.text, _sort: n.date, _author: n.author };
+                        }),
+                        ...data.clientLearnings.map(l => ({
+                          ...l, _type: "aprendizado", _tag: l.type === "erro" ? "erro" : "insight", _text: l.description, _title: l.title, _sort: l.date, _author: l.origin, _tags: l.tags,
+                        })),
                       ].sort((a, b) => b._sort.localeCompare(a._sort));
+
+                      const filterTags = ["todos", "gostou", "nao_gostou", "comunicacao", "processo", "elogio", "erro", "insight"];
+                      const filtered = kbFilter === "todos" ? entries : entries.filter(e => e._tag === kbFilter);
+
+                      // Count per tag
+                      const tagCounts = {};
+                      entries.forEach(e => { tagCounts[e._tag] = (tagCounts[e._tag] || 0) + 1; });
 
                       return (
                         <div>
-                          <div className="flex gap-2 mb-4">
-                            <input value={newNote} onChange={e => setNewNote(e.target.value)} onKeyDown={e => { if (e.key === "Enter") handleAddNote(c.id); }} placeholder="Adicionar anotação sobre este cliente..." className="flex-1 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
-                            <Button size="sm" onClick={() => handleAddNote(c.id)} disabled={!newNote.trim()}>Salvar</Button>
+                          {/* Add new note */}
+                          <Card className="p-4 mb-5">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Nova anotação</p>
+                            <div className="flex gap-2 mb-2">
+                              {["gostou", "nao_gostou", "comunicacao", "processo"].map(t => {
+                                const cfg = getTag(t);
+                                return (
+                                  <button key={t} onClick={() => setNoteTag(t)} className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-all ${noteTag === t ? cfg.color + " border-current ring-2 ring-offset-1 ring-gray-300" : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"}`}>
+                                    {cfg.label}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            <div className="flex gap-2">
+                              <input value={newNote} onChange={e => setNewNote(e.target.value)} onKeyDown={e => { if (e.key === "Enter") handleAddNote(c.id); }} placeholder="O que aprendemos sobre este cliente?" className="flex-1 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                              <Button size="sm" onClick={() => handleAddNote(c.id)} disabled={!newNote.trim()}>Salvar</Button>
+                            </div>
+                          </Card>
+
+                          {/* Filter */}
+                          <div className="flex flex-wrap gap-1.5 mb-4">
+                            {filterTags.filter(t => t === "todos" || tagCounts[t]).map(t => {
+                              const cfg = t === "todos" ? { label: "Todos", color: "bg-gray-100 text-gray-700 border-gray-300" } : getTag(t);
+                              const count = t === "todos" ? entries.length : (tagCounts[t] || 0);
+                              return (
+                                <button key={t} onClick={() => setKbFilter(t)} className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-all ${kbFilter === t ? (t === "todos" ? "bg-gray-900 text-white border-gray-900" : cfg.color + " border-current") : "bg-white text-gray-400 border-gray-200 hover:bg-gray-50"}`}>
+                                  {cfg.label} ({count})
+                                </button>
+                              );
+                            })}
                           </div>
 
-                          {entries.length === 0 ? (
-                            <p className="text-sm text-gray-400">Nenhum registro ainda.</p>
+                          {/* Timeline */}
+                          {filtered.length === 0 ? (
+                            <p className="text-sm text-gray-400 text-center py-6">Nenhum registro {kbFilter !== "todos" ? `com tag "${getTag(kbFilter).label}"` : ""} ainda.</p>
                           ) : (
-                            <div className="space-y-3">
-                              {entries.map((entry, i) => {
-                                if (entry._type === "elogio") {
-                                  return (
-                                    <div key={"n-" + entry.id} className="p-4 rounded-lg border-l-4 border-l-green-500 bg-green-50">
-                                      <div className="flex items-center justify-between mb-1">
-                                        <div className="flex items-center gap-2"><Badge variant="success">Elogio do cliente</Badge><span className="text-xs text-gray-500">{entry.author}</span></div>
-                                        <span className="text-xs text-gray-400">{entry.date}</span>
-                                      </div>
-                                      <p className="text-sm mt-1">{entry.text.replace(/^\[Elogio\]\s*/, "")}</p>
-                                    </div>
-                                  );
-                                }
-                                if (entry._type === "anotacao") {
-                                  return (
-                                    <div key={"n-" + entry.id} className="p-4 rounded-lg border-l-4 border-l-gray-300 bg-gray-50">
-                                      <div className="flex items-center justify-between mb-1">
-                                        <div className="flex items-center gap-2"><Badge variant="default">Anotação</Badge><span className="text-xs text-gray-500">{entry.author}</span></div>
-                                        <span className="text-xs text-gray-400">{entry.date}</span>
-                                      </div>
-                                      <p className="text-sm mt-1">{entry.text}</p>
-                                    </div>
-                                  );
-                                }
-                                if (entry._type === "erro") {
-                                  return (
-                                    <div key={"l-" + entry.id} className="p-4 rounded-lg border-l-4 border-l-red-500 bg-red-50">
-                                      <div className="flex items-center justify-between mb-1">
-                                        <div className="flex items-center gap-2"><Badge variant="danger">Erro</Badge><span className="text-xs text-gray-500">{entry.origin}</span></div>
-                                        <span className="text-xs text-gray-400">{entry.date}</span>
-                                      </div>
-                                      <p className="font-medium text-sm mt-1">{entry.title}</p>
-                                      <p className="text-sm text-gray-600 mt-1">{entry.description}</p>
-                                      {entry.tags && entry.tags.length > 0 && <div className="flex gap-1 mt-2">{entry.tags.map((tag, ti) => <span key={ti} className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">{tag}</span>)}</div>}
-                                    </div>
-                                  );
-                                }
-                                // insight
+                            <div className="space-y-2">
+                              {filtered.map((entry, i) => {
+                                const cfg = getTag(entry._tag);
                                 return (
-                                  <div key={"l-" + entry.id} className="p-4 rounded-lg border-l-4 border-l-yellow-500 bg-yellow-50">
-                                    <div className="flex items-center justify-between mb-1">
-                                      <div className="flex items-center gap-2"><Badge variant="warning">Insight</Badge><span className="text-xs text-gray-500">{entry.origin}</span></div>
-                                      <span className="text-xs text-gray-400">{entry.date}</span>
+                                  <div key={entry._type + "-" + entry.id} className={`p-4 rounded-lg border-l-4 ${cfg.border} ${cfg.bg}`}>
+                                    <div className="flex items-center justify-between mb-1.5">
+                                      <div className="flex items-center gap-2">
+                                        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cfg.color}`}>{cfg.label}</span>
+                                        <span className="text-xs text-gray-500">{entry._author}</span>
+                                      </div>
+                                      <span className="text-xs text-gray-400">{entry._sort}</span>
                                     </div>
-                                    <p className="font-medium text-sm mt-1">{entry.title}</p>
-                                    <p className="text-sm text-gray-600 mt-1">{entry.description}</p>
-                                    {entry.tags && entry.tags.length > 0 && <div className="flex gap-1 mt-2">{entry.tags.map((tag, ti) => <span key={ti} className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">{tag}</span>)}</div>}
+                                    {entry._title && <p className="font-medium text-sm">{entry._title}</p>}
+                                    <p className="text-sm text-gray-700">{entry._text}</p>
+                                    {entry._tags && entry._tags.length > 0 && <div className="flex gap-1 mt-2">{entry._tags.map((tag, ti) => <span key={ti} className="text-xs bg-white/60 text-gray-600 px-2 py-0.5 rounded-full border border-gray-200">{tag}</span>)}</div>}
                                   </div>
                                 );
                               })}
