@@ -868,12 +868,21 @@ function QAPortalView({ area, onBack, onViewErrors }) {
                           onClick={() => { approveTask(task.id, comments[task.id]); setComments(prev => { const n = { ...prev }; delete n[task.id]; return n; }); setExpandedId(null); }}>
                           <CheckCircle2 size={16} /> Aprovar e concluir
                         </button>
-                        <button className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
-                          onClick={() => { if (comments[task.id]?.trim()) { rejectTask(task.id, comments[task.id]); setComments(prev => { const n = { ...prev }; delete n[task.id]; return n; }); setExpandedId(null); } }}>
+                        <button
+                          className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${comments[task.id]?.trim() ? "border border-red-300 bg-red-50 text-red-700 hover:bg-red-100" : "border border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"}`}
+                          onClick={() => {
+                            if (!comments[task.id]?.trim()) {
+                              alert("Escreva um comentário antes de devolver a tarefa.");
+                              return;
+                            }
+                            rejectTask(task.id, comments[task.id]);
+                            setComments(prev => { const n = { ...prev }; delete n[task.id]; return n; });
+                            setExpandedId(null);
+                          }}>
                           <ArrowLeft size={16} /> Devolver para execução
                         </button>
                       </div>
-                      {!comments[task.id]?.trim() && <p className="text-xs text-gray-400 mt-3">Para devolver, é obrigatório escrever um comentário explicando o que precisa ser ajustado.</p>}
+                      {!comments[task.id]?.trim() && <p className="text-xs text-orange-500 mt-3 flex items-center gap-1"><AlertTriangle size={12} /> Escreva um comentário para poder devolver a tarefa ao executor.</p>}
                     </Card>
                   </div>
                 </div>
