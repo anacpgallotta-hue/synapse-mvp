@@ -134,28 +134,52 @@ function AppProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
   const [dismissedAlerts, setDismissedAlerts] = useState(new Set());
   const [qaAlerts, setQaAlerts] = useState([]);
-  const [qaLiderMessages, setQaLiderMessages] = useState([
-    { id: 1, from: "qa", author: "QA", text: "Pessoal, briefing do Festival de Esportes Radicais enviado. Prioridade alta — cliente espera retorno até sexta.", time: "09:30", date: new Date().toISOString().split("T")[0], projectId: null },
-    { id: 2, from: "lider", author: "Ana Gallotta", text: "Recebi! Vou distribuir as tarefas hoje. Alguma restrição de orçamento que devo saber?", time: "09:45", date: new Date().toISOString().split("T")[0], projectId: null },
-    { id: 3, from: "qa", author: "QA", text: "Orçamento aprovado sem restrições. Foco na qualidade visual — Red Bull é exigente com isso.", time: "10:02", date: new Date().toISOString().split("T")[0], projectId: null },
-  ]);
-  const [qaLiderLastRead, setQaLiderLastRead] = useState({ qa: 3, lider: 2 });
 
-  const sendQaLiderMsg = useCallback((from, author, text, projectId = null) => {
-    const msg = { id: Date.now(), from, author, text, time: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }), date: new Date().toISOString().split("T")[0], projectId };
-    setQaLiderMessages(prev => [...prev, msg]);
-    // Auto-mark as read for sender
-    setQaLiderLastRead(prev => ({ ...prev, [from]: msg.id }));
+  // Chat system: keyed by channelId
+  // Channels: "qa-lider" (QA ↔ Líder direct), "lider-t1" (Líder ↔ Executor t1), etc.
+  const today = new Date().toISOString().split("T")[0];
+  const [chatMessages, setChatMessages] = useState({
+    "qa-lider": [
+      { id: 1, from: "qa", author: "QA", text: "Briefing do Festival de Esportes Radicais enviado. Prioridade alta — cliente espera retorno até sexta.", time: "09:30", date: today },
+      { id: 2, from: "lider", author: "Ana Gallotta", text: "Recebi! Vou distribuir as tarefas hoje. Alguma restrição de orçamento?", time: "09:45", date: today },
+      { id: 3, from: "qa", author: "QA", text: "Orçamento aprovado sem restrições. Foco na qualidade visual — Red Bull é exigente.", time: "10:02", date: today },
+    ],
+    "lider-t1": [
+      { id: 4, from: "lider", author: "Ana Gallotta", text: "Mel, preciso que priorize o cronograma do evento. Prazo apertado.", time: "10:15", date: today },
+    ],
+    "lider-t2": [],
+    "lider-t3": [],
+    "lider-t4": [],
+  });
+  const [chatLastRead, setChatLastRead] = useState({
+    "qa-lider": { qa: 3, lider: 2 },
+    "lider-t1": { lider: 4, "t1": 0 },
+    "lider-t2": { lider: 0, "t2": 0 },
+    "lider-t3": { lider: 0, "t3": 0 },
+    "lider-t4": { lider: 0, "t4": 0 },
+  });
+
+  const sendChatMsg = useCallback((channelId, from, author, text) => {
+    const msg = { id: Date.now(), from, author, text, time: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }), date: new Date().toISOString().split("T")[0] };
+    setChatMessages(prev => ({ ...prev, [channelId]: [...(prev[channelId] || []), msg] }));
+    setChatLastRead(prev => ({ ...prev, [channelId]: { ...(prev[channelId] || {}), [from]: msg.id } }));
     return msg;
   }, []);
 
-  const markQaLiderRead = useCallback((role) => {
-    setQaLiderMessages(prev => {
-      if (prev.length === 0) return prev;
-      setQaLiderLastRead(p => ({ ...p, [role]: prev[prev.length - 1].id }));
+  const markChatRead = useCallback((channelId, role) => {
+    setChatMessages(prev => {
+      const msgs = prev[channelId] || [];
+      if (msgs.length === 0) return prev;
+      setChatLastRead(p => ({ ...p, [channelId]: { ...(p[channelId] || {}), [role]: msgs[msgs.length - 1].id } }));
       return prev;
     });
   }, []);
+
+  const getChatUnread = useCallback((channelId, role) => {
+    const msgs = chatMessages[channelId] || [];
+    const lastRead = (chatLastRead[channelId] || {})[role] || 0;
+    return msgs.filter(m => m.from !== role && m.id > lastRead).length;
+  }, [chatMessages, chatLastRead]);
 
   const addQaAlert = useCallback((taskId, executorId, text) => {
     setQaAlerts(prev => [...prev, { id: "qa-alert-" + Date.now(), taskId, executorId, text, date: new Date().toISOString().split("T")[0] }]);
@@ -340,7 +364,7 @@ function AppProvider({ children }) {
   }, [team, tasks]);
 
   return (
-    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, notify, addQaAlert, qaLiderMessages, qaLiderLastRead, sendQaLiderMsg, markQaLiderRead, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, createProject, updateProject, deleteTask, resubmitTask, revertFromQA, revertFromCompleted, revertFromDevolvida, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
+    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, notify, addQaAlert, chatMessages, chatLastRead, sendChatMsg, markChatRead, getChatUnread, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, createProject, updateProject, deleteTask, resubmitTask, revertFromQA, revertFromCompleted, revertFromDevolvida, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
       {children}
     </AppContext.Provider>
   );
@@ -2635,49 +2659,59 @@ function KanbanCreateTask({ projectId, project, team, addTask }) {
 // ============================
 // QA ↔ LÍDER CHAT PANEL (slide-out)
 // ============================
-function QaLiderChatPanel({ isOpen, onClose, role }) {
-  const { qaLiderMessages, qaLiderLastRead, sendQaLiderMsg, markQaLiderRead, projects, clients } = useContext(AppContext);
+function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
+  // role: "qa" | "lider" | executorId (e.g. "t1")
+  const { chatMessages, chatLastRead, sendChatMsg, markChatRead, getChatUnread, team } = useContext(AppContext);
   const [input, setInput] = useState("");
-  const [channel, setChannel] = useState("geral"); // "geral" or projectId
   const chatEndRef = useRef(null);
-  const author = role === "qa" ? "QA" : "Ana Gallotta";
 
-  // Mark as read when panel opens
-  if (isOpen) setTimeout(() => markQaLiderRead(role), 100);
+  // Determine channels based on role
+  const isQA = role === "qa";
+  const isLider = role === "lider";
+  const isExecutor = !isQA && !isLider;
+
+  // QA: single channel "qa-lider"
+  // Líder: "qa-lider" + "lider-t1", "lider-t2", etc.
+  // Executor: single channel "lider-{executorId}"
+  let channels;
+  if (isQA) {
+    channels = [{ id: "qa-lider", label: "Ana Gallotta", subtitle: "Líder Eventos", avatar: "L", color: "bg-blue-100 text-blue-700" }];
+  } else if (isLider) {
+    channels = [
+      { id: "qa-lider", label: "QA", subtitle: "Gestão de qualidade", avatar: "QA", color: "bg-purple-100 text-purple-700" },
+      ...team.map(t => ({ id: "lider-" + t.id, label: t.name, subtitle: t.role, avatar: t.name.split(" ").map(n => n[0]).join("").substring(0, 2), color: "bg-green-100 text-green-700" })),
+    ];
+  } else {
+    channels = [{ id: "lider-" + role, label: "Ana Gallotta", subtitle: "Líder", avatar: "L", color: "bg-blue-100 text-blue-700" }];
+  }
+
+  const [activeChannel, setActiveChannel] = useState(initialChannel || channels[0]?.id || "qa-lider");
+  const activeInfo = channels.find(c => c.id === activeChannel) || channels[0];
+  const myRole = isQA ? "qa" : isLider ? "lider" : role;
+  const myAuthor = isQA ? "QA" : isLider ? "Ana Gallotta" : (team.find(t => t.id === role)?.name || "Executor");
+
+  // Mark as read when panel opens or channel changes
+  if (isOpen) setTimeout(() => markChatRead(activeChannel, myRole), 100);
 
   const send = () => {
     if (!input.trim()) return;
-    const pid = channel === "geral" ? null : channel;
-    sendQaLiderMsg(role, author, input.trim(), pid);
+    sendChatMsg(activeChannel, myRole, myAuthor, input.trim());
     setInput("");
     setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
   };
 
-  // Filter: geral = only null projectId messages; project = only that projectId
-  const channelMessages = channel === "geral"
-    ? qaLiderMessages.filter(m => !m.projectId)
-    : qaLiderMessages.filter(m => m.projectId === channel);
-
-  const areaProjects = projects.filter(p => p.area === "eventos");
-
-  // Unread per channel
-  const getChannelUnread = (ch) => {
-    const msgs = ch === "geral" ? qaLiderMessages.filter(m => !m.projectId) : qaLiderMessages.filter(m => m.projectId === ch);
-    const lastRead = qaLiderLastRead[role] || 0;
-    return msgs.filter(m => m.from !== role && m.id > lastRead).length;
-  };
-
-  // Current channel info
-  const activeProject = channel !== "geral" ? areaProjects.find(p => p.id === channel) : null;
-  const activeClient = activeProject ? clients.find(c => c.id === activeProject.clientId) : null;
+  const msgs = chatMessages[activeChannel] || [];
 
   // Group messages by date
   const grouped = [];
   let lastDate = "";
-  channelMessages.forEach(m => {
+  msgs.forEach(m => {
     if (m.date !== lastDate) { grouped.push({ type: "date", date: m.date }); lastDate = m.date; }
     grouped.push({ type: "msg", ...m });
   });
+
+  // Total unread across all channels
+  const totalUnread = channels.reduce((sum, c) => sum + getChatUnread(c.id, myRole), 0);
 
   return (
     <>
@@ -2686,83 +2720,55 @@ function QaLiderChatPanel({ isOpen, onClose, role }) {
         {/* Header */}
         <div className="border-b border-gray-200 px-5 py-4 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className={`h-9 w-9 rounded-full flex items-center justify-center ${channel === "geral" ? "bg-blue-100" : "bg-purple-100"}`}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={channel === "geral" ? "text-blue-600" : "text-purple-600"}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <div className={`h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold ${activeInfo?.color || "bg-gray-100 text-gray-700"}`}>
+              {activeInfo?.avatar || "?"}
             </div>
             <div>
-              {channel === "geral" ? (
-                <>
-                  <h3 className="font-semibold text-gray-900 text-sm">Canal Geral</h3>
-                  <p className="text-xs text-gray-500">QA ↔ Líderes · Área de Eventos</p>
-                </>
-              ) : (
-                <>
-                  <h3 className="font-semibold text-gray-900 text-sm">{activeProject?.name || "Projeto"}</h3>
-                  <p className="text-xs text-gray-500">Cliente: <span className="font-medium text-gray-700">{activeClient?.name || "—"}</span> · Líder: {activeProject?.responsible || "—"}</p>
-                </>
-              )}
+              <h3 className="font-semibold text-gray-900 text-sm">{activeInfo?.label || "Chat"}</h3>
+              <p className="text-xs text-gray-500">{activeInfo?.subtitle || ""}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><X size={18} className="text-gray-400" /></button>
         </div>
 
-        {/* Channel tabs */}
-        <div className="border-b border-gray-100 px-3 py-2 flex gap-1 overflow-x-auto flex-shrink-0">
-          {(() => {
-            const geralUnread = getChannelUnread("geral");
-            return (
-              <button onClick={() => setChannel("geral")} className={`px-3 py-1.5 text-xs font-medium rounded-lg border whitespace-nowrap transition-colors flex items-center gap-1.5 ${channel === "geral" ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"}`}>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/></svg>
-                Geral
-                {geralUnread > 0 && <span className={`text-[9px] rounded-full px-1.5 py-0.5 font-bold ${channel === "geral" ? "bg-white text-gray-900" : "bg-red-500 text-white"}`}>{geralUnread}</span>}
-              </button>
-            );
-          })()}
-          {areaProjects.map(p => {
-            const cl = clients.find(c => c.id === p.clientId);
-            const unread = getChannelUnread(p.id);
-            const label = p.name.length > 16 ? p.name.substring(0, 16) + "…" : p.name;
-            return (
-              <button key={p.id} onClick={() => setChannel(p.id)} className={`px-3 py-1.5 text-xs font-medium rounded-lg border whitespace-nowrap transition-colors flex items-center gap-1.5 ${channel === p.id ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"}`}>
-                <span className="truncate">{label}</span>
-                {cl && <span className={`text-[9px] px-1 py-0.5 rounded ${channel === p.id ? "bg-blue-500 text-blue-100" : "bg-gray-100 text-gray-400"}`}>{cl.name}</span>}
-                {unread > 0 && <span className={`text-[9px] rounded-full px-1.5 py-0.5 font-bold ${channel === p.id ? "bg-white text-blue-600" : "bg-red-500 text-white"}`}>{unread}</span>}
-              </button>
-            );
-          })}
-        </div>
+        {/* Channel tabs (only show if more than 1 channel) */}
+        {channels.length > 1 && (
+          <div className="border-b border-gray-100 px-3 py-2 flex gap-1 overflow-x-auto flex-shrink-0">
+            {channels.map(ch => {
+              const unread = getChatUnread(ch.id, myRole);
+              return (
+                <button key={ch.id} onClick={() => { setActiveChannel(ch.id); setTimeout(() => markChatRead(ch.id, myRole), 50); }} className={`px-3 py-1.5 text-xs font-medium rounded-lg border whitespace-nowrap transition-colors flex items-center gap-1.5 ${activeChannel === ch.id ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"}`}>
+                  <span className={`h-5 w-5 rounded-full flex items-center justify-center text-[9px] font-bold ${activeChannel === ch.id ? "bg-white bg-opacity-20 text-white" : ch.color}`}>{ch.avatar}</span>
+                  <span className="truncate max-w-[100px]">{ch.label}</span>
+                  {unread > 0 && <span className={`text-[9px] rounded-full px-1.5 py-0.5 font-bold ${activeChannel === ch.id ? "bg-white text-gray-900" : "bg-red-500 text-white"}`}>{unread}</span>}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
-          {channel === "geral" && channelMessages.length === 0 && (
-            <div className="text-center py-8">
-              <div className="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-3">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-blue-400"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          {msgs.length === 0 && (
+            <div className="text-center py-12">
+              <div className={`h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-3 ${activeInfo?.color || "bg-gray-100"}`}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="opacity-60"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               </div>
-              <p className="text-sm text-gray-500 font-medium">Canal geral</p>
-              <p className="text-xs text-gray-400 mt-1">Comunicação aberta entre QA e todos os líderes da área.</p>
-            </div>
-          )}
-          {channel !== "geral" && channelMessages.length === 0 && (
-            <div className="text-center py-8">
-              <div className="h-12 w-12 rounded-full bg-purple-50 flex items-center justify-center mx-auto mb-3">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-purple-400"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              </div>
-              <p className="text-sm text-gray-500 font-medium">{activeProject?.name}</p>
-              <p className="text-xs text-gray-400 mt-1">Cliente: {activeClient?.name || "—"} · Discussões sobre este projeto.</p>
+              <p className="text-sm text-gray-500 font-medium">Conversa com {activeInfo?.label}</p>
+              <p className="text-xs text-gray-400 mt-1">Envie a primeira mensagem.</p>
             </div>
           )}
           {grouped.map((item, i) => {
             if (item.type === "date") {
               return <div key={"d" + i} className="flex items-center gap-3 py-3"><div className="flex-1 h-px bg-gray-200" /><span className="text-[10px] text-gray-400 font-medium uppercase">{item.date === new Date().toISOString().split("T")[0] ? "Hoje" : item.date}</span><div className="flex-1 h-px bg-gray-200" /></div>;
             }
-            const isMe = item.from === role;
+            const isMe = item.from === myRole;
             return (
               <div key={item.id} className={`flex ${isMe ? "justify-end" : "justify-start"} mb-1`}>
                 <div className={`max-w-[80%] ${isMe ? "" : "flex gap-2"}`}>
                   {!isMe && (
-                    <div className={`h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-1 ${item.from === "qa" ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`}>
-                      {item.from === "qa" ? "QA" : "L"}
+                    <div className={`h-7 w-7 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0 mt-1 ${activeInfo?.color || "bg-gray-100 text-gray-600"}`}>
+                      {activeInfo?.avatar || "?"}
                     </div>
                   )}
                   <div>
@@ -2780,16 +2786,8 @@ function QaLiderChatPanel({ isOpen, onClose, role }) {
 
         {/* Input */}
         <div className="border-t border-gray-200 p-4 flex-shrink-0">
-          {channel !== "geral" && activeClient && (
-            <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-[10px] text-gray-400">Enviando em</span>
-              <span className="text-[10px] font-medium text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">{activeProject?.name}</span>
-              <span className="text-[10px] text-gray-400">·</span>
-              <span className="text-[10px] text-gray-500">{activeClient.name}</span>
-            </div>
-          )}
           <div className="flex gap-2">
-            <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={channel === "geral" ? (role === "qa" ? "Mensagem para todos os líderes..." : "Mensagem para o QA...") : `Mensagem sobre ${activeProject?.name || "projeto"}...`} className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
+            <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={`Mensagem para ${activeInfo?.label || ""}...`} className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
             <button onClick={send} disabled={!input.trim()} className={`p-2.5 rounded-xl transition-colors ${input.trim() ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             </button>
@@ -2801,7 +2799,7 @@ function QaLiderChatPanel({ isOpen, onClose, role }) {
 }
 
 function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = false, isQAView = false, onOpenChat }) {
-  const { projects, tasks, clients, team, addTask, deleteTask, addQaAlert, qaLiderMessages, qaLiderLastRead } = useContext(AppContext);
+  const { projects, tasks, clients, team, addTask, deleteTask, addQaAlert, chatMessages, chatLastRead, getChatUnread } = useContext(AppContext);
   const project = projects.find(p => p.id === projectId);
   if (!project) return <div className="text-center py-12 text-gray-400">Projeto não encontrado.</div>;
 
@@ -2847,12 +2845,12 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
         </div>
         <div className="flex items-center gap-2">
           {(isQAView || !isClientView) && onOpenChat && (() => {
-            const role = isQAView ? "qa" : "lider";
-            const unread = qaLiderMessages.filter(m => m.from !== role && m.id > (qaLiderLastRead[role] || 0)).length;
+            const r = isQAView ? "qa" : "lider";
+            const unread = getChatUnread("qa-lider", r);
             return (
               <button onClick={onOpenChat} className="px-3 py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-600 hover:border-blue-300 hover:bg-blue-50 transition-all flex items-center gap-2 relative">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                {isQAView ? "Chat com Líder" : "Chat com QA"}
+                {isQAView ? "Chat com Líder" : "Mensagens"}
                 {unread > 0 && <span className="bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5 font-bold animate-pulse">{unread}</span>}
               </button>
             );
@@ -3153,8 +3151,8 @@ function App() {
 }
 
 function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, selectedProject, setSelectedProject, projectOrigin, executorId, executorName, setExecutorId, setExecutorName, qaArea, setQaArea, liderArea, setLiderArea, showNotif, setShowNotif, clientPortalId, setClientPortalId, onProjectClick, pushHistory }) {
-  const { notifications, getSmartAlerts, qaLiderMessages, qaLiderLastRead } = useContext(AppContext);
-  const [showQaChat, setShowQaChat] = useState(false);
+  const { notifications, getSmartAlerts, getChatUnread } = useContext(AppContext);
+  const [showChat, setShowChat] = useState(false);
 
   const isClientPortal = view === "experiencia_cliente";
   const isClientSelector = view === "client_selector";
@@ -3163,7 +3161,8 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   const isQA = view.startsWith("qa") || projectOrigin === "qa";
   const isLider = view.startsWith("lider") || (projectOrigin === "lider");
   const chatRole = isQA ? "qa" : "lider";
-  const chatUnread = qaLiderMessages.filter(m => m.from !== chatRole && m.id > (qaLiderLastRead[chatRole] || 0)).length;
+  // Count unread: QA sees qa-lider only; Líder sees qa-lider + all lider-* channels
+  const chatUnread = isQA ? getChatUnread("qa-lider", "qa") : (getChatUnread("qa-lider", "lider") + ["t1","t2","t3","t4"].reduce((s, t) => s + getChatUnread("lider-" + t, "lider"), 0));
 
   // Determine current notification context
   const notifContext = view.startsWith("qa") ? "qa" : view.startsWith("lider") ? "lider" : isClientPortal ? "client" : "executor";
@@ -3181,7 +3180,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   };
 
   const notifPanel = showNotif && <NotificationPanel onClose={() => setShowNotif(false)} context={notifContext} executorId={executorId} onTaskClick={handleTaskClick} />;
-  const chatPanel = <QaLiderChatPanel isOpen={showQaChat} onClose={() => setShowQaChat(false)} role={chatRole} />;
+  const chatPanel = <ChatPanel isOpen={showChat} onClose={() => setShowChat(false)} role={chatRole} />;
 
   if (isProjectDetail && selectedProject) {
     return (
@@ -3190,7 +3189,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
         {notifPanel}
         {chatPanel}
         <div className="max-w-7xl mx-auto px-6 py-8">
-          <ProjectKanbanView projectId={selectedProject} onBack={goBack} onTaskClick={handleTaskClick} isQAView={projectOrigin === "qa"} onOpenChat={() => setShowQaChat(true)} />
+          <ProjectKanbanView projectId={selectedProject} onBack={goBack} onTaskClick={handleTaskClick} isQAView={projectOrigin === "qa"} onOpenChat={() => setShowChat(true)} />
         </div>
       </>
     );
@@ -3240,8 +3239,8 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
       {notifPanel}
       {chatPanel}
       {/* Floating chat button for QA and Líder */}
-      {showChatFab && !showQaChat && (
-        <button onClick={() => setShowQaChat(true)} className="fixed bottom-6 right-6 z-30 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-all hover:scale-105 flex items-center gap-2" title={view.startsWith("qa") ? "Chat com Líder" : "Chat com QA"}>
+      {showChatFab && !showChat && (
+        <button onClick={() => setShowChat(true)} className="fixed bottom-6 right-6 z-30 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-all hover:scale-105 flex items-center gap-2" title={view.startsWith("qa") ? "Chat com Líder" : "Chat com QA"}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           {chatUnread > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse">{chatUnread}</span>}
         </button>
