@@ -3236,12 +3236,14 @@ const onboardingData = {
   lider: {
     title: "Portal Líder",
     slides: [
-      { icon: "layout", title: "Painel do Líder", desc: "Visão completa da operação: projetos ativos, feedbacks de clientes, carga do time e criação de tarefas — tudo em um só lugar." },
-      { icon: "users", title: "Squad do projeto", desc: "Dentro de cada projeto, monte o squad de executores. Só membros do squad podem receber tarefas daquele projeto." },
-      { icon: "plus", title: "Criar tarefas", desc: "Crie tarefas com nome, projeto, executor (filtrado pelo squad), prazo, prioridade, descrição, checklist e anexos." },
-      { icon: "message", title: "Feedbacks de clientes", desc: "Quando o cliente dá feedback sobre uma entrega, devolva a tarefa original ao executor com instruções — sem criar duplicatas." },
-      { icon: "bar", title: "Carga do time", desc: "Acompanhe quantas tarefas cada executor tem e seu nível de carga (Disponível, Moderado, Sobrecarregado)." },
-      { icon: "chat", title: "Chat", desc: "Converse diretamente com QA, com cada executor individual, ou nos canais dos projetos com todo o squad." },
+      { icon: "layout", title: "Seu painel de controle", desc: "O Portal Líder é o centro de comando da operação. Daqui você gerencia projetos, cria tarefas, acompanha entregas, recebe feedbacks de clientes e monitora a carga do time — tudo em uma única tela." },
+      { icon: "folder", title: "Projetos ativos", desc: "Na seção de projetos, veja todos os projetos da agência com cliente, status e squad. Clique em qualquer projeto para abrir o Kanban completo com todas as tarefas organizadas por status." },
+      { icon: "users", title: "Squad do projeto", desc: "Cada projeto tem um squad definido. Ao editar um projeto, monte o time de executores. Só membros do squad podem receber tarefas daquele projeto — isso evita atribuições erradas e mantém a operação organizada." },
+      { icon: "plus", title: "Criar tarefas", desc: "Crie tarefas preenchendo projeto, executor (filtrado pelo squad), prazo, prioridade, descrição detalhada e checklist. Quanto mais completo o briefing, menos retrabalho. O executor só vê as opções do squad do projeto selecionado." },
+      { icon: "message", title: "Feedbacks de clientes", desc: "Quando o cliente dá feedback sobre uma entrega, o card aparece no seu painel. Ao atribuir, a tarefa original é reaberta como 'Devolvida' com o feedback do cliente + suas instruções — sem criar duplicatas." },
+      { icon: "bar", title: "Carga do time", desc: "O indicador de carga mostra quantas tarefas cada executor tem: verde (Disponível), amarelo (Moderado) ou vermelho (Sobrecarregado). Use isso para distribuir trabalho de forma equilibrada." },
+      { icon: "bell", title: "Alertas inteligentes", desc: "O sininho mostra alertas sobre tarefas em risco de atraso, feedbacks pendentes e notificações do QA. Cada alerta é clicável e leva direto ao item que precisa de atenção." },
+      { icon: "chat", title: "Chat organizado", desc: "Seu chat tem duas seções: 'Direto' para falar com QA e cada executor individualmente, e 'Projetos' para canais de grupo com todo o squad. Quando um executor entra no squad, já aparece no chat." },
     ],
   },
 };
