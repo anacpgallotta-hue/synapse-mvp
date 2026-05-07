@@ -46,11 +46,11 @@ const initialClients = [
 ];
 
 const initialProjects = [
-  { id: "p1", name: "Gala de Premiação Anual", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Ana Gallotta", deadline: "2026-05-15", progress: 65 },
-  { id: "p2", name: "Festival de Esportes Radicais", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Ana Gallotta", deadline: "2026-05-28", progress: 30 },
-  { id: "p7", name: "Premiação Top Performers", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Ana Gallotta", deadline: "2026-07-10", progress: 10 },
-  { id: "p10", name: "Operações", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Ana Gallotta", deadline: "2026-05-30", progress: 0 },
-  { id: "p9", name: "Ativação de Marca - Evento Gastronômico", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Ana Gallotta", deadline: "2026-06-15", progress: 25 },
+  { id: "p1", name: "Gala de Premiação Anual", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Ana Gallotta", deadline: "2026-05-15", progress: 65, squad: ["t1", "t4"] },
+  { id: "p2", name: "Festival de Esportes Radicais", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Ana Gallotta", deadline: "2026-05-28", progress: 30, squad: [] },
+  { id: "p7", name: "Premiação Top Performers", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Ana Gallotta", deadline: "2026-07-10", progress: 10, squad: [] },
+  { id: "p10", name: "Operações", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Ana Gallotta", deadline: "2026-05-30", progress: 0, squad: ["t3", "t4"] },
+  { id: "p9", name: "Ativação de Marca - Evento Gastronômico", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Ana Gallotta", deadline: "2026-06-15", progress: 25, squad: ["t2"] },
 ];
 
 // Projetos históricos — concluídos (clientes passados)
@@ -2543,7 +2543,7 @@ function KanbanCreateTask({ projectId, project, team, addTask }) {
   const [kbCheckItems, setKbCheckItems] = useState([]);
   const [kbNewCheck, setKbNewCheck] = useState("");
   const kbFileRef = useRef(null);
-  const areaTeam = team.filter(m => m.area === project.area);
+  const areaTeam = project.squad && project.squad.length > 0 ? team.filter(m => project.squad.includes(m.id)) : team.filter(m => m.area === project.area);
 
   const handleKbFileSelect = (e) => {
     const selected = Array.from(e.target.files || []);
@@ -2799,7 +2799,7 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
 }
 
 function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = false, isQAView = false, onOpenChat }) {
-  const { projects, tasks, clients, team, addTask, deleteTask, addQaAlert, chatMessages, chatLastRead, getChatUnread } = useContext(AppContext);
+  const { projects, tasks, clients, team, addTask, deleteTask, addQaAlert, updateProject, chatMessages, chatLastRead, getChatUnread } = useContext(AppContext);
   const project = projects.find(p => p.id === projectId);
   if (!project) return <div className="text-center py-12 text-gray-400">Projeto não encontrado.</div>;
 
@@ -2941,25 +2941,88 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
         <KanbanCreateTask projectId={projectId} project={project} team={team} addTask={addTask} />
       )}
 
-      {!isClientView && !isQAView && (
-        <>
-          <h2 className="text-xl font-bold mt-8 mb-4">Membros do projeto</h2>
-          <div className="grid grid-cols-4 gap-3">
-            {[...new Set(projectTasks.map(t => t.executor))].map(execId => {
-              const execTasks = projectTasks.filter(t => t.executor === execId);
-              const name = execTasks[0]?.executorName || "—";
-              const done = execTasks.filter(t => t.status === "concluida").length;
-              return (
-                <Card key={execId} className="p-4">
-                  <p className="font-medium mb-1">{name}</p>
-                  <p className="text-sm text-gray-500">{execTasks.length} tarefa{execTasks.length !== 1 ? "s" : ""} · {done} concluída{done !== 1 ? "s" : ""}</p>
-                  <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2"><div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${execTasks.length > 0 ? Math.round((done / execTasks.length) * 100) : 0}%` }} /></div>
-                </Card>
-              );
-            })}
-          </div>
-        </>
-      )}
+      {!isClientView && !isQAView && (() => {
+        const squad = project.squad || [];
+        const squadMembers = team.filter(t => squad.includes(t.id));
+        const availableMembers = team.filter(t => !squad.includes(t.id));
+
+        const toggleSquadMember = (memberId) => {
+          const newSquad = squad.includes(memberId) ? squad.filter(id => id !== memberId) : [...squad, memberId];
+          updateProject(projectId, { squad: newSquad });
+        };
+
+        return (
+          <>
+            <div className="flex items-center justify-between mt-8 mb-4">
+              <h2 className="text-xl font-bold">Squad do projeto</h2>
+              <span className="text-sm text-gray-500">{squadMembers.length} de {team.length} executores</span>
+            </div>
+
+            {/* Squad members */}
+            <div className="grid grid-cols-4 gap-3 mb-4">
+              {squadMembers.map(member => {
+                const memberTasks = projectTasks.filter(t => t.executor === member.id);
+                const done = memberTasks.filter(t => t.status === "concluida").length;
+                return (
+                  <Card key={member.id} className="p-4 relative group border-2 border-green-200 bg-green-50/30">
+                    <button onClick={() => { if (confirm(`Remover ${member.name} do squad?`)) toggleSquadMember(member.id); }} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-red-50" title="Remover do squad">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300 hover:text-red-500"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+                    </button>
+                    <div className="flex items-center gap-2.5 mb-2">
+                      <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-xs font-bold text-green-700">{member.name.split(" ").map(n => n[0]).join("").substring(0, 2)}</div>
+                      <div>
+                        <p className="font-medium text-sm">{member.name}</p>
+                        <p className="text-[10px] text-gray-500">{member.role}</p>
+                      </div>
+                    </div>
+                    {memberTasks.length > 0 ? (
+                      <>
+                        <p className="text-xs text-gray-500">{memberTasks.length} tarefa{memberTasks.length !== 1 ? "s" : ""} · {done} concluída{done !== 1 ? "s" : ""}</p>
+                        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2"><div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${memberTasks.length > 0 ? Math.round((done / memberTasks.length) * 100) : 0}%` }} /></div>
+                      </>
+                    ) : (
+                      <p className="text-xs text-gray-400 italic">Sem tarefas ainda</p>
+                    )}
+                  </Card>
+                );
+              })}
+
+              {/* Add member button */}
+              {availableMembers.length > 0 && (
+                <div className="relative">
+                  <Card className="p-4 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-all min-h-[120px]" onClick={() => {
+                    const el = document.getElementById("squad-dropdown-" + projectId);
+                    if (el) el.classList.toggle("hidden");
+                  }}>
+                    <Plus size={20} className="text-gray-400 mb-1" />
+                    <p className="text-xs text-gray-500 font-medium">Adicionar</p>
+                  </Card>
+                  <div id={"squad-dropdown-" + projectId} className="hidden absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-20 py-1">
+                    <p className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Executores disponíveis</p>
+                    {availableMembers.map(m => (
+                      <button key={m.id} onClick={() => { toggleSquadMember(m.id); const el = document.getElementById("squad-dropdown-" + projectId); if (el) el.classList.add("hidden"); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-gray-50 transition-colors text-left">
+                        <div className="h-7 w-7 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600">{m.name.split(" ").map(n => n[0]).join("").substring(0, 2)}</div>
+                        <div>
+                          <p className="text-sm font-medium">{m.name}</p>
+                          <p className="text-[10px] text-gray-400">{m.role}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {squadMembers.length === 0 && (
+              <Card className="p-6 text-center border-dashed border-2 border-gray-200 mb-4">
+                <Users size={24} className="text-gray-300 mx-auto mb-2" />
+                <p className="text-sm text-gray-500 font-medium">Nenhum executor no squad</p>
+                <p className="text-xs text-gray-400 mt-1">Adicione membros do time para começar a atribuir tarefas.</p>
+              </Card>
+            )}
+          </>
+        );
+      })()}
     </div>
   );
 }
