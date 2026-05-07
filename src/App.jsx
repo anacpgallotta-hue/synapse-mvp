@@ -3248,6 +3248,19 @@ const onboardingData = {
       { icon: "chat", title: "Chat organizado", desc: "Seu chat tem duas seções: 'Direto' para falar com QA e cada executor individualmente, e 'Projetos' para canais de grupo com todo o squad. Quando um executor entra no squad, já aparece no chat." },
     ],
   },
+  clienthub: {
+    title: "Histórico de Clientes",
+    slides: [
+      { icon: "book", title: "A memória da agência", desc: "O Histórico de Clientes é a base de conhecimento da agência. Aqui ficam registrados todos os projetos, feedbacks, aprendizados e anotações de cada cliente — tudo organizado para que nenhuma informação se perca." },
+      { icon: "users", title: "Visão por cliente", desc: "Cada cliente tem um card com status (Ativo/Inativo), badge de relacionamento e um resumo: quantos projetos, quantos registros. Clique no card para expandir e ver tudo sobre aquele cliente." },
+      { icon: "folder", title: "Aba Projetos", desc: "Dentro de cada cliente, a aba 'Projetos' mostra todos os projetos ativos e concluídos. Veja nome, status, squad responsável e acompanhe o histórico completo de entregas ao longo do tempo." },
+      { icon: "message", title: "Aba Feedbacks", desc: "A aba 'Feedbacks' reúne todos os feedbacks que o cliente deu sobre entregas — aprovações, revisões e elogios. É o termômetro de satisfação: aqui você entende o que o cliente valoriza e o que precisa de atenção." },
+      { icon: "book", title: "Aba Aprendizados", desc: "Aprendizados registrados pelo QA durante as revisões ficam aqui, filtráveis por tag. Erros comuns, boas práticas e padrões de qualidade — tudo pesquisável para o time consultar antes de novas entregas." },
+      { icon: "clipboard", title: "Aba Anotações", desc: "Registre observações internas sobre o cliente: o que ele gostou, o que não gostou, preferências de comunicação e restrições. Use tags como 'Gostou', 'Não gostou' e 'Preferência' para organizar." },
+      { icon: "bar", title: "Métricas no topo", desc: "Os 4 cards no topo mostram: total de clientes, clientes ativos, projetos ativos e projetos concluídos. Uma visão rápida do tamanho e saúde da operação da agência." },
+      { icon: "star", title: "Construindo inteligência", desc: "Quanto mais o time registra aqui, mais inteligente a agência fica. Antes de começar um novo projeto com um cliente, consulte o histórico — evite repetir erros e replique o que funcionou." },
+    ],
+  },
   cliente: {
     title: "Portal do Cliente",
     slides: [
@@ -3547,7 +3560,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
 
   const notifPanel = showNotif && <NotificationPanel onClose={() => setShowNotif(false)} context={notifContext} executorId={executorId} onTaskClick={handleTaskClick} />;
   const chatPanel = <ChatPanel isOpen={showChat} onClose={() => setShowChat(false)} role={chatRole} />;
-  const currentPortal = isQA ? "qa" : isLider ? "lider" : isExecutorView ? "executor" : (isClientPortal || isClientHub || isClientSelector) ? "cliente" : null;
+  const currentPortal = isQA ? "qa" : isLider ? "lider" : isExecutorView ? "executor" : isClientHub ? "clienthub" : (isClientPortal || isClientSelector) ? "cliente" : null;
   const helpButton = currentPortal ? () => setShowOnboarding(currentPortal) : undefined;
   const onboardingModal = showOnboarding && <OnboardingModal portal={showOnboarding} onClose={() => setShowOnboarding(null)} />;
 
