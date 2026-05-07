@@ -159,14 +159,14 @@ function AppProvider({ children }) {
         alerts.push({ id: "smart-dev-" + t.id, text: `QA devolveu "${t.title}" — ${t.qaComment}`, priority: "danger", date: t.deadline, isDevolvida: true, taskId: t.id });
       }
       if (diffHours < 0 && t.status !== "devolvida") {
-        alerts.push({ id: "smart-late-" + t.id, text: `Atrasada: "${t.title}" — prazo era ${deadline.toLocaleDateString("pt-BR")}`, priority: "danger", date: t.deadline });
+        alerts.push({ id: "smart-late-" + t.id, text: `Atrasada: "${t.title}" — prazo era ${deadline.toLocaleDateString("pt-BR")}`, priority: "danger", date: t.deadline, taskId: t.id });
       } else if (diffHours >= 0 && diffHours < 48 && t.status !== "devolvida") {
-        alerts.push({ id: "smart-risk-" + t.id, text: `Em risco: "${t.title}" — prazo em ${Math.round(diffHours)}h`, priority: "warning", date: t.deadline });
+        alerts.push({ id: "smart-risk-" + t.id, text: `Em risco: "${t.title}" — prazo em ${Math.round(diffHours)}h`, priority: "warning", date: t.deadline, taskId: t.id });
       }
     });
     // Inject manual QA alerts for this executor
     qaAlerts.filter(qa => qa.executorId === executorId).forEach(qa => {
-      alerts.push({ id: qa.id, text: qa.text, priority: "warning", date: qa.date, isQaAlert: true });
+      alerts.push({ id: qa.id, text: qa.text, priority: "warning", date: qa.date, isQaAlert: true, taskId: qa.taskId });
     });
     return alerts.filter(a => !dismissedAlerts.has(a.id)).sort((a, b) => (a.priority === "danger" ? 0 : 1) - (b.priority === "danger" ? 0 : 1));
   }, [tasks, dismissedAlerts, qaAlerts]);
@@ -3002,7 +3002,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
           <TrocarExecutorView currentId={executorId} onSelect={(id, name) => { setExecutorId(id); setExecutorName(name); setView("executor"); }} onBack={goBack} />
         )}
         {!selectedTask && (view === "qa_selector" || view === "qa_eventos") && !view.includes("errors") && (
-          <QAPortalView area="eventos" onBack={goBack} onViewErrors={() => setView("qa_eventos_errors")} onProjectClick={(projectId) => { setView("project_kanban_" + projectId); }} />
+          <QAPortalView area="eventos" onBack={goBack} onViewErrors={() => setView("qa_eventos_errors")} onProjectClick={onProjectClick} />
         )}
         {!selectedTask && view.includes("qa_") && view.includes("_errors") && (
           <QAErrorsView area="eventos" onBack={goBack} />
