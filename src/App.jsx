@@ -3225,12 +3225,14 @@ const onboardingData = {
   qa: {
     title: "Portal QA",
     slides: [
-      { icon: "shield", title: "Visão geral", desc: "O Portal QA é o centro de controle de qualidade. Aqui você revisa entregas, acompanha projetos e garante que tudo sai no padrão." },
-      { icon: "inbox", title: "Entregas para revisar", desc: "Na aba 'Entregas', veja todas as tarefas enviadas pelos executores aguardando revisão. Aprove ou devolva com comentário." },
-      { icon: "folder", title: "Projetos", desc: "Acompanhe o kanban de cada projeto, veja o progresso e use o sininho para alertar executores sobre tarefas em risco." },
-      { icon: "bell", title: "Alertas ao executor", desc: "No kanban do projeto, clique no sininho de qualquer tarefa para enviar um alerta direto ao executor responsável." },
-      { icon: "book", title: "Base de conhecimento", desc: "Registre aprendizados e erros encontrados para que o time evolua. Tudo fica salvo e pesquisável." },
-      { icon: "chat", title: "Chat com o Líder", desc: "Use o chat para alinhar prioridades, passar briefings e dar orientações ao líder de forma rápida e organizada." },
+      { icon: "shield", title: "Seu papel no fluxo", desc: "O Portal QA é o centro de controle de qualidade da agência. Você é o filtro final antes do cliente ver qualquer entrega. Aqui você revisa, aprova, devolve e acompanha tudo que está sendo produzido." },
+      { icon: "inbox", title: "Entregas para revisar", desc: "Na aba 'Entregas', veja todas as tarefas enviadas pelos executores aguardando sua revisão. Abra cada entrega, confira o link/arquivo anexado e decida: aprovar (tarefa concluída) ou devolver com comentário explicando o ajuste." },
+      { icon: "check", title: "Aprovar ou devolver", desc: "Ao aprovar, a tarefa muda para 'Concluída' e o executor é notificado. Ao devolver, escreva um comentário claro do que precisa ser ajustado — a tarefa volta como 'Devolvida' no portal do executor com seu feedback." },
+      { icon: "folder", title: "Projetos e Kanban", desc: "Na aba 'Projetos', veja todos os projetos ativos. Clique em qualquer um para abrir o Kanban completo com as tarefas organizadas por coluna (A Fazer, Em Execução, Em QA, Concluída). Acompanhe o progresso de perto." },
+      { icon: "bell", title: "Alertas ao executor", desc: "No Kanban do projeto, cada tarefa tem um ícone de sininho. Clique para enviar um alerta direto ao executor responsável — útil para cobrar prazos, sinalizar urgências ou pedir atualizações sobre tarefas em risco." },
+      { icon: "plus", title: "Criar projetos", desc: "Você também pode criar novos projetos direto do portal QA. Defina nome, cliente, squad de executores e comece a organizar as entregas antes mesmo do líder atribuir tarefas." },
+      { icon: "book", title: "Base de conhecimento", desc: "Registre aprendizados, padrões de erro e boas práticas encontrados durante as revisões. Essa base fica salva, pesquisável e ajuda o time a não repetir os mesmos erros — quanto mais usa, mais inteligente o time fica." },
+      { icon: "chat", title: "Chat com o Líder", desc: "Use o botão de chat (canto inferior direito) para falar diretamente com o líder. Alinhe prioridades, tire dúvidas sobre briefings e passe orientações de forma rápida e organizada." },
     ],
   },
   lider: {
