@@ -232,6 +232,10 @@ function AppProvider({ children }) {
     setLearnings(prev => [...prev, { ...learning, id: "l" + Date.now() }]);
   }, []);
 
+  const deleteTask = useCallback((taskId) => {
+    setTasks(prev => prev.filter(t => t.id !== taskId));
+  }, []);
+
   const resubmitTask = useCallback((taskId) => {
     setTasks(prev => {
       const task = prev.find(t => t.id === taskId);
@@ -296,7 +300,7 @@ function AppProvider({ children }) {
   }, [team, tasks]);
 
   return (
-    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, createProject, updateProject, resubmitTask, revertFromQA, revertFromCompleted, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
+    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, createProject, updateProject, deleteTask, resubmitTask, revertFromQA, revertFromCompleted, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
       {children}
     </AppContext.Provider>
   );
@@ -409,7 +413,7 @@ function Header({ currentView, setView, currentExecutor, setShowNotif, notifCoun
 // EXECUTOR VIEW
 // ============================
 function ExecutorView({ executorId, onTaskClick }) {
-  const { tasks } = useContext(AppContext);
+  const { tasks, revertFromQA } = useContext(AppContext);
   const [timeFilter, setTimeFilter] = useState("todos");
   const [statusFilter, setStatusFilter] = useState("todos");
   const [viewMode, setViewMode] = useState("lista");
@@ -548,7 +552,12 @@ function ExecutorView({ executorId, onTaskClick }) {
                 </div>
                 <div className="space-y-2">
                   {colTasks.map(task => (
-                    <Card key={task.id} className="p-3" onClick={() => onTaskClick(task.id)}>
+                    <Card key={task.id} className="p-3 group relative" onClick={() => onTaskClick(task.id)}>
+                      {task.status === "em_qa" && (
+                        <button onClick={(e) => { e.stopPropagation(); if (confirm(`Cancelar entrega de "${task.title}"? A tarefa voltará para execução.`)) revertFromQA(task.id); }} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-red-50" title="Cancelar entrega">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300 hover:text-red-500"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+                        </button>
+                      )}
                       <div className="flex items-start gap-2 mb-2">
                         <div className={`h-2.5 w-2.5 rounded-full mt-1 flex-shrink-0 ${priorityColor(task.priority)}`} />
                         <p className="text-sm font-medium leading-tight">{task.title}</p>
@@ -637,7 +646,10 @@ function TaskDetailView({ taskId, onBack }) {
         <Card className="p-6 mb-6 border-l-4 border-l-purple-500">
           <h3 className="font-bold text-purple-700 mb-2">Enviada para QA</h3>
           <p className="text-sm text-gray-700 mb-4">Esta tarefa está aguardando revisão do QA. Se você precisa fazer ajustes, pode retirar do QA.</p>
-          <Button variant="outline" size="sm" onClick={() => { revertFromQA(taskId); }}>← Retirar do QA e voltar a editar</Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => { revertFromQA(taskId); }}>← Retirar do QA e voltar a editar</Button>
+            <button onClick={() => { if (confirm("Tem certeza que deseja cancelar esta entrega? A tarefa voltará para 'A fazer' e os arquivos serão removidos.")) { revertFromQA(taskId); } }} className="text-xs text-gray-400 hover:text-red-500 px-3 py-1.5 rounded-lg border border-gray-200 hover:border-red-300 transition-colors">Cancelar entrega</button>
+          </div>
         </Card>
       )}
 
@@ -2666,7 +2678,7 @@ function KanbanCreateTask({ projectId, project, team, addTask }) {
 }
 
 function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = false }) {
-  const { projects, tasks, clients, team, addTask } = useContext(AppContext);
+  const { projects, tasks, clients, team, addTask, deleteTask } = useContext(AppContext);
   const project = projects.find(p => p.id === projectId);
   if (!project) return <div className="text-center py-12 text-gray-400">Projeto não encontrado.</div>;
 
@@ -2733,7 +2745,12 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
               </div>
               <div className="space-y-2">
                 {colTasks.map(task => (
-                  <Card key={task.id} className="p-3" onClick={!isClientView && onTaskClick ? () => onTaskClick(task.id) : undefined}>
+                  <Card key={task.id} className="p-3 group relative" onClick={!isClientView && onTaskClick ? () => onTaskClick(task.id) : undefined}>
+                    {!isClientView && (
+                      <button onClick={(e) => { e.stopPropagation(); if (confirm(`Excluir tarefa "${task.title}"?`)) deleteTask(task.id); }} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-red-50" title="Excluir tarefa">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300 hover:text-red-500"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                      </button>
+                    )}
                     <div className="flex items-start gap-2 mb-2">
                       <div className={`h-2.5 w-2.5 rounded-full mt-1 flex-shrink-0 ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-orange-500" : "bg-green-500"}`} />
                       <p className="text-sm font-medium leading-tight">{task.title}</p>
