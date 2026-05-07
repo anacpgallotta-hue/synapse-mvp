@@ -427,7 +427,7 @@ function Card({ children, className = "", onClick }) {
 // ============================
 // HEADER
 // ============================
-function Header({ currentView, setView, currentExecutor, setShowNotif, notifCount, onHelp }) {
+function Header({ currentView, setView, currentExecutor, setShowNotif, notifCount, onHelp, showBell = true }) {
   const allNavItems = [
     { label: "Executor", view: "executor" },
     { label: "QA", view: "qa_selector" },
@@ -484,12 +484,14 @@ function Header({ currentView, setView, currentExecutor, setShowNotif, notifCoun
                 <span className="text-xs">Ajuda</span>
               </Button>
             )}
-            <div className="relative ml-1">
-              <Button variant="ghost" size="icon" onClick={() => setShowNotif(prev => !prev)}>
-                <Bell size={20} />
-                {notifCount > 0 && <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">{notifCount}</span>}
-              </Button>
-            </div>
+            {showBell && (
+              <div className="relative ml-1">
+                <Button variant="ghost" size="icon" onClick={() => setShowNotif(prev => !prev)}>
+                  <Bell size={20} />
+                  {notifCount > 0 && <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">{notifCount}</span>}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -3581,8 +3583,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   if (isClientSelector) {
     return (
       <>
-        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} />
-        {notifPanel}
+        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} showBell={false} />
         {onboardingModal}
         <div className="max-w-7xl mx-auto px-6 py-8">
           <ClientSelectorView onSelect={(cid) => { pushHistory(); setClientPortalId(cid); setView("experiencia_cliente"); }} onBack={goBack} />
@@ -3594,8 +3595,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   if (isClientPortal) {
     return (
       <>
-        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} />
-        {notifPanel}
+        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} showBell={false} />
         {onboardingModal}
         <div className="max-w-7xl mx-auto px-6 py-8">
           <ClientPortalView clientId={clientPortalId} onBack={goBack} />
@@ -3607,7 +3607,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   if (isClientHub) {
     return (
       <>
-        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} />
+        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} showBell={false} />
         {notifPanel}
         {onboardingModal}
         <div className="max-w-7xl mx-auto px-6 py-8">
