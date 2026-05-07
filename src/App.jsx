@@ -393,13 +393,13 @@ function AppProvider({ children }) {
 // ============================
 function Badge({ children, variant = "default", className = "" }) {
   const variants = {
-    default: "bg-stone-100 text-stone-800 border-stone-200",
-    success: "bg-green-50 text-green-700 border-green-200",
+    default: "bg-stone-100 text-stone-700 border-stone-200",
+    success: "bg-emerald-50 text-emerald-700 border-emerald-200",
     warning: "bg-orange-50 text-orange-600 border-orange-200",
-    danger: "bg-red-50 text-red-600 border-red-200",
-    info: "bg-blue-50 text-blue-600 border-blue-200",
-    accent: "bg-white text-green-700 border-green-300",
-    purple: "bg-purple-50 text-purple-600 border-purple-200",
+    danger: "bg-rose-50 text-rose-700 border-rose-200",
+    info: "bg-sky-50 text-sky-600 border-sky-200",
+    accent: "bg-amber-50 text-amber-700 border-amber-200",
+    purple: "bg-violet-50 text-violet-600 border-violet-200",
   };
   return <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium ${variants[variant] || variants.default} ${className}`}>{children}</span>;
 }
@@ -410,7 +410,7 @@ function Button({ children, variant = "default", size = "default", className = "
     outline: "bg-white text-stone-900 border border-stone-300 hover:bg-stone-50",
     ghost: "bg-transparent text-stone-700 hover:bg-stone-100",
     nav: "bg-transparent text-stone-600 hover:bg-stone-100 text-sm",
-    navActive: "bg-green-700 text-white text-sm",
+    navActive: "bg-stone-900 text-amber-400 text-sm",
   };
   const sizes = {
     default: "px-4 py-2",
@@ -516,11 +516,11 @@ function ExecutorView({ executorId, onTaskClick }) {
   const completedTasks = myTasks.filter(t => t.status === "concluida");
 
   const statusConfig = {
-    a_fazer: { label: "A Fazer", bg: "bg-stone-100", text: "text-stone-700", border: "border-stone-200", dot: "bg-stone-400", badge: "default" },
-    em_execucao: { label: "Em execução", bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200", dot: "bg-blue-500", badge: "info" },
-    em_qa: { label: "Em QA", bg: "bg-purple-50", text: "text-purple-700", border: "border-purple-200", dot: "bg-purple-500", badge: "purple" },
-    devolvida: { label: "Devolvida", bg: "bg-red-50", text: "text-red-700", border: "border-red-200", dot: "bg-red-500", badge: "danger" },
-    concluida: { label: "Concluída", bg: "bg-green-50", text: "text-green-700", border: "border-green-200", dot: "bg-green-500", badge: "success" },
+    a_fazer: { label: "A Fazer", bg: "bg-stone-100", text: "text-stone-600", border: "border-stone-200", dot: "bg-stone-400", badge: "default" },
+    em_execucao: { label: "Em execução", bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200", dot: "bg-amber-500", badge: "accent" },
+    em_qa: { label: "Em QA", bg: "bg-violet-50", text: "text-violet-700", border: "border-violet-200", dot: "bg-violet-500", badge: "purple" },
+    devolvida: { label: "Devolvida", bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200", dot: "bg-rose-500", badge: "danger" },
+    concluida: { label: "Concluída", bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200", dot: "bg-emerald-500", badge: "success" },
   };
 
   // For list view, filters apply only to active tasks
@@ -534,7 +534,7 @@ function ExecutorView({ executorId, onTaskClick }) {
     filtered = filtered.filter(t => t.status === statusFilter);
   }
 
-  const priorityColor = (p) => p === "Alta" ? "bg-red-500" : p === "Média" ? "bg-orange-500" : "bg-green-500";
+  const priorityColor = (p) => p === "Alta" ? "bg-red-500" : p === "Média" ? "bg-orange-500" : "bg-emerald-500";
 
   const formatDeadline = (d) => {
     const date = new Date(d);
@@ -655,10 +655,10 @@ function ExecutorView({ executorId, onTaskClick }) {
             <div className="mt-10 border-t pt-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="h-2.5 w-2.5 rounded-full bg-purple-500" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-violet-500" />
                   <h3 className="text-lg font-semibold text-stone-900">Aguardando QA</h3>
                 </div>
-                <span className="text-xs font-medium bg-purple-100 text-purple-700 rounded-full px-2.5 py-0.5">{qaTasksList.length}</span>
+                <span className="text-xs font-medium bg-purple-100 text-violet-700 rounded-full px-2.5 py-0.5">{qaTasksList.length}</span>
               </div>
               <div className="space-y-3">
                 {qaTasksList.map(task => (
@@ -673,10 +673,10 @@ function ExecutorView({ executorId, onTaskClick }) {
             <div className="mt-10 border-t pt-6">
               <button onClick={() => setShowHistory(!showHistory)} className="flex items-center gap-3 mb-4 group w-full text-left">
                 <div className="flex items-center gap-2">
-                  <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
                   <h3 className="text-lg font-semibold text-stone-900">Concluídas</h3>
                 </div>
-                <span className="text-xs font-medium bg-green-100 text-green-700 rounded-full px-2.5 py-0.5">{completedTasks.length}</span>
+                <span className="text-xs font-medium bg-emerald-100 text-emerald-700 rounded-full px-2.5 py-0.5">{completedTasks.length}</span>
                 <span className="ml-auto text-stone-400 group-hover:text-stone-600 transition-colors">
                   {showHistory ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </span>
@@ -780,7 +780,7 @@ function TaskDetailView({ taskId, onBack }) {
       <button onClick={onBack} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 mb-6">← Voltar para minhas tarefas</button>
       <div className="flex items-start justify-between mb-2">
         <h1 className="text-3xl font-bold text-stone-900">{task.title}</h1>
-        <div className={`h-4 w-4 rounded-full mt-2 ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-orange-500" : "bg-green-500"}`} />
+        <div className={`h-4 w-4 rounded-full mt-2 ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-orange-500" : "bg-emerald-500"}`} />
       </div>
       <div className="flex items-center gap-3 text-sm text-stone-500 mb-4 flex-wrap">
         <span><strong>Projeto:</strong> {task.project}</span>
@@ -798,8 +798,8 @@ function TaskDetailView({ taskId, onBack }) {
       )}
 
       {task.status === "em_qa" && (
-        <Card className="p-6 mb-6 border-l-4 border-l-purple-500">
-          <h3 className="font-bold text-purple-700 mb-2">Enviada para QA</h3>
+        <Card className="p-6 mb-6 border-l-4 border-l-violet-500">
+          <h3 className="font-bold text-violet-700 mb-2">Enviada para QA</h3>
           <p className="text-sm text-stone-700 mb-4">Esta tarefa está aguardando revisão do QA. Se você precisa fazer ajustes, pode retirar do QA.</p>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => { revertFromQA(taskId); }}>← Retirar do QA e voltar a editar</Button>
@@ -809,8 +809,8 @@ function TaskDetailView({ taskId, onBack }) {
       )}
 
       {task.status === "concluida" && (
-        <Card className="p-6 mb-6 border-l-4 border-l-green-500">
-          <h3 className="font-bold text-green-700 mb-2">Tarefa concluída</h3>
+        <Card className="p-6 mb-6 border-l-4 border-l-emerald-500">
+          <h3 className="font-bold text-emerald-700 mb-2">Tarefa concluída</h3>
           <p className="text-sm text-stone-700">{task.qaComment && `Comentário do QA: ${task.qaComment}`}</p>
         </Card>
       )}
@@ -839,7 +839,7 @@ function TaskDetailView({ taskId, onBack }) {
                 {leaderText && (
                   <div>
                     <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Instruções do líder</p>
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-stone-700">{leaderText}</div>
+                    <div className="bg-sky-50 border border-sky-200 rounded-lg p-3 text-sm text-stone-700">{leaderText}</div>
                   </div>
                 )}
                 {!leaderText && feedbackText && (
@@ -871,7 +871,7 @@ function TaskDetailView({ taskId, onBack }) {
         <h3 className="font-bold mb-4">Checklist de execução</h3>
         {task.checklist.map((item, i) => (
           <label key={i} className="flex items-center gap-3 py-2 cursor-pointer">
-            <input type="checkbox" checked={item.done} onChange={() => toggleChecklist(taskId, i)} className="h-5 w-5 rounded border-stone-300 text-blue-600" />
+            <input type="checkbox" checked={item.done} onChange={() => toggleChecklist(taskId, i)} className="h-5 w-5 rounded border-stone-300 text-sky-600" />
             <span className={item.done ? "line-through text-stone-400" : "text-stone-700"}>{item.text}</span>
           </label>
         ))}
@@ -885,8 +885,8 @@ function TaskDetailView({ taskId, onBack }) {
           <div className="mb-4">
             <label className="text-sm font-medium mb-2 block">Arquivos da entrega</label>
             {files.map((f, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-lg mb-2">
-                <FolderOpen size={16} className="text-green-600" />
+              <div key={i} className="flex items-center gap-3 p-3 bg-emerald-50 border border-emerald-200 rounded-lg mb-2">
+                <FolderOpen size={16} className="text-emerald-600" />
                 <div className="flex-1">
                   <p className="text-sm font-medium">{f.name}</p>
                   <p className="text-xs text-stone-400">{f.type} · {f.size}</p>
@@ -895,7 +895,7 @@ function TaskDetailView({ taskId, onBack }) {
               </div>
             ))}
             <input type="file" ref={fileInputRef} onChange={handleFileSelect} multiple style={{display: "none"}} />
-            <button type="button" onClick={() => fileInputRef.current && fileInputRef.current.click()} className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-stone-300 rounded-lg text-sm text-stone-500 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors cursor-pointer">
+            <button type="button" onClick={() => fileInputRef.current && fileInputRef.current.click()} className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-stone-300 rounded-lg text-sm text-stone-500 hover:border-green-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer">
               <Plus size={18} /> Clique para selecionar arquivos
             </button>
             <p className="text-xs text-stone-400 mt-1">Você pode selecionar vários arquivos de uma vez.</p>
@@ -968,10 +968,10 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
   };
 
   const tagConfig = {
-    gostou: { label: "Gostou", color: "bg-green-100 text-green-700 border-green-300" },
+    gostou: { label: "Gostou", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
     nao_gostou: { label: "Não gostou", color: "bg-red-100 text-red-700 border-red-300" },
-    comunicacao: { label: "Comunicação", color: "bg-blue-100 text-blue-700 border-blue-300" },
-    processo: { label: "Processo", color: "bg-purple-100 text-purple-700 border-purple-300" },
+    comunicacao: { label: "Comunicação", color: "bg-sky-100 text-sky-700 border-sky-300" },
+    processo: { label: "Processo", color: "bg-purple-100 text-violet-700 border-purple-300" },
     elogio: { label: "Elogio", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
     erro: { label: "Erro", color: "bg-red-100 text-red-700 border-red-300" },
     insight: { label: "Insight", color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
@@ -993,17 +993,17 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
           <p className="text-sm text-stone-500 mb-1">Projetos ativos</p>
           <p className="text-3xl font-bold text-stone-900">{areaProjects.length}</p>
         </Card>
-        <Card className={`p-5 cursor-pointer hover:shadow-md transition-shadow ${pendingTasks.length > 0 ? "border-l-4 border-l-purple-500" : ""}`} onClick={() => setTab("revisao")}>
+        <Card className={`p-5 cursor-pointer hover:shadow-md transition-shadow ${pendingTasks.length > 0 ? "border-l-4 border-l-violet-500" : ""}`} onClick={() => setTab("revisao")}>
           <p className="text-sm text-stone-500 mb-1">Aguardando revisão</p>
-          <p className={`text-3xl font-bold ${pendingTasks.length > 0 ? "text-purple-600" : "text-stone-900"}`}>{pendingTasks.length}</p>
+          <p className={`text-3xl font-bold ${pendingTasks.length > 0 ? "text-violet-600" : "text-stone-900"}`}>{pendingTasks.length}</p>
         </Card>
         <Card className="p-5">
           <p className="text-sm text-stone-500 mb-1">Taxa de retrabalho</p>
-          <p className={`text-3xl font-bold ${retrabalhoRate > 30 ? "text-red-600" : retrabalhoRate > 15 ? "text-yellow-600" : "text-green-600"}`}>{retrabalhoRate}%</p>
+          <p className={`text-3xl font-bold ${retrabalhoRate > 30 ? "text-red-600" : retrabalhoRate > 15 ? "text-yellow-600" : "text-emerald-600"}`}>{retrabalhoRate}%</p>
         </Card>
         <Card className={`p-5 ${atRisk.length > 0 ? "border-l-4 border-l-red-500" : ""}`}>
           <p className="text-sm text-stone-500 mb-1">Em risco de atraso</p>
-          <p className={`text-3xl font-bold ${atRisk.length > 0 ? "text-red-600" : "text-green-600"}`}>{atRisk.length}</p>
+          <p className={`text-3xl font-bold ${atRisk.length > 0 ? "text-red-600" : "text-emerald-600"}`}>{atRisk.length}</p>
         </Card>
       </div>
 
@@ -1033,7 +1033,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                 <Card key={task.id} className="mb-3 overflow-hidden">
                   <div className="p-4 flex items-center justify-between cursor-pointer hover:bg-stone-50 transition-colors" onClick={() => { setTab("revisao"); setExpandedId(task.id); }}>
                     <div className="flex items-center gap-3">
-                      <div className={`h-10 w-10 rounded-lg flex items-center justify-center text-white text-xs font-bold ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-yellow-500" : "bg-green-500"}`}>{task.priority[0]}</div>
+                      <div className={`h-10 w-10 rounded-lg flex items-center justify-center text-white text-xs font-bold ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-yellow-500" : "bg-emerald-500"}`}>{task.priority[0]}</div>
                       <div>
                         <p className="font-medium">{task.title}</p>
                         <p className="text-xs text-stone-500 mt-0.5">{task.project} · {task.executorName} · {new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</p>
@@ -1046,10 +1046,10 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
             </div>
           )}
           {pendingTasks.length === 0 && (
-            <Card className="p-8 text-center mb-8 bg-green-50 border-green-200">
+            <Card className="p-8 text-center mb-8 bg-emerald-50 border-emerald-200">
               <CheckCircle2 size={32} className="text-green-500 mx-auto mb-2" />
-              <p className="font-medium text-green-700">Nenhuma entrega pendente de revisão</p>
-              <p className="text-sm text-green-600 mt-1">Todas as entregas foram revisadas.</p>
+              <p className="font-medium text-emerald-700">Nenhuma entrega pendente de revisão</p>
+              <p className="text-sm text-emerald-600 mt-1">Todas as entregas foram revisadas.</p>
             </Card>
           )}
 
@@ -1103,16 +1103,16 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                       <h3 className="font-semibold text-stone-900">{p.name}</h3>
                       <p className="text-xs text-stone-500 mt-0.5">{p.client} · Líder: {p.responsible}</p>
                     </div>
-                    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${p.priority === "Alta" ? "bg-red-50 text-red-700 border-red-200" : p.priority === "Média" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : "bg-green-50 text-green-700 border-green-200"}`}>{p.priority}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${p.priority === "Alta" ? "bg-red-50 text-red-700 border-red-200" : p.priority === "Média" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"}`}>{p.priority}</span>
                   </div>
                   <div className="flex items-center gap-4 mb-3">
-                    <div className="flex-1 bg-stone-200 rounded-full h-2"><div className="bg-green-600 h-2 rounded-full transition-all" style={{ width: `${pct}%` }} /></div>
+                    <div className="flex-1 bg-stone-200 rounded-full h-2"><div className="bg-amber-500 h-2 rounded-full transition-all" style={{ width: `${pct}%` }} /></div>
                     <span className="text-sm font-medium text-stone-700">{pct}%</span>
                   </div>
                   <div className="flex gap-3 text-xs text-stone-500">
                     <span>{pTasks.length} tarefas</span>
                     <span>{done} concluídas</span>
-                    {inQa > 0 && <span className="text-purple-600 font-medium">{inQa} em QA</span>}
+                    {inQa > 0 && <span className="text-violet-600 font-medium">{inQa} em QA</span>}
                   </div>
                   <p className="text-xs text-stone-400 mt-2">Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })}</p>
                 </Card>
@@ -1168,11 +1168,11 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                 <Card key={p.id} className="p-5 cursor-pointer hover:shadow-md transition-all" onClick={() => { if (onProjectClick) onProjectClick(p.id, "qa"); }}>
                   <div className="flex items-start justify-between mb-3">
                     <div><h3 className="font-semibold text-stone-900">{p.name}</h3><p className="text-xs text-stone-500 mt-0.5">{p.client} · Líder: {p.responsible}</p></div>
-                    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${p.priority === "Alta" ? "bg-red-50 text-red-700 border-red-200" : p.priority === "Média" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : "bg-green-50 text-green-700 border-green-200"}`}>{p.priority}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${p.priority === "Alta" ? "bg-red-50 text-red-700 border-red-200" : p.priority === "Média" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"}`}>{p.priority}</span>
                   </div>
                   {p.briefing && <p className="text-xs text-stone-500 mb-3 line-clamp-2">{p.briefing}</p>}
                   <div className="flex items-center gap-4 mb-2">
-                    <div className="flex-1 bg-stone-200 rounded-full h-2"><div className="bg-green-600 h-2 rounded-full" style={{ width: `${pct}%` }} /></div>
+                    <div className="flex-1 bg-stone-200 rounded-full h-2"><div className="bg-amber-500 h-2 rounded-full" style={{ width: `${pct}%` }} /></div>
                     <span className="text-sm font-medium">{pct}%</span>
                   </div>
                   <div className="flex justify-between text-xs text-stone-500">
@@ -1192,9 +1192,9 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
           {/* Sub-tabs */}
           <div className="flex gap-2 mb-6">
             {[
-              ["pendentes", `Pendentes (${pendingTasks.length})`, pendingTasks.length > 0 ? "bg-purple-50 text-purple-700 border-purple-200" : ""],
-              ["devolvidas", `Devolvidas (${allDevolvidas.length})`, allDevolvidas.length > 0 ? "bg-red-50 text-red-700 border-red-200" : ""],
-              ["aprovadas", `Aprovadas (${allCompleted.length})`, "bg-green-50 text-green-700 border-green-200"],
+              ["pendentes", `Pendentes (${pendingTasks.length})`, pendingTasks.length > 0 ? "bg-violet-50 text-violet-700 border-violet-200" : ""],
+              ["devolvidas", `Devolvidas (${allDevolvidas.length})`, allDevolvidas.length > 0 ? "bg-rose-50 text-rose-700 border-rose-200" : ""],
+              ["aprovadas", `Aprovadas (${allCompleted.length})`, "bg-emerald-50 text-emerald-700 border-emerald-200"],
             ].map(([key, label, activeColor]) => (
               <button key={key} onClick={() => setReviewTab(key)} className={`px-4 py-2 text-sm font-medium rounded-lg border transition-colors ${reviewTab === key ? (activeColor || "bg-stone-100 text-stone-700 border-stone-300") : "bg-white text-stone-500 border-stone-200 hover:border-stone-300"}`}>{label}</button>
             ))}
@@ -1210,7 +1210,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                 <div className="p-5 cursor-pointer hover:bg-stone-50 transition-colors" onClick={() => setExpandedId(isExpanded ? null : task.id)}>
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
-                      <div className={`h-10 w-10 rounded-lg flex items-center justify-center text-white text-xs font-bold flex-shrink-0 ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-yellow-500" : "bg-green-500"}`}>{task.priority[0]}</div>
+                      <div className={`h-10 w-10 rounded-lg flex items-center justify-center text-white text-xs font-bold flex-shrink-0 ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-yellow-500" : "bg-emerald-500"}`}>{task.priority[0]}</div>
                       <div>
                         <h3 className="font-semibold text-stone-900">{task.title}</h3>
                         <div className="flex items-center gap-3 mt-1 text-sm text-stone-500">
@@ -1235,18 +1235,18 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                                 const desc = task.description || "";
                                 const hasLeader = desc.includes("Instruções do líder:");
                                 const hasFbPrefix = desc.match(/^Feedback do cliente [^:]+:\s*/i);
-                                if (hasLeader) { const lt = desc.split(/Instruções do líder:\s*/i)[1]?.trim(); return lt ? (<div><p className="text-xs font-semibold text-blue-600 mb-1">Instruções do líder</p><div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-stone-700">{lt}</div></div>) : null; }
+                                if (hasLeader) { const lt = desc.split(/Instruções do líder:\s*/i)[1]?.trim(); return lt ? (<div><p className="text-xs font-semibold text-sky-600 mb-1">Instruções do líder</p><div className="bg-sky-50 border border-sky-200 rounded-lg p-3 text-sm text-stone-700">{lt}</div></div>) : null; }
                                 if (hasFbPrefix) { const cl = desc.replace(/^Feedback do cliente [^:]+:\s*/i, "").trim(); return cl ? <p className="text-sm text-stone-700">{cl}</p> : null; }
                                 return <p className="text-sm text-stone-700">{desc}</p>;
                               })()}
-                              {task.feedbackOrigin && (<div className="p-3 bg-green-50 border border-green-200 rounded-lg"><p className="text-xs font-semibold text-green-700 mb-1">Feedback do cliente</p><p className="text-sm text-stone-700">{task.feedbackOrigin.text}</p></div>)}
+                              {task.feedbackOrigin && (<div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg"><p className="text-xs font-semibold text-emerald-700 mb-1">Feedback do cliente</p><p className="text-sm text-stone-700">{task.feedbackOrigin.text}</p></div>)}
                             </Card>
                           </div>
                           <div>
                             <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">Checklist</p>
                             <Card className="p-4">
-                              <div className="space-y-2">{task.checklist.map((item, i) => (<div key={i} className="flex items-center gap-2.5"><div className={`h-4 w-4 rounded flex items-center justify-center text-xs flex-shrink-0 ${item.done ? "bg-green-600 text-white" : "border border-stone-300"}`}>{item.done ? "✓" : ""}</div><span className={`text-sm ${item.done ? "text-stone-400 line-through" : "text-stone-700"}`}>{item.text}</span></div>))}</div>
-                              <div className="mt-3 pt-3 border-t border-stone-100"><div className="flex items-center justify-between"><span className="text-xs text-stone-500">{task.checklist.filter(c => c.done).length}/{task.checklist.length}</span><div className="w-20 bg-stone-200 rounded-full h-1.5"><div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${(task.checklist.filter(c => c.done).length / task.checklist.length) * 100}%` }} /></div></div></div>
+                              <div className="space-y-2">{task.checklist.map((item, i) => (<div key={i} className="flex items-center gap-2.5"><div className={`h-4 w-4 rounded flex items-center justify-center text-xs flex-shrink-0 ${item.done ? "bg-amber-500 text-white" : "border border-stone-300"}`}>{item.done ? "✓" : ""}</div><span className={`text-sm ${item.done ? "text-stone-400 line-through" : "text-stone-700"}`}>{item.text}</span></div>))}</div>
+                              <div className="mt-3 pt-3 border-t border-stone-100"><div className="flex items-center justify-between"><span className="text-xs text-stone-500">{task.checklist.filter(c => c.done).length}/{task.checklist.length}</span><div className="w-20 bg-stone-200 rounded-full h-1.5"><div className="bg-amber-500 h-1.5 rounded-full" style={{ width: `${(task.checklist.filter(c => c.done).length / task.checklist.length) * 100}%` }} /></div></div></div>
                             </Card>
                           </div>
                         </div>
@@ -1256,11 +1256,11 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                             <Card className="p-4">
                               {(task.submittedFiles && task.submittedFiles.length > 0) ? (
                                 <div className="space-y-2">
-                                  {task.submittedFiles.map((f, i) => (<div key={i} className="flex items-center gap-3 p-3 bg-stone-50 rounded-lg border border-stone-100"><div className="h-8 w-8 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-purple-600" /></div><div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">{f.name}</p><p className="text-xs text-stone-500">{f.type ? f.type + " · " : ""}{f.size}</p></div><a href={f.url} download={f.name} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 cursor-pointer flex-shrink-0" style={{textDecoration:"none"}}><ExternalLink size={12} /> Abrir</a></div>))}
+                                  {task.submittedFiles.map((f, i) => (<div key={i} className="flex items-center gap-3 p-3 bg-stone-50 rounded-lg border border-stone-100"><div className="h-8 w-8 rounded-lg bg-violet-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-violet-600" /></div><div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">{f.name}</p><p className="text-xs text-stone-500">{f.type ? f.type + " · " : ""}{f.size}</p></div><a href={f.url} download={f.name} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 cursor-pointer flex-shrink-0" style={{textDecoration:"none"}}><ExternalLink size={12} /> Abrir</a></div>))}
                                   {task.submittedLink?.trim() && (<div className="flex items-center gap-3 p-3 bg-stone-50 rounded-lg border border-stone-100"><ExternalLink size={16} className="text-stone-500 flex-shrink-0" /><p className="text-xs text-stone-500 truncate flex-1">{task.submittedLink}</p><Button variant="outline" size="sm" onClick={() => window.open(task.submittedLink, "_blank")}>Abrir</Button></div>)}
                                 </div>
                               ) : task.submittedLink?.trim() ? (
-                                <div className="flex items-center gap-3 p-3 bg-stone-50 rounded-lg border border-stone-100"><ExternalLink size={16} className="text-purple-600 flex-shrink-0" /><p className="text-xs text-stone-500 truncate flex-1">{task.submittedLink}</p><Button variant="outline" size="sm" onClick={() => window.open(task.submittedLink, "_blank")}>Abrir</Button></div>
+                                <div className="flex items-center gap-3 p-3 bg-stone-50 rounded-lg border border-stone-100"><ExternalLink size={16} className="text-violet-600 flex-shrink-0" /><p className="text-xs text-stone-500 truncate flex-1">{task.submittedLink}</p><Button variant="outline" size="sm" onClick={() => window.open(task.submittedLink, "_blank")}>Abrir</Button></div>
                               ) : (<p className="text-sm text-stone-400 italic">Nenhum arquivo anexado.</p>)}
                             </Card>
                           </div>
@@ -1271,7 +1271,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                         <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-3">Revisão e devolutiva</p>
                         <textarea value={comments[task.id] || ""} onChange={e => setComments(prev => ({ ...prev, [task.id]: e.target.value }))} placeholder="Escreva o que precisa ser ajustado, elogie o que ficou bom, ou aprove diretamente..." className="w-full border border-stone-200 rounded-lg p-3 text-sm min-h-[80px] mb-4 focus:outline-none focus:ring-2 focus:ring-gray-900 bg-stone-50" />
                         <div className="flex gap-3">
-                          <button className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg bg-green-700 text-white hover:bg-green-800 transition-colors" onClick={() => { approveTask(task.id, comments[task.id]); setComments(prev => { const n = { ...prev }; delete n[task.id]; return n; }); setExpandedId(null); }}><CheckCircle2 size={16} /> Aprovar</button>
+                          <button className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors" onClick={() => { approveTask(task.id, comments[task.id]); setComments(prev => { const n = { ...prev }; delete n[task.id]; return n; }); setExpandedId(null); }}><CheckCircle2 size={16} /> Aprovar</button>
                           <button className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${comments[task.id]?.trim() ? "border border-red-300 bg-red-50 text-red-700 hover:bg-red-100" : "border border-stone-200 bg-stone-100 text-stone-400 cursor-not-allowed"}`} onClick={() => { if (!comments[task.id]?.trim()) return; rejectTask(task.id, comments[task.id]); setComments(prev => { const n = { ...prev }; delete n[task.id]; return n; }); setExpandedId(null); }}><ArrowLeft size={16} /> Devolver</button>
                         </div>
                         {!comments[task.id]?.trim() && <p className="text-xs text-stone-400 mt-3">Escreva um comentário para poder devolver.</p>}
@@ -1293,7 +1293,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                   <div><p className="font-medium text-sm">{task.title}</p><p className="text-xs text-stone-500 mt-0.5">{task.project} · {task.executorName}</p></div>
                   <button onClick={() => revertFromDevolvida(task.id)} className="text-xs text-stone-400 hover:text-red-500 px-3 py-1.5 rounded-lg border border-stone-200 hover:border-red-300 transition-colors">Reverter devolução</button>
                 </div>
-                {task.qaComment && <div className="mt-2 p-2.5 bg-red-50 rounded-lg border border-red-100"><p className="text-xs text-red-700">{task.qaComment}</p></div>}
+                {task.qaComment && <div className="mt-2 p-2.5 bg-rose-50 rounded-lg border border-rose-100"><p className="text-xs text-rose-700">{task.qaComment}</p></div>}
               </Card>
             ))
           )}
@@ -1373,8 +1373,8 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                   <div className="space-y-2">
                     {filtered.map((entry, i) => {
                       const cfg = getTagInfo(entry._tag);
-                      const borderColors = { gostou: "border-l-green-500", nao_gostou: "border-l-red-500", comunicacao: "border-l-blue-500", processo: "border-l-purple-500", elogio: "border-l-emerald-500", erro: "border-l-red-500", insight: "border-l-yellow-500" };
-                      const bgColors = { gostou: "bg-green-50", nao_gostou: "bg-red-50", comunicacao: "bg-blue-50", processo: "bg-purple-50", elogio: "bg-emerald-50", erro: "bg-red-50", insight: "bg-yellow-50" };
+                      const borderColors = { gostou: "border-l-emerald-500", nao_gostou: "border-l-red-500", comunicacao: "border-l-sky-500", processo: "border-l-violet-500", elogio: "border-l-emerald-500", erro: "border-l-red-500", insight: "border-l-yellow-500" };
+                      const bgColors = { gostou: "bg-emerald-50", nao_gostou: "bg-red-50", comunicacao: "bg-sky-50", processo: "bg-violet-50", elogio: "bg-emerald-50", erro: "bg-red-50", insight: "bg-yellow-50" };
                       return (
                         <div key={i} className={`p-4 rounded-lg border-l-4 ${borderColors[entry._tag] || "border-l-gray-300"} ${bgColors[entry._tag] || "bg-stone-50"}`}>
                           <div className="flex items-center justify-between mb-1.5">
@@ -1529,8 +1529,8 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
       <p className="text-sm text-stone-400 mb-6">Você está vendo todos os projetos de eventos.</p>
 
       <div className="flex gap-2 mb-6">
-        <Button variant={tab === "geral" ? "outline" : "ghost"} size="sm" onClick={() => setTab("geral")} className={tab === "geral" ? "border-green-600 text-green-700" : ""}>Visão geral</Button>
-        <Button variant={tab === "portal" ? "outline" : "ghost"} size="sm" onClick={() => setTab("portal")} className={tab === "portal" ? "border-green-600 text-green-700" : ""}>Portal do cliente</Button>
+        <Button variant={tab === "geral" ? "outline" : "ghost"} size="sm" onClick={() => setTab("geral")} className={tab === "geral" ? "border-amber-500 text-amber-700" : ""}>Visão geral</Button>
+        <Button variant={tab === "portal" ? "outline" : "ghost"} size="sm" onClick={() => setTab("portal")} className={tab === "portal" ? "border-amber-500 text-amber-700" : ""}>Portal do cliente</Button>
       </div>
 
       {tab === "geral" && (
@@ -1548,7 +1548,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                       <td className="p-4 text-stone-500">{p.client}</td>
                       <td className="p-4"><Badge variant="info">{p.type}</Badge></td>
                       <td className="p-4"><Badge variant="purple">Projeto</Badge></td>
-                      <td className="p-4"><span className="inline-flex items-center gap-1"><span className={`h-2 w-2 rounded-full ${p.priority === "Alta" ? "bg-red-500" : p.priority === "Média" ? "bg-orange-500" : "bg-green-500"}`} />{p.priority}</span></td>
+                      <td className="p-4"><span className="inline-flex items-center gap-1"><span className={`h-2 w-2 rounded-full ${p.priority === "Alta" ? "bg-red-500" : p.priority === "Média" ? "bg-orange-500" : "bg-emerald-500"}`} />{p.priority}</span></td>
                       <td className="p-4 text-stone-500">{p.responsible}</td>
                       <td className="p-4 text-stone-500"><Calendar className="inline" size={12} /> {new Date(p.deadline).toLocaleDateString("pt-BR")}</td>
                     </tr>
@@ -1675,7 +1675,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
               {elogios.map(fb => {
                 const proj = projects.find(p => p.id === fb.projectId);
                 return (
-                  <Card key={fb.id} className="mb-3 border-l-4 border-l-green-500">
+                  <Card key={fb.id} className="mb-3 border-l-4 border-l-emerald-500">
                     <div className="p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Badge variant="success">Elogio</Badge>
@@ -1717,10 +1717,10 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
             <p className="text-sm font-medium text-stone-700 mb-3">Nova anotação sobre cliente</p>
             {(() => {
               const noteTagConfig = {
-                gostou: { label: "Gostou", color: "bg-green-100 text-green-700 border-green-300" },
+                gostou: { label: "Gostou", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
                 nao_gostou: { label: "Não gostou", color: "bg-red-100 text-red-700 border-red-300" },
-                comunicacao: { label: "Comunicação", color: "bg-blue-100 text-blue-700 border-blue-300" },
-                processo: { label: "Processo", color: "bg-purple-100 text-purple-700 border-purple-300" },
+                comunicacao: { label: "Comunicação", color: "bg-sky-100 text-sky-700 border-sky-300" },
+                processo: { label: "Processo", color: "bg-purple-100 text-violet-700 border-purple-300" },
                 elogio: { label: "Elogio", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
                 erro: { label: "Erro", color: "bg-red-100 text-red-700 border-red-300" },
                 insight: { label: "Insight", color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
@@ -1824,7 +1824,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                   <p className="text-xs text-stone-400 mt-0.5 mb-2">Anexe briefings, manuais, referências visuais ou qualquer arquivo útil para o executor.</p>
                   {createFiles.map((f, i) => (
                     <div key={i} className="flex items-center gap-3 p-2.5 bg-stone-50 border border-stone-100 rounded-lg mb-1.5">
-                      <div className="h-8 w-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-green-700" /></div>
+                      <div className="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-emerald-700" /></div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-stone-900 truncate">{f.name}</p>
                         <p className="text-xs text-stone-400">{f.type} · {f.size}</p>
@@ -1833,7 +1833,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                     </div>
                   ))}
                   <input type="file" ref={createFileRef} onChange={handleCreateFileSelect} multiple style={{display: "none"}} />
-                  <button type="button" onClick={() => createFileRef.current && createFileRef.current.click()} className="w-full flex items-center justify-center gap-2 p-3 border-2 border-dashed border-stone-200 rounded-lg text-sm text-stone-400 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors cursor-pointer">
+                  <button type="button" onClick={() => createFileRef.current && createFileRef.current.click()} className="w-full flex items-center justify-center gap-2 p-3 border-2 border-dashed border-stone-200 rounded-lg text-sm text-stone-400 hover:border-green-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer">
                     <Plus size={16} /> Selecionar arquivos
                   </button>
                 </div>
@@ -1882,7 +1882,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
               <div className="grid grid-cols-4 gap-4 mb-6">
                 <Card className="p-4 text-center"><p className="text-2xl font-bold">{cProjects.length}</p><p className="text-xs text-stone-500">Projetos ativos</p></Card>
                 <Card className="p-4 text-center"><p className="text-2xl font-bold">{cDone.length}/{cTasks.length}</p><p className="text-xs text-stone-500">Tarefas concluídas</p></Card>
-                <Card className="p-4 text-center"><p className={`text-2xl font-bold ${cPendingFb.length > 0 ? "text-orange-600" : "text-green-600"}`}>{cPendingFb.length}</p><p className="text-xs text-stone-500">Feedbacks pendentes</p></Card>
+                <Card className="p-4 text-center"><p className={`text-2xl font-bold ${cPendingFb.length > 0 ? "text-orange-600" : "text-emerald-600"}`}>{cPendingFb.length}</p><p className="text-xs text-stone-500">Feedbacks pendentes</p></Card>
                 <Card className="p-4 text-center"><p className="text-sm font-medium"><Calendar size={12} className="inline" /> {new Date(client.nextMeeting).toLocaleDateString("pt-BR")}</p><p className="text-xs text-stone-500 mt-1">Próxima reunião</p></Card>
               </div>
 
@@ -1943,7 +1943,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                     const assignedTask = fb.assignedTaskId ? tasks.find(t => t.id === fb.assignedTaskId) : null;
 
                     return (
-                      <Card key={fb.id} className={`overflow-hidden border-l-4 ${fb.type === "Elogio" ? "border-l-green-500" : fb.type === "Ajuste" ? "border-l-orange-500" : "border-l-blue-500"}`}>
+                      <Card key={fb.id} className={`overflow-hidden border-l-4 ${fb.type === "Elogio" ? "border-l-emerald-500" : fb.type === "Ajuste" ? "border-l-orange-500" : "border-l-sky-500"}`}>
                         <div className="p-4">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
@@ -1955,7 +1955,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                               </div>
                               <p className="text-sm text-stone-800">{fb.text}</p>
                               {relTask && <p className="text-xs text-stone-500 mt-1">Entrega: {relTask.title} (por {relTask.executorName})</p>}
-                              {assignedTask && <p className="text-xs text-green-600 mt-1">Tarefa criada: {assignedTask.title} → {assignedTask.executorName}</p>}
+                              {assignedTask && <p className="text-xs text-emerald-600 mt-1">Tarefa criada: {assignedTask.title} → {assignedTask.executorName}</p>}
                             </div>
                             {canAssign && !isAssigning && <Button size="sm" onClick={() => openAssign(fb)}>Atribuir</Button>}
                           </div>
@@ -2000,7 +2000,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                       {cElogios.map(fb => {
                         const proj = projects.find(p => p.id === fb.projectId);
                         return (
-                          <Card key={fb.id} className="mb-3 border-l-4 border-l-green-500">
+                          <Card key={fb.id} className="mb-3 border-l-4 border-l-emerald-500">
                             <div className="p-4">
                               <p className="text-sm text-stone-800 mb-1">"{fb.text}"</p>
                               {proj && <p className="text-xs text-stone-400 mb-3">Projeto: {proj.name} · {fb.date}</p>}
@@ -2018,10 +2018,10 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                   <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-3">Notas internas</p>
                   {(() => {
                     const dTagCfg = {
-                      gostou: { label: "Gostou", color: "bg-green-100 text-green-700 border-green-300" },
+                      gostou: { label: "Gostou", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
                       nao_gostou: { label: "Não gostou", color: "bg-red-100 text-red-700 border-red-300" },
-                      comunicacao: { label: "Comunicação", color: "bg-blue-100 text-blue-700 border-blue-300" },
-                      processo: { label: "Processo", color: "bg-purple-100 text-purple-700 border-purple-300" },
+                      comunicacao: { label: "Comunicação", color: "bg-sky-100 text-sky-700 border-sky-300" },
+                      processo: { label: "Processo", color: "bg-purple-100 text-violet-700 border-purple-300" },
                       elogio: { label: "Elogio", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
                       erro: { label: "Erro", color: "bg-red-100 text-red-700 border-red-300" },
                       insight: { label: "Insight", color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
@@ -2067,7 +2067,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
               <Card key={client.id} className="mb-3 hover:shadow-md transition-shadow cursor-pointer" onClick={() => { setSelectedClient(client.id); setClientDetailTab("projetos"); }}>
                 <div className="p-5 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold ${health === "good" ? "bg-green-100 text-green-700" : health === "warning" ? "bg-orange-100 text-orange-700" : "bg-red-100 text-red-700"}`}>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold ${health === "good" ? "bg-emerald-100 text-emerald-700" : health === "warning" ? "bg-orange-100 text-orange-700" : "bg-red-100 text-red-700"}`}>
                       {client.name.slice(0, 2).toUpperCase()}
                     </div>
                     <div>
@@ -2165,7 +2165,7 @@ function ClientHubView({ onBack }) {
         {[
           { label: "Total de clientes", value: clients.length, icon: <Users size={20} className="text-stone-400" /> },
           { label: "Clientes ativos", value: activeClientIds.size, icon: <CheckCircle2 size={20} className="text-green-400" /> },
-          { label: "Projetos ativos", value: totalActive, icon: <FolderOpen size={20} className="text-blue-400" /> },
+          { label: "Projetos ativos", value: totalActive, icon: <FolderOpen size={20} className="text-amber-400" /> },
           { label: "Projetos concluídos", value: totalDone, icon: <CheckCircle2 size={20} className="text-stone-400" /> },
         ].map((s, i) => (
           <Card key={i} className="p-5">
@@ -2224,14 +2224,14 @@ function ClientHubView({ onBack }) {
                           <>
                             <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">Projetos ativos</p>
                             {data.activeP.map(p => (
-                              <div key={p.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                              <div key={p.id} className="flex items-center justify-between p-3 bg-sky-50 rounded-lg">
                                 <div>
                                   <p className="font-medium">{p.name}</p>
                                   <p className="text-sm text-stone-500">Responsável: {p.responsible} · Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <Badge variant={p.priority === "Alta" ? "danger" : p.priority === "Média" ? "warning" : "success"}>{p.priority}</Badge>
-                                  <div className="w-24 bg-stone-200 rounded-full h-2"><div className="bg-blue-600 h-2 rounded-full" style={{ width: p.progress + "%" }} /></div>
+                                  <div className="w-24 bg-stone-200 rounded-full h-2"><div className="bg-stone-900 h-2 rounded-full" style={{ width: p.progress + "%" }} /></div>
                                   <span className="text-xs text-stone-500 w-8">{p.progress}%</span>
                                 </div>
                               </div>
@@ -2257,10 +2257,10 @@ function ClientHubView({ onBack }) {
 
                     {clientTab === "conhecimento" && (() => {
                       const tagConfig = {
-                        gostou: { label: "Gostou", color: "bg-green-100 text-green-700 border-green-300", border: "border-l-green-500", bg: "bg-green-50" },
+                        gostou: { label: "Gostou", color: "bg-emerald-100 text-emerald-700 border-emerald-300", border: "border-l-emerald-500", bg: "bg-emerald-50" },
                         nao_gostou: { label: "Não gostou", color: "bg-red-100 text-red-700 border-red-300", border: "border-l-red-500", bg: "bg-red-50" },
-                        comunicacao: { label: "Comunicação", color: "bg-blue-100 text-blue-700 border-blue-300", border: "border-l-blue-500", bg: "bg-blue-50" },
-                        processo: { label: "Processo", color: "bg-purple-100 text-purple-700 border-purple-300", border: "border-l-purple-500", bg: "bg-purple-50" },
+                        comunicacao: { label: "Comunicação", color: "bg-sky-100 text-sky-700 border-sky-300", border: "border-l-sky-500", bg: "bg-sky-50" },
+                        processo: { label: "Processo", color: "bg-purple-100 text-violet-700 border-purple-300", border: "border-l-violet-500", bg: "bg-violet-50" },
                         elogio: { label: "Elogio", color: "bg-emerald-100 text-emerald-700 border-emerald-300", border: "border-l-emerald-500", bg: "bg-emerald-50" },
                         erro: { label: "Erro", color: "bg-red-100 text-red-700 border-red-300", border: "border-l-red-500", bg: "bg-red-50" },
                         insight: { label: "Insight", color: "bg-yellow-100 text-yellow-700 border-yellow-300", border: "border-l-yellow-500", bg: "bg-yellow-50" },
@@ -2385,10 +2385,10 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
             <p className="text-sm font-medium text-stone-700">Progresso geral</p>
             <p className="text-lg font-bold">{progress}%</p>
           </div>
-          <div className="w-full bg-stone-200 rounded-full h-2.5"><div className="bg-green-600 h-2.5 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
+          <div className="w-full bg-stone-200 rounded-full h-2.5"><div className="bg-amber-500 h-2.5 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
           <div className="flex gap-6 mt-3 text-sm">
             {pendingApproval.length > 0 && <span className="text-stone-700 font-medium">{pendingApproval.length} para revisar</span>}
-            <span className="text-green-600 font-medium">{approved.length} aprovada{approved.length !== 1 ? "s" : ""}</span>
+            <span className="text-emerald-600 font-medium">{approved.length} aprovada{approved.length !== 1 ? "s" : ""}</span>
             {inProgress > 0 && <span className="text-stone-400">{inProgress} em andamento</span>}
           </div>
         </Card>
@@ -2435,7 +2435,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                             <div key={i} className="flex items-center gap-2 bg-stone-50 rounded-lg p-2.5 mb-1">
                               <Copy size={14} className="text-stone-400" />
                               <span className="text-sm flex-1 truncate">{f.name}</span>
-                              {f.url && <a href={f.url} download={f.name} className="text-xs text-blue-600 hover:underline">Baixar</a>}
+                              {f.url && <a href={f.url} download={f.name} className="text-xs text-sky-600 hover:underline">Baixar</a>}
                             </div>
                           ))}
                         </div>
@@ -2460,7 +2460,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                         </div>
                       ) : (
                         <div className="flex gap-3 mt-4 pt-4 border-t border-stone-100">
-                          <button type="button" onClick={() => clientApproveTask(task.id)} className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white hover:bg-green-700 rounded-lg font-medium text-sm">
+                          <button type="button" onClick={() => clientApproveTask(task.id)} className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg font-medium text-sm">
                             <CheckCircle2 size={16} /> Aprovar
                           </button>
                           <button type="button" onClick={() => setFeedbackTaskId(task.id)} className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-stone-700 border border-stone-300 hover:bg-stone-50 rounded-lg font-medium text-sm">
@@ -2572,7 +2572,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
           </div>
           <div>
             <p className="text-sm text-stone-500 mb-1">Projetos ativos</p>
-            <p className="text-2xl font-bold text-green-600">{clientProjects.length}</p>
+            <p className="text-2xl font-bold text-emerald-600">{clientProjects.length}</p>
           </div>
         </div>
         {showSchedule && (
@@ -2613,7 +2613,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                   </div>
                   <ChevronLeft size={20} className="text-stone-300 rotate-180" />
                 </div>
-                <div className="w-full bg-stone-200 rounded-full h-2 mb-2"><div className="bg-green-600 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
+                <div className="w-full bg-stone-200 rounded-full h-2 mb-2"><div className="bg-amber-500 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
                 <div className="flex gap-4 text-xs text-stone-500">
                   <span>{progress}% concluído</span>
                   <span>{approvedCount} aprovada{approvedCount !== 1 ? "s" : ""}</span>
@@ -2727,7 +2727,7 @@ function KanbanCreateTask({ projectId, project, team, addTask }) {
               <p className="text-xs text-stone-400 mt-0.5 mb-2">Anexe briefings, manuais ou referências úteis para o executor.</p>
               {kbFiles.map((f, i) => (
                 <div key={i} className="flex items-center gap-3 p-2.5 bg-stone-50 border border-stone-100 rounded-lg mb-1.5">
-                  <div className="h-8 w-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-green-700" /></div>
+                  <div className="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-emerald-700" /></div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-stone-900 truncate">{f.name}</p>
                     <p className="text-xs text-stone-400">{f.type} · {f.size}</p>
@@ -2736,7 +2736,7 @@ function KanbanCreateTask({ projectId, project, team, addTask }) {
                 </div>
               ))}
               <input type="file" ref={kbFileRef} onChange={handleKbFileSelect} multiple style={{display: "none"}} />
-              <button type="button" onClick={() => kbFileRef.current && kbFileRef.current.click()} className="w-full flex items-center justify-center gap-2 p-3 border-2 border-dashed border-stone-200 rounded-lg text-sm text-stone-400 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors cursor-pointer">
+              <button type="button" onClick={() => kbFileRef.current && kbFileRef.current.click()} className="w-full flex items-center justify-center gap-2 p-3 border-2 border-dashed border-stone-200 rounded-lg text-sm text-stone-400 hover:border-green-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer">
                 <Plus size={16} /> Selecionar arquivos
               </button>
             </div>
@@ -2775,11 +2775,11 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
   let projectChannels = [];
 
   if (isQA) {
-    directChannels = [{ id: "qa-lider", label: "Ana Gallotta", subtitle: "Líder Eventos", avatar: "AG", color: "bg-blue-100 text-blue-700" }];
+    directChannels = [{ id: "qa-lider", label: "Ana Gallotta", subtitle: "Líder Eventos", avatar: "AG", color: "bg-sky-100 text-sky-700" }];
   } else if (isLider) {
     directChannels = [
-      { id: "qa-lider", label: "QA", subtitle: "Gestão de qualidade", avatar: "QA", color: "bg-purple-100 text-purple-700" },
-      ...team.map(t => ({ id: "lider-" + t.id, label: t.name.split(" ").slice(0, 2).join(" "), subtitle: t.role, avatar: t.name.split(" ").map(n => n[0]).join("").substring(0, 2), color: "bg-green-100 text-green-700" })),
+      { id: "qa-lider", label: "QA", subtitle: "Gestão de qualidade", avatar: "QA", color: "bg-purple-100 text-violet-700" },
+      ...team.map(t => ({ id: "lider-" + t.id, label: t.name.split(" ").slice(0, 2).join(" "), subtitle: t.role, avatar: t.name.split(" ").map(n => n[0]).join("").substring(0, 2), color: "bg-emerald-100 text-emerald-700" })),
     ];
     projectChannels = activeProjects.filter(p => p.squad && p.squad.length > 0).map(p => {
       const client = clients.find(c => c.id === p.clientId);
@@ -2788,7 +2788,7 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
     });
   } else {
     // Executor: direct channel with líder + project channels they're part of
-    directChannels = [{ id: "lider-" + role, label: "Ana Gallotta", subtitle: "Líder Eventos", avatar: "AG", color: "bg-blue-100 text-blue-700" }];
+    directChannels = [{ id: "lider-" + role, label: "Ana Gallotta", subtitle: "Líder Eventos", avatar: "AG", color: "bg-sky-100 text-sky-700" }];
     projectChannels = activeProjects.filter(p => p.squad && p.squad.includes(role)).map(p => {
       const client = clients.find(c => c.id === p.clientId);
       const squadMembers = team.filter(t => p.squad.includes(t.id));
@@ -2922,7 +2922,7 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
                         </div>
                       )}
                       <div>
-                        <div className={`px-3.5 py-2.5 rounded-2xl text-sm ${isMe ? "bg-blue-600 text-white rounded-br-md" : "bg-stone-100 text-stone-800 rounded-bl-md"}`}>
+                        <div className={`px-3.5 py-2.5 rounded-2xl text-sm ${isMe ? "bg-stone-900 text-white rounded-br-md" : "bg-stone-100 text-stone-800 rounded-bl-md"}`}>
                           <p>{item.text}</p>
                         </div>
                         <p className={`text-[10px] mt-0.5 px-1 ${isMe ? "text-right text-stone-400" : "text-stone-400"}`}>{item.author} · {item.time}</p>
@@ -2937,8 +2937,8 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
             {/* Input */}
             <div className="border-t border-stone-200 p-4 flex-shrink-0">
               <div className="flex gap-2">
-                <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={`Mensagem para ${activeInfo?.label || ""}...`} className="flex-1 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
-                <button onClick={send} disabled={!input.trim()} className={`p-2.5 rounded-xl transition-colors ${input.trim() ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-stone-100 text-stone-400 cursor-not-allowed"}`}>
+                <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={`Mensagem para ${activeInfo?.label || ""}...`} className="flex-1 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent" />
+                <button onClick={send} disabled={!input.trim()} className={`p-2.5 rounded-xl transition-colors ${input.trim() ? "bg-stone-900 text-white hover:bg-stone-800" : "bg-stone-100 text-stone-400 cursor-not-allowed"}`}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                 </button>
               </div>
@@ -2976,10 +2976,10 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
 
   const columns = [
     { key: "a_fazer", label: "A Fazer", headerColor: "bg-stone-100 text-stone-700", dotColor: "bg-stone-400" },
-    { key: "em_execucao", label: "Em Execução", headerColor: "bg-blue-50 text-blue-700", dotColor: "bg-blue-500" },
-    { key: "em_qa", label: "Em QA", headerColor: "bg-purple-50 text-purple-700", dotColor: "bg-purple-500" },
-    { key: "devolvida", label: "Devolvida", headerColor: "bg-red-50 text-red-700", dotColor: "bg-red-500" },
-    { key: "concluida", label: "Concluída", headerColor: "bg-green-50 text-green-700", dotColor: "bg-green-500" },
+    { key: "em_execucao", label: "Em Execução", headerColor: "bg-amber-50 text-amber-700", dotColor: "bg-amber-500" },
+    { key: "em_qa", label: "Em QA", headerColor: "bg-violet-50 text-violet-700", dotColor: "bg-violet-500" },
+    { key: "devolvida", label: "Devolvida", headerColor: "bg-rose-50 text-rose-700", dotColor: "bg-rose-500" },
+    { key: "concluida", label: "Concluída", headerColor: "bg-emerald-50 text-emerald-700", dotColor: "bg-emerald-500" },
   ];
 
   return (
@@ -2991,7 +2991,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
           <div className="flex items-center gap-3 mb-1">
             <h1 className="text-3xl font-bold text-stone-900">{project.name}</h1>
             <Badge variant="purple">Evento</Badge>
-            {isQAView && <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200 font-medium">Visão QA</span>}
+            {isQAView && <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-violet-700 border border-violet-200 font-medium">Visão QA</span>}
           </div>
           <p className="text-stone-500">Cliente: <strong>{project.client}</strong> · Responsável: <strong>{project.responsible}</strong> · Prazo: <strong>{new Date(project.deadline).toLocaleDateString("pt-BR")}</strong></p>
         </div>
@@ -3000,7 +3000,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
             const r = isQAView ? "qa" : "lider";
             const unread = getChatUnread("qa-lider", r);
             return (
-              <button onClick={onOpenChat} className="px-3 py-2 text-sm font-medium rounded-lg border border-stone-200 text-stone-600 hover:border-blue-300 hover:bg-blue-50 transition-all flex items-center gap-2 relative">
+              <button onClick={onOpenChat} className="px-3 py-2 text-sm font-medium rounded-lg border border-stone-200 text-stone-600 hover:border-amber-300 hover:bg-sky-50 transition-all flex items-center gap-2 relative">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 {isQAView ? "Chat com Líder" : "Mensagens"}
                 {unread > 0 && <span className="bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5 font-bold animate-pulse">{unread}</span>}
@@ -3018,12 +3018,12 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
         </Card>
         <Card className="p-4">
           <p className="text-sm text-stone-500">Concluídas</p>
-          <p className="text-2xl font-bold text-green-600">{doneCount}</p>
+          <p className="text-2xl font-bold text-emerald-600">{doneCount}</p>
         </Card>
         <Card className="p-4">
           <p className="text-sm text-stone-500">Progresso</p>
           <p className="text-2xl font-bold">{progress}%</p>
-          <div className="w-full bg-stone-200 rounded-full h-2 mt-2"><div className="bg-green-600 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
+          <div className="w-full bg-stone-200 rounded-full h-2 mt-2"><div className="bg-amber-500 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
         </Card>
         <Card className="p-4">
           <p className="text-sm text-stone-500">Em risco</p>
@@ -3061,7 +3061,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
                       </button>
                     )}
                     <div className="flex items-start gap-2 mb-2">
-                      <div className={`h-2.5 w-2.5 rounded-full mt-1 flex-shrink-0 ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-orange-500" : "bg-green-500"}`} />
+                      <div className={`h-2.5 w-2.5 rounded-full mt-1 flex-shrink-0 ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-orange-500" : "bg-emerald-500"}`} />
                       <p className="text-sm font-medium leading-tight">{task.title}</p>
                     </div>
                     <div className="flex items-center justify-between">
@@ -3116,12 +3116,12 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
                 const memberTasks = projectTasks.filter(t => t.executor === member.id);
                 const done = memberTasks.filter(t => t.status === "concluida").length;
                 return (
-                  <Card key={member.id} className="p-4 relative group border-2 border-green-200 bg-green-50/30">
+                  <Card key={member.id} className="p-4 relative group border-2 border-emerald-200 bg-emerald-50/30">
                     <button onClick={() => { if (confirm(`Remover ${member.name} do squad?`)) toggleSquadMember(member.id); }} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-red-50" title="Remover do squad">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-300 hover:text-red-500"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
                     </button>
                     <div className="flex items-center gap-2.5 mb-2">
-                      <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-xs font-bold text-green-700">{member.name.split(" ").map(n => n[0]).join("").substring(0, 2)}</div>
+                      <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-xs font-bold text-emerald-700">{member.name.split(" ").map(n => n[0]).join("").substring(0, 2)}</div>
                       <div>
                         <p className="font-medium text-sm">{member.name}</p>
                         <p className="text-[10px] text-stone-500">{member.role}</p>
@@ -3130,7 +3130,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
                     {memberTasks.length > 0 ? (
                       <>
                         <p className="text-xs text-stone-500">{memberTasks.length} tarefa{memberTasks.length !== 1 ? "s" : ""} · {done} concluída{done !== 1 ? "s" : ""}</p>
-                        <div className="w-full bg-stone-200 rounded-full h-1.5 mt-2"><div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${memberTasks.length > 0 ? Math.round((done / memberTasks.length) * 100) : 0}%` }} /></div>
+                        <div className="w-full bg-stone-200 rounded-full h-1.5 mt-2"><div className="bg-amber-500 h-1.5 rounded-full" style={{ width: `${memberTasks.length > 0 ? Math.round((done / memberTasks.length) * 100) : 0}%` }} /></div>
                       </>
                     ) : (
                       <p className="text-xs text-stone-400 italic">Sem tarefas ainda</p>
@@ -3314,7 +3314,7 @@ function OnboardingModal({ portal, onClose }) {
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden" onClick={e => e.stopPropagation()}>
           {/* Progress bar */}
           <div className="h-1 bg-stone-100">
-            <div className="h-1 bg-stone-900 transition-all duration-300 rounded-r" style={{ width: `${((step + 1) / total) * 100}%` }} />
+            <div className="h-1 bg-amber-500 transition-all duration-300 rounded-r" style={{ width: `${((step + 1) / total) * 100}%` }} />
           </div>
 
           {/* Header */}
@@ -3350,7 +3350,7 @@ function OnboardingModal({ portal, onClose }) {
                 Próximo
               </button>
             ) : (
-              <button onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors">
+              <button onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-lg bg-stone-900 text-white hover:bg-stone-800 transition-colors">
                 Entendi!
               </button>
             )}
@@ -3387,8 +3387,8 @@ function NotificationPanel({ onClose, context, executorId, onTaskClick }) {
 
   const priorityStyle = (p) => p === "danger" ? "bg-red-50 border-l-4 border-l-red-500"
     : p === "warning" ? "bg-orange-50 border-l-4 border-l-orange-400"
-    : "bg-blue-50";
-  const accentColor = (p) => p === "danger" ? "text-red-600" : p === "warning" ? "text-orange-600" : "text-blue-600";
+    : "bg-sky-50";
+  const accentColor = (p) => p === "danger" ? "text-red-600" : p === "warning" ? "text-orange-600" : "text-sky-600";
 
   const hasContent = smartAlerts.length > 0 || historyNotifications.length > 0;
 
@@ -3419,7 +3419,7 @@ function NotificationPanel({ onClose, context, executorId, onTaskClick }) {
                     return a.text;
                   })()}
                 </p>
-                <button onClick={(e) => { e.stopPropagation(); dismissSmartAlert(a.id, a.text, targetFilter, a.priority); }} className="text-stone-400 hover:text-green-600 flex-shrink-0 mt-0.5" title="Resolver alerta"><CheckCircle2 size={16} /></button>
+                <button onClick={(e) => { e.stopPropagation(); dismissSmartAlert(a.id, a.text, targetFilter, a.priority); }} className="text-stone-400 hover:text-emerald-600 flex-shrink-0 mt-0.5" title="Resolver alerta"><CheckCircle2 size={16} /></button>
               </div>
             </div>
           ))}
@@ -3627,7 +3627,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
       {chatPanel}
       {/* Floating chat button for QA and Líder */}
       {showChatFab && !showChat && (
-        <button onClick={() => setShowChat(true)} className="fixed bottom-6 right-6 z-30 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-all hover:scale-105 flex items-center gap-2" title={isQA ? "Chat com Líder" : isLider ? "Mensagens" : "Chat"}>
+        <button onClick={() => setShowChat(true)} className="fixed bottom-6 right-6 z-30 bg-stone-900 text-white rounded-full p-4 shadow-lg hover:bg-stone-800 transition-all hover:scale-105 flex items-center gap-2" title={isQA ? "Chat com Líder" : isLider ? "Mensagens" : "Chat"}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           {chatUnread > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse">{chatUnread}</span>}
         </button>
