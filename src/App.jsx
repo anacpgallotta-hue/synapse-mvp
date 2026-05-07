@@ -31,6 +31,20 @@ const Sun = ({ className = "", size = 20 }) => <svg {...iconProps} width={size} 
 
 const DarkModeContext = createContext({ darkMode: false, setDarkMode: () => {} });
 
+function useMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth < breakpoint);
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+    const handler = (e) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    setIsMobile(mq.matches);
+    return () => mq.removeEventListener("change", handler);
+  }, [breakpoint]);
+  return isMobile;
+}
+
+const Menu = ({ className = "", size = 20 }) => <svg {...iconProps} width={size} height={size} className={className}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>;
+
 // ============================
 // DATA INICIAL (mesmo do MVP)
 // ============================
@@ -581,13 +595,15 @@ function Card({ children, className = "", onClick }) {
 // HEADER
 // ============================
 function Header({ currentView, setView, currentExecutor, setShowNotif, notifCount, onHelp, showBell = true, darkMode, setDarkMode }) {
+  const mobile = useMobile();
+  const [menuOpen, setMenuOpen] = useState(false);
   const allNavItems = [
     { label: "Executor", view: "executor" },
     { label: "QA", view: "qa_selector" },
     { label: "Líder", view: "lider_selector" },
-    { label: "Histórico Clientes", view: "clientes" },
-    { label: "Portal do Cliente", view: "client_selector" },
-    { label: "Trocar executor", view: "trocar_executor" },
+    { label: "Histórico", view: "clientes" },
+    { label: "Cliente", view: "client_selector" },
+    { label: "Trocar", view: "trocar_executor" },
   ];
 
   const isQA = currentView.startsWith("qa");
@@ -617,21 +633,24 @@ function Header({ currentView, setView, currentExecutor, setShowNotif, notifCoun
     : currentView === "executor" ? `Olá, ${currentExecutor}`
     : null;
 
+  const navItem = (item) => (
+    <Button key={item.view} variant={isActive(item.view) ? "navActive" : "nav"} size="sm" onClick={() => { setView(item.view); setMenuOpen(false); }} className={mobile ? "w-full justify-start" : ""}>
+      {item.label}
+    </Button>
+  );
+
   return (
-    <header className={`border-b sticky top-0 z-10 ${darkMode ? "border-stone-800 bg-stone-950" : "border-stone-200 bg-white"}`}>
-      <div className="max-w-7xl mx-auto px-6 py-4">
+    <header className={`border-b sticky top-0 z-20 ${darkMode ? "border-stone-800 bg-stone-950" : "border-stone-200 bg-white"}`}>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-stone-900"}`}>{headerTitle}</h1>
-            {subtitle && <p className={`text-sm ${darkMode ? "text-stone-400" : "text-stone-500"}`}>{subtitle}</p>}
+          <div className="min-w-0">
+            <h1 className={`text-lg md:text-2xl font-bold truncate ${darkMode ? "text-white" : "text-stone-900"}`}>{headerTitle}</h1>
+            {subtitle && !mobile && <p className={`text-sm ${darkMode ? "text-stone-400" : "text-stone-500"}`}>{subtitle}</p>}
           </div>
-          <div className="flex items-center gap-2">
-            {allNavItems.map(item => (
-              <Button key={item.view} variant={isActive(item.view) ? "navActive" : "nav"} size="sm" onClick={() => setView(item.view)}>
-                {item.label}
-              </Button>
-            ))}
-            {onHelp && (
+          <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
+            {/* Desktop nav */}
+            {!mobile && allNavItems.map(navItem)}
+            {!mobile && onHelp && (
               <Button variant="ghost" size="sm" onClick={onHelp} className="text-stone-400 hover:text-stone-700 gap-1">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 <span className="text-xs">Ajuda</span>
@@ -641,16 +660,29 @@ function Header({ currentView, setView, currentExecutor, setShowNotif, notifCoun
               {darkMode ? <Sun size={18} /> : <Moon size={18} />}
             </button>
             {showBell && (
-              <div className="relative ml-1">
+              <div className="relative">
                 <Button variant="ghost" size="icon" onClick={() => setShowNotif(prev => !prev)}>
                   <Bell size={20} />
                   {notifCount > 0 && <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">{notifCount}</span>}
                 </Button>
               </div>
             )}
+            {/* Mobile hamburger */}
+            {mobile && (
+              <button onClick={() => setMenuOpen(!menuOpen)} className={`p-2 rounded-md ${darkMode ? "text-stone-300 hover:bg-stone-800" : "text-stone-600 hover:bg-stone-100"}`}>
+                {menuOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
+            )}
           </div>
         </div>
       </div>
+      {/* Mobile dropdown nav */}
+      {mobile && menuOpen && (
+        <div className={`border-t px-4 py-3 flex flex-col gap-1 ${darkMode ? "border-stone-800 bg-stone-950" : "border-stone-200 bg-white"}`}>
+          {allNavItems.map(navItem)}
+          {onHelp && <Button variant="ghost" size="sm" onClick={() => { onHelp(); setMenuOpen(false); }} className="w-full justify-start text-stone-400 gap-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Ajuda</Button>}
+        </div>
+      )}
     </header>
   );
 }
@@ -850,7 +882,7 @@ function ExecutorView({ executorId, onTaskClick }) {
       )}
 
       {viewMode === "kanban" && (
-        <div className="grid grid-cols-5 gap-3" style={{ minHeight: "350px" }}>
+        <div className="flex md:grid md:grid-cols-5 gap-3 overflow-x-auto pb-4 snap-x snap-mandatory md:overflow-visible md:pb-0" style={{ minHeight: "350px" }}>
           {kanbanColumns.map(key => {
             const cfg = statusConfig[key];
             const colTasks = myTasks.filter(t => t.status === key).sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
@@ -3189,7 +3221,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
       {isClientView && <h2 className="text-xl font-bold mb-4">Acompanhamento das entregas</h2>}
       {isQAView && <h2 className="text-xl font-bold mb-4">Acompanhamento do projeto</h2>}
 
-      <div className="grid grid-cols-5 gap-3" style={{ minHeight: "400px" }}>
+      <div className="flex md:grid md:grid-cols-5 gap-3 overflow-x-auto pb-4 snap-x snap-mandatory md:overflow-visible md:pb-0" style={{ minHeight: "400px" }}>
         {columns.map(col => {
           const colTasks = projectTasks.filter(t => t.status === col.key);
           return (
