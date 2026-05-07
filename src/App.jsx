@@ -136,6 +136,9 @@ function AppProvider({ children }) {
       if (t.status === "concluida") return;
       const deadline = new Date(t.deadline);
       const diffHours = (deadline - now) / (1000 * 60 * 60);
+      if (t.feedbackOrigin && (t.status === "a_fazer" || t.status === "em_execucao")) {
+        alerts.push({ id: "smart-fb-" + t.id, text: `Feedback do cliente: "${t.title}" — ${t.feedbackOrigin.text.substring(0, 80)}`, priority: "danger", date: t.deadline, taskId: t.id });
+      }
       if (t.status === "devolvida") {
         alerts.push({ id: "smart-dev-" + t.id, text: `QA devolveu "${t.title}" — ${t.qaComment}`, priority: "danger", date: t.deadline, isDevolvida: true, taskId: t.id });
       }
@@ -1960,6 +1963,15 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
   const [feedbackTaskId, setFeedbackTaskId] = useState(null);
   const [feedbackText, setFeedbackText] = useState("");
 
+  // Clean internal info for client view
+  const clientTitle = (title) => title.replace(/^\[Feedback\]\s*/i, "");
+  const clientDescription = (desc) => {
+    if (!desc) return null;
+    // Remove "Feedback do cliente X: ..." and "Instruções do líder: ..."
+    let clean = desc.replace(/Feedback do cliente [^:]+:\s*/i, "").replace(/\n?\n?Instruções do líder:[\s\S]*/i, "").trim();
+    return clean || null;
+  };
+
   const getPendingApproval = (projectId) => tasks.filter(t => t.projectId === projectId && t.status === "concluida" && !t.clientApproved);
   const getClientApproved = (projectId) => tasks.filter(t => t.projectId === projectId && t.status === "concluida" && t.clientApproved);
   const getInProgressCount = (projectId) => tasks.filter(t => t.projectId === projectId && t.status !== "concluida").length;
@@ -2021,7 +2033,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                     <div className="p-5">
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <p className="font-semibold text-lg">{task.title}</p>
+                          <p className="font-semibold text-lg">{clientTitle(task.title)}</p>
                           <p className="text-sm text-gray-500 mt-0.5">Entregue em {new Date(task.deadline).toLocaleDateString("pt-BR")}</p>
                         </div>
                         {task.submittedLink && task.submittedLink.trim() && (
@@ -2030,7 +2042,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                           </Button>
                         )}
                       </div>
-                      {task.description && <p className="text-sm text-gray-600 mb-3">{task.description}</p>}
+                      {clientDescription(task.description) && <p className="text-sm text-gray-600 mb-3">{clientDescription(task.description)}</p>}
                       {task.submittedFiles && task.submittedFiles.length > 0 && (
                         <div className="mb-4">
                           <p className="text-xs text-gray-500 font-medium mb-1.5">Arquivos da entrega</p>
@@ -2092,7 +2104,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                       <div className="flex items-center gap-3">
                         <CheckCircle2 size={18} className="text-green-500" />
                         <div>
-                          <p className="font-medium text-sm">{task.title}</p>
+                          <p className="font-medium text-sm">{clientTitle(task.title)}</p>
                           <p className="text-xs text-gray-400">{new Date(task.deadline).toLocaleDateString("pt-BR")}</p>
                         </div>
                       </div>
