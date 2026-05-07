@@ -2636,64 +2636,122 @@ function KanbanCreateTask({ projectId, project, team, addTask }) {
 // QA ↔ LÍDER CHAT PANEL (slide-out)
 // ============================
 function QaLiderChatPanel({ isOpen, onClose, role }) {
-  const { qaLiderMessages, sendQaLiderMsg, markQaLiderRead, projects } = useContext(AppContext);
+  const { qaLiderMessages, qaLiderLastRead, sendQaLiderMsg, markQaLiderRead, projects, clients } = useContext(AppContext);
   const [input, setInput] = useState("");
-  const [filter, setFilter] = useState("todos");
+  const [channel, setChannel] = useState("geral"); // "geral" or projectId
   const chatEndRef = useRef(null);
   const author = role === "qa" ? "QA" : "Ana Gallotta";
 
   // Mark as read when panel opens
-  useState(() => { if (isOpen) markQaLiderRead(role); });
-  // Also mark on every render while open
   if (isOpen) setTimeout(() => markQaLiderRead(role), 100);
 
   const send = () => {
     if (!input.trim()) return;
-    sendQaLiderMsg(role, author, input.trim());
+    const pid = channel === "geral" ? null : channel;
+    sendQaLiderMsg(role, author, input.trim(), pid);
     setInput("");
     setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
   };
 
-  const filtered = filter === "todos" ? qaLiderMessages : qaLiderMessages.filter(m => m.projectId === filter);
+  // Filter: geral = only null projectId messages; project = only that projectId
+  const channelMessages = channel === "geral"
+    ? qaLiderMessages.filter(m => !m.projectId)
+    : qaLiderMessages.filter(m => m.projectId === channel);
+
+  const areaProjects = projects.filter(p => p.area === "eventos");
+
+  // Unread per channel
+  const getChannelUnread = (ch) => {
+    const msgs = ch === "geral" ? qaLiderMessages.filter(m => !m.projectId) : qaLiderMessages.filter(m => m.projectId === ch);
+    const lastRead = qaLiderLastRead[role] || 0;
+    return msgs.filter(m => m.from !== role && m.id > lastRead).length;
+  };
+
+  // Current channel info
+  const activeProject = channel !== "geral" ? areaProjects.find(p => p.id === channel) : null;
+  const activeClient = activeProject ? clients.find(c => c.id === activeProject.clientId) : null;
 
   // Group messages by date
   const grouped = [];
   let lastDate = "";
-  filtered.forEach(m => {
+  channelMessages.forEach(m => {
     if (m.date !== lastDate) { grouped.push({ type: "date", date: m.date }); lastDate = m.date; }
     grouped.push({ type: "msg", ...m });
   });
 
   return (
     <>
-      {/* Backdrop */}
       {isOpen && <div className="fixed inset-0 bg-black bg-opacity-20 z-40 transition-opacity" onClick={onClose} />}
-      {/* Panel */}
       <div className={`fixed top-0 right-0 h-full w-[420px] bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
         {/* Header */}
         <div className="border-b border-gray-200 px-5 py-4 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <div className={`h-9 w-9 rounded-full flex items-center justify-center ${channel === "geral" ? "bg-blue-100" : "bg-purple-100"}`}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={channel === "geral" ? "text-blue-600" : "text-purple-600"}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 text-sm">Canal QA ↔ Líder</h3>
-              <p className="text-xs text-gray-500">{role === "qa" ? "Ana Gallotta (Líder)" : "QA"} · Área de Eventos</p>
+              {channel === "geral" ? (
+                <>
+                  <h3 className="font-semibold text-gray-900 text-sm">Canal Geral</h3>
+                  <p className="text-xs text-gray-500">QA ↔ Líderes · Área de Eventos</p>
+                </>
+              ) : (
+                <>
+                  <h3 className="font-semibold text-gray-900 text-sm">{activeProject?.name || "Projeto"}</h3>
+                  <p className="text-xs text-gray-500">Cliente: <span className="font-medium text-gray-700">{activeClient?.name || "—"}</span> · Líder: {activeProject?.responsible || "—"}</p>
+                </>
+              )}
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><X size={18} className="text-gray-400" /></button>
         </div>
 
-        {/* Project filter tabs */}
-        <div className="border-b border-gray-100 px-4 py-2 flex gap-1.5 overflow-x-auto flex-shrink-0">
-          <button onClick={() => setFilter("todos")} className={`px-3 py-1.5 text-xs font-medium rounded-full border whitespace-nowrap transition-colors ${filter === "todos" ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"}`}>Todas</button>
-          {projects.filter(p => p.area === "eventos").map(p => (
-            <button key={p.id} onClick={() => setFilter(p.id)} className={`px-3 py-1.5 text-xs font-medium rounded-full border whitespace-nowrap transition-colors ${filter === p.id ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"}`}>{p.name.length > 20 ? p.name.substring(0, 20) + "…" : p.name}</button>
-          ))}
+        {/* Channel tabs */}
+        <div className="border-b border-gray-100 px-3 py-2 flex gap-1 overflow-x-auto flex-shrink-0">
+          {(() => {
+            const geralUnread = getChannelUnread("geral");
+            return (
+              <button onClick={() => setChannel("geral")} className={`px-3 py-1.5 text-xs font-medium rounded-lg border whitespace-nowrap transition-colors flex items-center gap-1.5 ${channel === "geral" ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"}`}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/></svg>
+                Geral
+                {geralUnread > 0 && <span className={`text-[9px] rounded-full px-1.5 py-0.5 font-bold ${channel === "geral" ? "bg-white text-gray-900" : "bg-red-500 text-white"}`}>{geralUnread}</span>}
+              </button>
+            );
+          })()}
+          {areaProjects.map(p => {
+            const cl = clients.find(c => c.id === p.clientId);
+            const unread = getChannelUnread(p.id);
+            const label = p.name.length > 16 ? p.name.substring(0, 16) + "…" : p.name;
+            return (
+              <button key={p.id} onClick={() => setChannel(p.id)} className={`px-3 py-1.5 text-xs font-medium rounded-lg border whitespace-nowrap transition-colors flex items-center gap-1.5 ${channel === p.id ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"}`}>
+                <span className="truncate">{label}</span>
+                {cl && <span className={`text-[9px] px-1 py-0.5 rounded ${channel === p.id ? "bg-blue-500 text-blue-100" : "bg-gray-100 text-gray-400"}`}>{cl.name}</span>}
+                {unread > 0 && <span className={`text-[9px] rounded-full px-1.5 py-0.5 font-bold ${channel === p.id ? "bg-white text-blue-600" : "bg-red-500 text-white"}`}>{unread}</span>}
+              </button>
+            );
+          })}
         </div>
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+          {channel === "geral" && channelMessages.length === 0 && (
+            <div className="text-center py-8">
+              <div className="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-3">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-blue-400"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <p className="text-sm text-gray-500 font-medium">Canal geral</p>
+              <p className="text-xs text-gray-400 mt-1">Comunicação aberta entre QA e todos os líderes da área.</p>
+            </div>
+          )}
+          {channel !== "geral" && channelMessages.length === 0 && (
+            <div className="text-center py-8">
+              <div className="h-12 w-12 rounded-full bg-purple-50 flex items-center justify-center mx-auto mb-3">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-purple-400"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <p className="text-sm text-gray-500 font-medium">{activeProject?.name}</p>
+              <p className="text-xs text-gray-400 mt-1">Cliente: {activeClient?.name || "—"} · Discussões sobre este projeto.</p>
+            </div>
+          )}
           {grouped.map((item, i) => {
             if (item.type === "date") {
               return <div key={"d" + i} className="flex items-center gap-3 py-3"><div className="flex-1 h-px bg-gray-200" /><span className="text-[10px] text-gray-400 font-medium uppercase">{item.date === new Date().toISOString().split("T")[0] ? "Hoje" : item.date}</span><div className="flex-1 h-px bg-gray-200" /></div>;
@@ -2709,7 +2767,6 @@ function QaLiderChatPanel({ isOpen, onClose, role }) {
                   )}
                   <div>
                     <div className={`px-3.5 py-2.5 rounded-2xl text-sm ${isMe ? "bg-blue-600 text-white rounded-br-md" : "bg-gray-100 text-gray-800 rounded-bl-md"}`}>
-                      {item.projectId && (() => { const proj = projects.find(p => p.id === item.projectId); return proj ? <p className={`text-[10px] font-semibold mb-1 ${isMe ? "text-blue-200" : "text-blue-500"}`}>#{proj.name}</p> : null; })()}
                       <p>{item.text}</p>
                     </div>
                     <p className={`text-[10px] mt-0.5 px-1 ${isMe ? "text-right text-gray-400" : "text-gray-400"}`}>{item.author} · {item.time}</p>
@@ -2719,13 +2776,20 @@ function QaLiderChatPanel({ isOpen, onClose, role }) {
             );
           })}
           <div ref={chatEndRef} />
-          {filtered.length === 0 && <p className="text-center text-gray-400 text-sm py-8">Nenhuma mensagem ainda.</p>}
         </div>
 
         {/* Input */}
         <div className="border-t border-gray-200 p-4 flex-shrink-0">
+          {channel !== "geral" && activeClient && (
+            <div className="flex items-center gap-1.5 mb-2">
+              <span className="text-[10px] text-gray-400">Enviando em</span>
+              <span className="text-[10px] font-medium text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">{activeProject?.name}</span>
+              <span className="text-[10px] text-gray-400">·</span>
+              <span className="text-[10px] text-gray-500">{activeClient.name}</span>
+            </div>
+          )}
           <div className="flex gap-2">
-            <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={role === "qa" ? "Briefing, instrução ou feedback..." : "Responder ao QA..."} className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
+            <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={channel === "geral" ? (role === "qa" ? "Mensagem para todos os líderes..." : "Mensagem para o QA...") : `Mensagem sobre ${activeProject?.name || "projeto"}...`} className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
             <button onClick={send} disabled={!input.trim()} className={`p-2.5 rounded-xl transition-colors ${input.trim() ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             </button>
