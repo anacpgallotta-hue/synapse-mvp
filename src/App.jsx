@@ -247,6 +247,27 @@ function AppProvider({ children }) {
     });
   }, [notify]);
 
+  const clientApproveTask = useCallback((taskId) => {
+    setTasks(prev => {
+      const task = prev.find(t => t.id === taskId);
+      notify(`Cliente aprovou a entrega: "${task?.title}"`, "lider", "info");
+      notify(`Entrega "${task?.title}" aprovada pelo cliente!`, "executor:" + task?.executor, "info");
+      return prev.map(t => t.id === taskId ? { ...t, clientApproved: true } : t);
+    });
+  }, [notify]);
+
+  const clientRejectTask = useCallback((taskId, feedbackText, clientId, clientName, projectId) => {
+    setTasks(prev => {
+      const task = prev.find(t => t.id === taskId);
+      notify(`Cliente reprovou "${task?.title}" com feedback`, "lider", "danger");
+      notify(`Entrega "${task?.title}" recebeu feedback do cliente — retornando para execução`, "executor:" + task?.executor, "warning");
+      return prev.map(t => t.id === taskId ? { ...t, status: "a_fazer", clientApproved: false, qaComment: "", submittedLink: "", submittedFiles: [] } : t);
+    });
+    // Create feedback entry
+    const newFb = { id: "f" + Date.now(), projectId, clientId, clientName, type: "Ajuste", text: feedbackText, relatedTaskId: taskId, date: new Date().toISOString().split("T")[0], status: "pendente", assignedTaskId: null };
+    setFeedbacks(prev => [...prev, newFb]);
+  }, [notify]);
+
   const dismissNotification = useCallback((notifId) => {
     setNotifications(prev => prev.filter(n => n.id !== notifId));
   }, []);
@@ -265,7 +286,7 @@ function AppProvider({ children }) {
   }, [team, tasks]);
 
   return (
-    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, resubmitTask, revertFromQA, revertFromCompleted, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
+    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, resubmitTask, revertFromQA, revertFromCompleted, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
       {children}
     </AppContext.Provider>
   );
@@ -1067,6 +1088,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
   const [showCreate, setShowCreate] = useState(false);
   const [feedFilter, setFeedFilter] = useState("pendentes");
   const [form, setForm] = useState({ title: "", projectId: "", executor: "", deadline: "", priority: "Média", description: "" });
+  const [createClientFilter, setCreateClientFilter] = useState("");
   const [createFiles, setCreateFiles] = useState([]);
   const [checkItems, setCheckItems] = useState([]);
   const [newCheckItem, setNewCheckItem] = useState("");
@@ -1393,12 +1415,20 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
               <div className="px-5 pb-5 space-y-4 border-t pt-4">
                 <div><label className="text-sm font-medium text-gray-700">Nome da tarefa</label><input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Ex: Criar roteiro detalhado..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
                 <div className="grid grid-cols-2 gap-4">
+                  <div><label className="text-sm font-medium text-gray-700">Cliente</label>
+                    <select value={createClientFilter} onChange={e => { setCreateClientFilter(e.target.value); setForm(p => ({ ...p, projectId: "" })); }} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                      <option value="">Todos os clientes</option>
+                      {[...new Set(areaProjects.map(p => p.client))].map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
                   <div><label className="text-sm font-medium text-gray-700">Projeto</label>
                     <select value={form.projectId} onChange={e => setForm(p => ({ ...p, projectId: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                       <option value="">Selecione um projeto</option>
-                      {areaProjects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                      {areaProjects.filter(p => !createClientFilter || p.client === createClientFilter).map(p => <option key={p.id} value={p.id}>{p.client} — {p.name}</option>)}
                     </select>
                   </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <div><label className="text-sm font-medium text-gray-700">Responsável</label>
                     <select value={form.executor} onChange={e => setForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                       <option value="">Selecione</option>
@@ -1914,7 +1944,7 @@ function ClientHubView({ onBack }) {
 }
 
 function ClientPortalView({ clientId, onBack, onProjectClick }) {
-  const { clients, projects, tasks, feedbacks, addFeedback } = useContext(AppContext);
+  const { clients, projects, tasks, feedbacks, addFeedback, clientApproveTask, clientRejectTask } = useContext(AppContext);
   const client = clients.find(c => c.id === clientId) || clients[0];
   const clientProjects = projects.filter(p => p.clientId === client.id);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -1922,6 +1952,8 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
   const [expandedProject, setExpandedProject] = useState(null);
   const [showSchedule, setShowSchedule] = useState(false);
   const [inlineFbProject, setInlineFbProject] = useState(null);
+  const [rejectingTask, setRejectingTask] = useState(null);
+  const [rejectText, setRejectText] = useState("");
 
   const filtered = clientProjects;
 
@@ -1932,8 +1964,10 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
     setShowFeedback(false);
   };
 
-  // Client only sees approved deliverables
-  const getApprovedDeliverables = (projectId) => tasks.filter(t => t.projectId === projectId && t.status === "concluida");
+  // Pending client approval = QA approved (concluida) but not yet client-approved
+  const getPendingApproval = (projectId) => tasks.filter(t => t.projectId === projectId && t.status === "concluida" && !t.clientApproved);
+  // Client approved
+  const getClientApproved = (projectId) => tasks.filter(t => t.projectId === projectId && t.status === "concluida" && t.clientApproved);
   const getInProgressCount = (projectId) => tasks.filter(t => t.projectId === projectId && t.status !== "concluida").length;
   const myFeedbacks = feedbacks.filter(f => clientProjects.some(p => p.id === f.projectId));
 
@@ -1986,10 +2020,11 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
 
       <div className="space-y-4 mb-8">
         {filtered.map(p => {
-          const approved = getApprovedDeliverables(p.id);
+          const pendingApproval = getPendingApproval(p.id);
+          const clientApproved = getClientApproved(p.id);
           const inProgress = getInProgressCount(p.id);
           const allTasks = tasks.filter(t => t.projectId === p.id);
-          const progress = allTasks.length > 0 ? Math.round((approved.length / allTasks.length) * 100) : p.progress;
+          const progress = allTasks.length > 0 ? Math.round(((clientApproved.length) / allTasks.length) * 100) : p.progress;
           const isExpanded = expandedProject === p.id;
 
           return (
@@ -2000,6 +2035,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-bold text-lg">{p.name}</h3>
                       <Badge variant="purple">Evento</Badge>
+                      {pendingApproval.length > 0 && <Badge variant="warning">{pendingApproval.length} para aprovar</Badge>}
                     </div>
                     <p className="text-sm text-gray-500">Responsável: {p.responsible} · Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
                   </div>
@@ -2013,19 +2049,86 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2 mt-3"><div className="bg-green-600 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
                 <div className="flex gap-4 mt-3 text-sm">
-                  <span className="text-green-600 font-medium">{approved.length} entrega{approved.length !== 1 ? "s" : ""} aprovada{approved.length !== 1 ? "s" : ""}</span>
+                  {pendingApproval.length > 0 && <span className="text-orange-600 font-medium">{pendingApproval.length} aguardando sua aprovação</span>}
+                  <span className="text-green-600 font-medium">{clientApproved.length} aprovada{clientApproved.length !== 1 ? "s" : ""}</span>
                   {inProgress > 0 && <span className="text-gray-500">{inProgress} em andamento</span>}
                 </div>
               </div>
 
               {isExpanded && (
                 <div className="border-t border-gray-100 p-5 bg-gray-50">
+
+                  {/* Pending Client Approval */}
+                  {pendingApproval.length > 0 && (
+                    <div className="mb-6">
+                      <h4 className="font-semibold mb-3 flex items-center gap-2"><AlertTriangle size={16} className="text-orange-500" /> Entregas aguardando sua aprovação</h4>
+                      <div className="space-y-3">
+                        {pendingApproval.map(task => (
+                          <div key={task.id} className="bg-white rounded-lg border-2 border-orange-200 p-4">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <p className="font-medium">{task.title}</p>
+                                <p className="text-xs text-gray-500 mt-0.5">Entregue em {new Date(task.deadline).toLocaleDateString("pt-BR")}</p>
+                              </div>
+                              {task.submittedLink && task.submittedLink.trim() && (
+                                <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); window.open(task.submittedLink, "_blank"); }}>
+                                  <ExternalLink size={12} /> Ver entrega
+                                </Button>
+                              )}
+                            </div>
+                            {task.description && <p className="text-sm text-gray-600 mb-3">{task.description}</p>}
+                            {task.submittedFiles && task.submittedFiles.length > 0 && (
+                              <div className="mb-3">
+                                <p className="text-xs text-gray-500 font-medium mb-1">Arquivos</p>
+                                {task.submittedFiles.map((f, i) => (
+                                  <div key={i} className="flex items-center gap-2 bg-gray-50 rounded p-2 mb-1">
+                                    <Copy size={14} className="text-gray-400" />
+                                    <span className="text-sm flex-1 truncate">{f.name}</span>
+                                    {f.url && <a href={f.url} download={f.name} className="text-xs text-blue-600 hover:underline">Baixar</a>}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {rejectingTask === task.id ? (
+                              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mt-3">
+                                <p className="text-sm font-medium text-orange-800 mb-2">O que precisa ser ajustado?</p>
+                                <textarea
+                                  value={rejectText}
+                                  onChange={e => setRejectText(e.target.value)}
+                                  placeholder="Descreva o que não ficou como esperado..."
+                                  className="w-full border border-orange-200 rounded-lg p-2.5 text-sm min-h-[60px] focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                                />
+                                <div className="flex gap-2 mt-2 justify-end">
+                                  <Button variant="outline" size="sm" onClick={() => { setRejectingTask(null); setRejectText(""); }}>Cancelar</Button>
+                                  <button type="button" disabled={!rejectText.trim()} onClick={() => { clientRejectTask(task.id, rejectText.trim(), client.id, client.name, p.id); setRejectingTask(null); setRejectText(""); }} className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium ${rejectText.trim() ? "bg-orange-600 text-white hover:bg-orange-700" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>
+                                    <Send size={12} /> Enviar feedback
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+                                <button type="button" onClick={() => clientApproveTask(task.id)} className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-md font-medium text-sm flex-1 justify-center">
+                                  <CheckCircle2 size={16} /> Aprovar entrega
+                                </button>
+                                <button type="button" onClick={() => setRejectingTask(task.id)} className="inline-flex items-center gap-2 px-4 py-2 bg-white text-orange-600 border border-orange-300 hover:bg-orange-50 rounded-md font-medium text-sm flex-1 justify-center">
+                                  <MessageSquare size={16} /> Pedir ajuste
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Client Approved */}
                   <h4 className="font-semibold mb-3">Entregas aprovadas</h4>
-                  {approved.length === 0 ? (
-                    <p className="text-sm text-gray-400 italic mb-4">Nenhuma entrega aprovada ainda. Seu time está trabalhando nisso!</p>
+                  {clientApproved.length === 0 ? (
+                    <p className="text-sm text-gray-400 italic mb-4">Nenhuma entrega aprovada ainda.</p>
                   ) : (
                     <div className="space-y-2 mb-4">
-                      {approved.map(task => (
+                      {clientApproved.map(task => (
                         <div key={task.id} className="bg-white rounded-lg border p-4">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -2041,24 +2144,6 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                               </Button>
                             )}
                           </div>
-                          {task.description && (
-                            <div className="ml-8 mt-3 pt-3 border-t">
-                              <p className="text-xs text-gray-500 font-medium mb-1">Descrição da tarefa</p>
-                              <p className="text-sm text-gray-700">{task.description}</p>
-                            </div>
-                          )}
-                          {task.submittedFiles && task.submittedFiles.length > 0 && (
-                            <div className="ml-8 mt-2">
-                              <p className="text-xs text-gray-500 font-medium mb-1">Arquivos da entrega</p>
-                              {task.submittedFiles.map((f, i) => (
-                                <div key={i} className="flex items-center gap-2 bg-gray-50 rounded p-2 mb-1">
-                                  <Copy size={14} className="text-gray-400" />
-                                  <span className="text-sm flex-1 truncate">{f.name}</span>
-                                  {f.url && <a href={f.url} download={f.name} className="text-xs text-blue-600 hover:underline">Baixar</a>}
-                                </div>
-                              ))}
-                            </div>
-                          )}
                         </div>
                       ))}
                     </div>
