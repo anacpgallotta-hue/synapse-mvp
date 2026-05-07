@@ -3223,9 +3223,10 @@ function NotificationPanel({ onClose, context, executorId, onTaskClick }) {
     smartAlerts.forEach(a => dismissSmartAlert(a.id, a.text, targetFilter, a.priority));
   };
 
-  const priorityStyle = (p) => p === "danger" ? "bg-red-50 border-l-4 border-l-red-500 text-red-800"
-    : p === "warning" ? "bg-orange-50 border-l-4 border-l-orange-400 text-orange-800"
-    : "bg-blue-50 text-gray-700";
+  const priorityStyle = (p) => p === "danger" ? "bg-red-50 border-l-4 border-l-red-500"
+    : p === "warning" ? "bg-orange-50 border-l-4 border-l-orange-400"
+    : "bg-blue-50";
+  const accentColor = (p) => p === "danger" ? "text-red-600" : p === "warning" ? "text-orange-600" : "text-blue-600";
 
   const hasContent = smartAlerts.length > 0 || historyNotifications.length > 0;
 
@@ -3247,7 +3248,15 @@ function NotificationPanel({ onClose, context, executorId, onTaskClick }) {
               <div className="flex items-start gap-2">
                 {a.priority === "danger" && <AlertTriangle size={14} className="text-red-500 flex-shrink-0 mt-0.5" />}
                 {a.priority === "warning" && <Clock size={14} className="text-orange-500 flex-shrink-0 mt-0.5" />}
-                <p className={`flex-1 font-medium ${a.taskId && onTaskClick ? "underline decoration-dotted underline-offset-2" : ""}`}>{a.text}</p>
+                <p className={`flex-1 text-gray-900 ${a.taskId && onTaskClick ? "cursor-pointer" : ""}`}>
+                  {(() => {
+                    const match = a.text.match(/^([^:]+):\s*(.+?)(\s*[—–-]\s*.+)?$/);
+                    if (match) {
+                      return <><span className={`font-semibold ${accentColor(a.priority)}`}>{match[1]}:</span> {match[2]}{match[3] && <span className={`${accentColor(a.priority)} font-medium`}>{match[3]}</span>}</>;
+                    }
+                    return a.text;
+                  })()}
+                </p>
                 <button onClick={(e) => { e.stopPropagation(); dismissSmartAlert(a.id, a.text, targetFilter, a.priority); }} className="text-gray-400 hover:text-green-600 flex-shrink-0 mt-0.5" title="Resolver alerta"><CheckCircle2 size={16} /></button>
               </div>
             </div>
