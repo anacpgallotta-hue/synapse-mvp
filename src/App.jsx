@@ -1134,7 +1134,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
   };
 
   const [assigningFb, setAssigningFb] = useState(null);
-  const [assignForm, setAssignForm] = useState({ executor: "", priority: "Alta", deadline: "", title: "" });
+  const [assignForm, setAssignForm] = useState({ executor: "", priority: "Alta", deadline: "", title: "", instructions: "" });
   const [elogioNotes, setElogioNotes] = useState({});
   const [relNote, setRelNote] = useState({ clientId: "", text: "" });
   const [showRelacionamento, setShowRelacionamento] = useState(false);
@@ -1153,6 +1153,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
       priority: "Alta",
       deadline: new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 16),
       title: suggestedTitle,
+      instructions: "",
     });
   };
 
@@ -1170,7 +1171,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
       priority: assignForm.priority,
       area,
       deadline: assignForm.deadline,
-      description: `Feedback do cliente ${fb.clientName}: ${fb.text}`,
+      description: `Feedback do cliente ${fb.clientName}: ${fb.text}${assignForm.instructions.trim() ? `\n\nInstruções do líder: ${assignForm.instructions.trim()}` : ""}`,
       checklist: [{ text: "Analisar feedback do cliente", done: false }, { text: "Implementar ajuste solicitado", done: false }, { text: "Validar com líder antes de enviar ao QA", done: false }],
       attachments: [],
     });
@@ -1291,6 +1292,10 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                         <label className="text-xs font-medium text-gray-600">Prazo</label>
                         <input type="datetime-local" value={assignForm.deadline} onChange={e => setAssignForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" />
                       </div>
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-gray-600">Instruções para o executor <span className="text-gray-400 font-normal">(opcional)</span></label>
+                      <textarea value={assignForm.instructions} onChange={e => setAssignForm(p => ({ ...p, instructions: e.target.value }))} placeholder="Dê contexto, orientações ou detalhes sobre como resolver este feedback..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 min-h-[60px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50" />
                     </div>
                     <div className="flex gap-2 pt-1">
                       <Button size="sm" onClick={handleAssignFeedback} disabled={!assignForm.executor || !assignForm.title.trim()}>Confirmar atribuição</Button>
@@ -1624,6 +1629,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                               <div><label className="text-xs font-medium text-gray-600">Prioridade</label><select value={assignForm.priority} onChange={e => setAssignForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900"><option>Alta</option><option>Média</option><option>Baixa</option></select></div>
                               <div><label className="text-xs font-medium text-gray-600">Prazo</label><input type="datetime-local" value={assignForm.deadline} onChange={e => setAssignForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
                             </div>
+                            <div><label className="text-xs font-medium text-gray-600">Instruções para o executor <span className="text-gray-400 font-normal">(opcional)</span></label><textarea value={assignForm.instructions} onChange={e => setAssignForm(p => ({ ...p, instructions: e.target.value }))} placeholder="Contexto, orientações ou detalhes para o executor..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 min-h-[60px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-white" /></div>
                             <div className="flex gap-2"><Button size="sm" onClick={handleAssignFeedback} disabled={!assignForm.executor || !assignForm.title.trim()}>Confirmar</Button><Button variant="outline" size="sm" onClick={() => setAssigningFb(null)}>Cancelar</Button></div>
                           </div>
                         )}
@@ -1947,30 +1953,201 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
   const { clients, projects, tasks, feedbacks, addFeedback, clientApproveTask, clientRejectTask } = useContext(AppContext);
   const client = clients.find(c => c.id === clientId) || clients[0];
   const clientProjects = projects.filter(p => p.clientId === client.id);
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [fbForm, setFbForm] = useState({ projectId: "", type: "Ajuste", text: "" });
-  const [expandedProject, setExpandedProject] = useState(null);
   const [showSchedule, setShowSchedule] = useState(false);
-  const [inlineFbProject, setInlineFbProject] = useState(null);
-  const [rejectingTask, setRejectingTask] = useState(null);
-  const [rejectText, setRejectText] = useState("");
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [projectTab, setProjectTab] = useState("entregas");
+  const [fbForm, setFbForm] = useState({ type: "Sugestão", text: "" });
+  const [feedbackTaskId, setFeedbackTaskId] = useState(null);
+  const [feedbackText, setFeedbackText] = useState("");
 
-  const filtered = clientProjects;
-
-  const handleSendFeedback = () => {
-    if (!fbForm.projectId || !fbForm.text.trim()) return;
-    addFeedback({ ...fbForm, clientId: client.id, clientName: client.name, date: new Date().toISOString().split("T")[0] });
-    setFbForm({ projectId: "", type: "Ajuste", text: "" });
-    setShowFeedback(false);
-  };
-
-  // Pending client approval = QA approved (concluida) but not yet client-approved
   const getPendingApproval = (projectId) => tasks.filter(t => t.projectId === projectId && t.status === "concluida" && !t.clientApproved);
-  // Client approved
   const getClientApproved = (projectId) => tasks.filter(t => t.projectId === projectId && t.status === "concluida" && t.clientApproved);
   const getInProgressCount = (projectId) => tasks.filter(t => t.projectId === projectId && t.status !== "concluida").length;
-  const myFeedbacks = feedbacks.filter(f => clientProjects.some(p => p.id === f.projectId));
+  const totalPending = clientProjects.reduce((sum, p) => sum + getPendingApproval(p.id).length, 0);
 
+  // Project detail view
+  if (selectedProject) {
+    const p = selectedProject;
+    const pendingApproval = getPendingApproval(p.id);
+    const approved = getClientApproved(p.id);
+    const inProgress = getInProgressCount(p.id);
+    const allTasks = tasks.filter(t => t.projectId === p.id);
+    const progress = allTasks.length > 0 ? Math.round((approved.length / allTasks.length) * 100) : p.progress;
+    const projectFeedbacks = feedbacks.filter(f => f.projectId === p.id);
+
+    return (
+      <div className="max-w-5xl mx-auto">
+        <button onClick={() => { setSelectedProject(null); setProjectTab("entregas"); setFeedbackTaskId(null); setFeedbackText(""); }} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-4"><ArrowLeft size={16} /> Voltar aos projetos</button>
+        <p className="text-sm text-gray-400 mb-1">Synapse · Portal do Cliente · {client.name}</p>
+        <h1 className="text-3xl font-bold mb-2">{p.name}</h1>
+        <p className="text-sm text-gray-500 mb-6">Responsável: {p.responsible} · Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
+
+        {/* Progress bar */}
+        <Card className="p-5 mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium text-gray-700">Progresso geral</p>
+            <p className="text-lg font-bold">{progress}%</p>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2.5"><div className="bg-green-600 h-2.5 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
+          <div className="flex gap-6 mt-3 text-sm">
+            {pendingApproval.length > 0 && <span className="text-gray-700 font-medium">{pendingApproval.length} para revisar</span>}
+            <span className="text-green-600 font-medium">{approved.length} aprovada{approved.length !== 1 ? "s" : ""}</span>
+            {inProgress > 0 && <span className="text-gray-400">{inProgress} em andamento</span>}
+          </div>
+        </Card>
+
+        {/* Tabs */}
+        <div className="flex gap-1 mb-6 border-b">
+          {[{ key: "entregas", label: "Entregas", count: pendingApproval.length }, { key: "aprovadas", label: "Aprovadas", count: approved.length }, { key: "feedback", label: "Feedback", count: projectFeedbacks.length }].map(tab => (
+            <button key={tab.key} onClick={() => setProjectTab(tab.key)} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${projectTab === tab.key ? "border-gray-900 text-gray-900" : "border-transparent text-gray-400 hover:text-gray-600"}`}>
+              {tab.label} {tab.count > 0 && <span className={`ml-1 text-xs px-1.5 py-0.5 rounded-full ${projectTab === tab.key ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-500"}`}>{tab.count}</span>}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab: Entregas (pending approval) */}
+        {projectTab === "entregas" && (
+          <div>
+            {pendingApproval.length === 0 ? (
+              <Card className="p-8 text-center">
+                <CheckCircle2 size={32} className="text-green-400 mx-auto mb-3" />
+                <p className="text-gray-500">Todas as entregas foram revisadas.</p>
+                <p className="text-sm text-gray-400 mt-1">{inProgress > 0 ? `${inProgress} entrega${inProgress > 1 ? "s" : ""} ainda em andamento.` : "Nenhuma pendência no momento."}</p>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {pendingApproval.map(task => (
+                  <Card key={task.id} className="overflow-hidden">
+                    <div className="p-5">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <p className="font-semibold text-lg">{task.title}</p>
+                          <p className="text-sm text-gray-500 mt-0.5">Entregue em {new Date(task.deadline).toLocaleDateString("pt-BR")}</p>
+                        </div>
+                        {task.submittedLink && task.submittedLink.trim() && (
+                          <Button variant="outline" size="sm" onClick={() => window.open(task.submittedLink, "_blank")}>
+                            <ExternalLink size={12} /> Ver entrega
+                          </Button>
+                        )}
+                      </div>
+                      {task.description && <p className="text-sm text-gray-600 mb-3">{task.description}</p>}
+                      {task.submittedFiles && task.submittedFiles.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-xs text-gray-500 font-medium mb-1.5">Arquivos da entrega</p>
+                          {task.submittedFiles.map((f, i) => (
+                            <div key={i} className="flex items-center gap-2 bg-gray-50 rounded-lg p-2.5 mb-1">
+                              <Copy size={14} className="text-gray-400" />
+                              <span className="text-sm flex-1 truncate">{f.name}</span>
+                              {f.url && <a href={f.url} download={f.name} className="text-xs text-blue-600 hover:underline">Baixar</a>}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {feedbackTaskId === task.id ? (
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-3">
+                          <p className="text-sm font-medium text-gray-700 mb-2">Seu feedback sobre esta entrega</p>
+                          <textarea
+                            value={feedbackText}
+                            onChange={e => setFeedbackText(e.target.value)}
+                            placeholder="Descreva o que gostaria de ajustar ou melhorar..."
+                            className="w-full border border-gray-200 rounded-lg p-2.5 text-sm min-h-[70px] focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white"
+                            autoFocus
+                          />
+                          <div className="flex gap-2 mt-2 justify-end">
+                            <Button variant="outline" size="sm" onClick={() => { setFeedbackTaskId(null); setFeedbackText(""); }}>Cancelar</Button>
+                            <button type="button" disabled={!feedbackText.trim()} onClick={() => { clientRejectTask(task.id, feedbackText.trim(), client.id, client.name, p.id); setFeedbackTaskId(null); setFeedbackText(""); }} className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium ${feedbackText.trim() ? "bg-gray-900 text-white hover:bg-gray-800" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>
+                              <Send size={12} /> Enviar feedback
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex gap-3 mt-4 pt-4 border-t border-gray-100">
+                          <button type="button" onClick={() => clientApproveTask(task.id)} className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white hover:bg-green-700 rounded-lg font-medium text-sm">
+                            <CheckCircle2 size={16} /> Aprovar
+                          </button>
+                          <button type="button" onClick={() => setFeedbackTaskId(task.id)} className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg font-medium text-sm">
+                            <MessageSquare size={16} /> Enviar feedback
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab: Aprovadas */}
+        {projectTab === "aprovadas" && (
+          <div>
+            {approved.length === 0 ? (
+              <Card className="p-8 text-center text-gray-400">Nenhuma entrega aprovada ainda.</Card>
+            ) : (
+              <div className="space-y-2">
+                {approved.map(task => (
+                  <Card key={task.id} className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle2 size={18} className="text-green-500" />
+                        <div>
+                          <p className="font-medium text-sm">{task.title}</p>
+                          <p className="text-xs text-gray-400">{new Date(task.deadline).toLocaleDateString("pt-BR")}</p>
+                        </div>
+                      </div>
+                      {task.submittedLink && task.submittedLink.trim() && (
+                        <Button variant="outline" size="sm" onClick={() => window.open(task.submittedLink, "_blank")}>
+                          <ExternalLink size={12} /> Ver
+                        </Button>
+                      )}
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab: Feedback */}
+        {projectTab === "feedback" && (
+          <div>
+            <Card className="p-5 mb-4">
+              <p className="text-sm font-medium text-gray-700 mb-3">Enviar feedback geral sobre o projeto</p>
+              <div className="flex gap-3 mb-3">
+                <select value={fbForm.type} onChange={e => setFbForm(prev => ({ ...prev, type: e.target.value }))} className="border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400">
+                  <option>Sugestão</option><option>Ajuste</option><option>Elogio</option><option>Problema</option>
+                </select>
+                <input value={fbForm.text} onChange={e => setFbForm(prev => ({ ...prev, text: e.target.value }))} placeholder="Escreva seu feedback..." className="flex-1 border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400" />
+                <button type="button" disabled={!fbForm.text.trim()} onClick={() => { addFeedback({ projectId: p.id, clientId: client.id, clientName: client.name, date: new Date().toISOString().split("T")[0], type: fbForm.type, text: fbForm.text }); setFbForm({ type: "Sugestão", text: "" }); }} className={`inline-flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium ${fbForm.text.trim() ? "bg-gray-900 text-white hover:bg-gray-800" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>
+                  <Send size={14} /> Enviar
+                </button>
+              </div>
+            </Card>
+
+            {projectFeedbacks.length === 0 ? (
+              <Card className="p-6 text-center text-gray-400">Nenhum feedback enviado para este projeto.</Card>
+            ) : (
+              <div className="space-y-2">
+                {projectFeedbacks.map(fb => (
+                  <Card key={fb.id} className="p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge variant={fb.type === "Elogio" ? "success" : fb.type === "Problema" ? "danger" : "warning"}>{fb.type}</Badge>
+                      <Badge variant={fb.status === "pendente" ? "default" : "success"}>{fb.status === "pendente" ? "Enviado" : "Em tratamento"}</Badge>
+                      <span className="text-xs text-gray-400">{fb.date}</span>
+                    </div>
+                    <p className="text-sm text-gray-700">{fb.text}</p>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Main project list
   return (
     <div className="max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-2">
@@ -2012,234 +2189,45 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
         )}
       </Card>
 
-      {/* Projects */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">Seus projetos</h2>
-        <p className="text-sm text-gray-500">{clientProjects.length} projeto{clientProjects.length !== 1 ? "s" : ""} ativo{clientProjects.length !== 1 ? "s" : ""}</p>
-      </div>
+      {/* Pending approvals banner */}
+      {totalPending > 0 && (
+        <Card className="p-4 mb-6 bg-amber-50 border-amber-200">
+          <p className="text-sm text-amber-800 font-medium">{totalPending} entrega{totalPending !== 1 ? "s" : ""} aguardando sua revisão. Clique no projeto para revisar.</p>
+        </Card>
+      )}
 
-      <div className="space-y-4 mb-8">
-        {filtered.map(p => {
-          const pendingApproval = getPendingApproval(p.id);
-          const clientApproved = getClientApproved(p.id);
+      {/* Projects */}
+      <h2 className="text-xl font-bold mb-4">Seus projetos</h2>
+      <div className="space-y-3 mb-8">
+        {clientProjects.map(p => {
+          const pending = getPendingApproval(p.id).length;
+          const approvedCount = getClientApproved(p.id).length;
           const inProgress = getInProgressCount(p.id);
           const allTasks = tasks.filter(t => t.projectId === p.id);
-          const progress = allTasks.length > 0 ? Math.round(((clientApproved.length) / allTasks.length) * 100) : p.progress;
-          const isExpanded = expandedProject === p.id;
+          const progress = allTasks.length > 0 ? Math.round((approvedCount / allTasks.length) * 100) : p.progress;
 
           return (
-            <Card key={p.id} className="overflow-hidden">
-              <div className="p-5 cursor-pointer hover:bg-gray-50" onClick={() => setExpandedProject(isExpanded ? null : p.id)}>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-lg">{p.name}</h3>
-                      <Badge variant="purple">Evento</Badge>
-                      {pendingApproval.length > 0 && <Badge variant="warning">{pendingApproval.length} para aprovar</Badge>}
-                    </div>
-                    <p className="text-sm text-gray-500">Responsável: {p.responsible} · Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
+            <Card key={p.id} className="cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => { setSelectedProject(p); setProjectTab(pending > 0 ? "entregas" : "aprovadas"); }}>
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-lg">{p.name}</h3>
+                    {pending > 0 && <span className="text-xs font-medium bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">{pending} para revisar</span>}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="text-right">
-                      <p className="text-lg font-bold">{progress}%</p>
-                      <p className="text-xs text-gray-400">concluído</p>
-                    </div>
-                    {isExpanded ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
-                  </div>
+                  <ChevronLeft size={20} className="text-gray-300 rotate-180" />
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-3"><div className="bg-green-600 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
-                <div className="flex gap-4 mt-3 text-sm">
-                  {pendingApproval.length > 0 && <span className="text-orange-600 font-medium">{pendingApproval.length} aguardando sua aprovação</span>}
-                  <span className="text-green-600 font-medium">{clientApproved.length} aprovada{clientApproved.length !== 1 ? "s" : ""}</span>
-                  {inProgress > 0 && <span className="text-gray-500">{inProgress} em andamento</span>}
+                <div className="w-full bg-gray-200 rounded-full h-2 mb-2"><div className="bg-green-600 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
+                <div className="flex gap-4 text-xs text-gray-500">
+                  <span>{progress}% concluído</span>
+                  <span>{approvedCount} aprovada{approvedCount !== 1 ? "s" : ""}</span>
+                  {inProgress > 0 && <span>{inProgress} em andamento</span>}
+                  <span className="ml-auto text-gray-400">Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</span>
                 </div>
               </div>
-
-              {isExpanded && (
-                <div className="border-t border-gray-100 p-5 bg-gray-50">
-
-                  {/* Pending Client Approval */}
-                  {pendingApproval.length > 0 && (
-                    <div className="mb-6">
-                      <h4 className="font-semibold mb-3 flex items-center gap-2"><AlertTriangle size={16} className="text-orange-500" /> Entregas aguardando sua aprovação</h4>
-                      <div className="space-y-3">
-                        {pendingApproval.map(task => (
-                          <div key={task.id} className="bg-white rounded-lg border-2 border-orange-200 p-4">
-                            <div className="flex items-start justify-between mb-2">
-                              <div>
-                                <p className="font-medium">{task.title}</p>
-                                <p className="text-xs text-gray-500 mt-0.5">Entregue em {new Date(task.deadline).toLocaleDateString("pt-BR")}</p>
-                              </div>
-                              {task.submittedLink && task.submittedLink.trim() && (
-                                <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); window.open(task.submittedLink, "_blank"); }}>
-                                  <ExternalLink size={12} /> Ver entrega
-                                </Button>
-                              )}
-                            </div>
-                            {task.description && <p className="text-sm text-gray-600 mb-3">{task.description}</p>}
-                            {task.submittedFiles && task.submittedFiles.length > 0 && (
-                              <div className="mb-3">
-                                <p className="text-xs text-gray-500 font-medium mb-1">Arquivos</p>
-                                {task.submittedFiles.map((f, i) => (
-                                  <div key={i} className="flex items-center gap-2 bg-gray-50 rounded p-2 mb-1">
-                                    <Copy size={14} className="text-gray-400" />
-                                    <span className="text-sm flex-1 truncate">{f.name}</span>
-                                    {f.url && <a href={f.url} download={f.name} className="text-xs text-blue-600 hover:underline">Baixar</a>}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {rejectingTask === task.id ? (
-                              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mt-3">
-                                <p className="text-sm font-medium text-orange-800 mb-2">O que precisa ser ajustado?</p>
-                                <textarea
-                                  value={rejectText}
-                                  onChange={e => setRejectText(e.target.value)}
-                                  placeholder="Descreva o que não ficou como esperado..."
-                                  className="w-full border border-orange-200 rounded-lg p-2.5 text-sm min-h-[60px] focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
-                                />
-                                <div className="flex gap-2 mt-2 justify-end">
-                                  <Button variant="outline" size="sm" onClick={() => { setRejectingTask(null); setRejectText(""); }}>Cancelar</Button>
-                                  <button type="button" disabled={!rejectText.trim()} onClick={() => { clientRejectTask(task.id, rejectText.trim(), client.id, client.name, p.id); setRejectingTask(null); setRejectText(""); }} className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium ${rejectText.trim() ? "bg-orange-600 text-white hover:bg-orange-700" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>
-                                    <Send size={12} /> Enviar feedback
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
-                                <button type="button" onClick={() => clientApproveTask(task.id)} className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-md font-medium text-sm flex-1 justify-center">
-                                  <CheckCircle2 size={16} /> Aprovar entrega
-                                </button>
-                                <button type="button" onClick={() => setRejectingTask(task.id)} className="inline-flex items-center gap-2 px-4 py-2 bg-white text-orange-600 border border-orange-300 hover:bg-orange-50 rounded-md font-medium text-sm flex-1 justify-center">
-                                  <MessageSquare size={16} /> Pedir ajuste
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Client Approved */}
-                  <h4 className="font-semibold mb-3">Entregas aprovadas</h4>
-                  {clientApproved.length === 0 ? (
-                    <p className="text-sm text-gray-400 italic mb-4">Nenhuma entrega aprovada ainda.</p>
-                  ) : (
-                    <div className="space-y-2 mb-4">
-                      {clientApproved.map(task => (
-                        <div key={task.id} className="bg-white rounded-lg border p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <CheckCircle2 size={18} className="text-green-500" />
-                              <div>
-                                <p className="font-medium text-sm">{task.title}</p>
-                                <p className="text-xs text-gray-400">Concluído em {new Date(task.deadline).toLocaleDateString("pt-BR")}</p>
-                              </div>
-                            </div>
-                            {task.submittedLink && task.submittedLink.trim() && (
-                              <Button variant="outline" size="sm" onClick={() => { window.open(task.submittedLink, "_blank"); }}>
-                                <ExternalLink size={12} /> Ver entrega
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {inProgress > 0 && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                      <p className="text-sm text-blue-700"><Clock size={14} className="inline mr-1" /> <strong>{inProgress} entrega{inProgress !== 1 ? "s" : ""}</strong> em andamento. Você será notificado quando estiverem prontas.</p>
-                    </div>
-                  )}
-
-                  {inlineFbProject !== p.id ? (
-                    <button type="button" onClick={() => setInlineFbProject(p.id)} className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-800 rounded-md font-medium text-sm">
-                      <Send size={14} /> Enviar feedback sobre este projeto
-                    </button>
-                  ) : (
-                    <div className="bg-white rounded-lg border p-4 mt-2">
-                      <p className="font-semibold text-sm mb-3">Feedback sobre {p.name}</p>
-                      <div className="space-y-3">
-                        <div>
-                          <label className="text-sm font-medium">Tipo</label>
-                          <select value={fbForm.type} onChange={e => setFbForm(prev => ({ ...prev, type: e.target.value }))} className="w-full border rounded-lg p-2 text-sm mt-1">
-                            <option>Ajuste</option><option>Sugestão</option><option>Problema</option><option>Elogio</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium">Mensagem</label>
-                          <textarea value={fbForm.text} onChange={e => setFbForm(prev => ({ ...prev, text: e.target.value }))} placeholder="Descreva seu feedback..." className="w-full border rounded-lg p-2 text-sm mt-1 min-h-[80px]" />
-                        </div>
-                        <div className="flex gap-2">
-                          <button type="button" onClick={() => { if (fbForm.text.trim()) { addFeedback({ projectId: p.id, clientId: client.id, clientName: client.name, date: new Date().toISOString().split("T")[0], type: fbForm.type, text: fbForm.text }); setFbForm({ projectId: "", type: "Ajuste", text: "" }); setInlineFbProject(null); } }} className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-800 rounded-md font-medium text-sm">
-                            <Send size={14} /> Enviar
-                          </button>
-                          <button type="button" onClick={() => setInlineFbProject(null)} className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-900 border border-gray-300 hover:bg-gray-50 rounded-md font-medium text-sm">Cancelar</button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
             </Card>
           );
         })}
       </div>
-
-      {/* Feedback Section */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">Feedback</h2>
-        <Button size="sm" onClick={() => setShowFeedback(!showFeedback)}><Send size={16} /> Novo feedback</Button>
-      </div>
-
-      {showFeedback && (
-        <Card className="p-6 mb-4">
-          <h3 className="font-semibold mb-3">Enviar feedback</h3>
-          <div className="space-y-4">
-            <div><label className="text-sm font-medium">Projeto</label>
-              <select value={fbForm.projectId} onChange={e => setFbForm(p => ({ ...p, projectId: e.target.value }))} className="w-full border rounded-lg p-2 text-sm mt-1">
-                <option value="">Selecione o projeto</option>
-                {clientProjects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
-            </div>
-            <div><label className="text-sm font-medium">Tipo</label>
-              <select value={fbForm.type} onChange={e => setFbForm(p => ({ ...p, type: e.target.value }))} className="w-full border rounded-lg p-2 text-sm mt-1">
-                <option>Ajuste</option><option>Sugestão</option><option>Problema</option><option>Elogio</option>
-              </select>
-            </div>
-            <div><label className="text-sm font-medium">Mensagem</label><textarea value={fbForm.text} onChange={e => setFbForm(p => ({ ...p, text: e.target.value }))} placeholder="Descreva seu feedback ou solicitação..." className="w-full border rounded-lg p-2 text-sm mt-1 min-h-[100px]" /></div>
-            <div className="flex gap-2"><Button onClick={handleSendFeedback}><Send size={16} /> Enviar</Button><Button variant="outline" onClick={() => setShowFeedback(false)}>Cancelar</Button></div>
-          </div>
-        </Card>
-      )}
-
-      {myFeedbacks.length > 0 && (
-        <div className="space-y-3 mb-8">
-          {myFeedbacks.map(fb => {
-            const proj = projects.find(p => p.id === fb.projectId);
-            return (
-              <Card key={fb.id} className="p-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <Badge variant={fb.type === "Elogio" ? "success" : fb.type === "Problema" ? "danger" : "warning"}>{fb.type}</Badge>
-                      <Badge variant={fb.status === "pendente" ? "default" : "success"}>{fb.status === "pendente" ? "Aguardando resposta" : "Sendo tratado"}</Badge>
-                    </div>
-                    <p className="text-sm text-gray-700">{fb.text}</p>
-                    <p className="text-xs text-gray-400 mt-1">{proj?.name} · {fb.date}</p>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      )}
-      {myFeedbacks.length === 0 && !showFeedback && (
-        <Card className="p-6 text-center text-gray-400 mb-8">Nenhum feedback enviado ainda.</Card>
-      )}
     </div>
   );
 }
