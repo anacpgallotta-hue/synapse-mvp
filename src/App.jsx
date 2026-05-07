@@ -26,6 +26,10 @@ const ArrowLeft = ({ className = "", size = 20 }) => <svg {...iconProps} width={
 const Plane = ({ className = "", size = 20 }) => <svg {...iconProps} width={size} height={size} className={className}><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>;
 const Sparkles = ({ className = "", size = 20 }) => <svg {...iconProps} width={size} height={size} className={className}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>;
 const X = ({ className = "", size = 20 }) => <svg {...iconProps} width={size} height={size} className={className}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>;
+const Moon = ({ className = "", size = 20 }) => <svg {...iconProps} width={size} height={size} className={className}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>;
+const Sun = ({ className = "", size = 20 }) => <svg {...iconProps} width={size} height={size} className={className}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>;
+
+const DarkModeContext = createContext({ darkMode: false, setDarkMode: () => {} });
 
 // ============================
 // DATA INICIAL (mesmo do MVP)
@@ -391,6 +395,141 @@ function AppProvider({ children }) {
 // ============================
 // COMPONENTES UI
 // ============================
+function DarkModeStyles() {
+  return (
+    <style>{`
+      .dark { color-scheme: dark; }
+
+      /* ── Page & surface backgrounds ── */
+      .dark .bg-stone-50  { background-color: #0c0a09; }
+      .dark .bg-white     { background-color: #1c1917; }
+      .dark .bg-stone-100 { background-color: #292524; }
+      .dark .bg-stone-200 { background-color: #44403c; }
+
+      /* ── Text ── */
+      .dark .text-stone-900 { color: #f5f5f4; }
+      .dark .text-stone-800 { color: #e7e5e4; }
+      .dark .text-stone-700 { color: #d6d3d0; }
+      .dark .text-stone-600 { color: #a8a29e; }
+      .dark .text-stone-500 { color: #a8a29e; }
+      .dark .text-stone-400 { color: #78716c; }
+      .dark .text-gray-500  { color: #a8a29e; }
+
+      /* ── Borders ── */
+      .dark .border-stone-200 { border-color: #292524; }
+      .dark .border-stone-300 { border-color: #44403c; }
+      .dark .border-b.border-stone-200, .dark .border-stone-200 { border-color: #292524; }
+
+      /* ── Tabs with border-b-2 (QA, Líder) ── */
+      .dark .border-stone-900 { border-color: #f5f5f4; }
+
+      /* ── Hover states ── */
+      .dark .hover\\:bg-stone-50:hover  { background-color: #292524; }
+      .dark .hover\\:bg-stone-100:hover { background-color: #44403c; }
+      .dark .hover\\:text-stone-900:hover { color: #f5f5f4; }
+      .dark .hover\\:text-stone-700:hover { color: #d6d3d0; }
+      .dark .hover\\:shadow-md:hover { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.6); }
+
+      /* ── Shadows (deeper for dark bg) ── */
+      .dark .shadow-sm  { box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.5); }
+      .dark .shadow-md  { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.6); }
+      .dark .shadow-lg  { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.7); }
+      .dark .shadow-xl  { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.7); }
+      .dark .shadow-2xl { box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.8); }
+
+      /* ── Inputs & textareas ── */
+      .dark input, .dark textarea, .dark select {
+        background-color: #1c1917 !important;
+        color: #f5f5f4 !important;
+        border-color: #44403c !important;
+      }
+      .dark input::placeholder, .dark textarea::placeholder { color: #78716c !important; }
+      .dark input:focus, .dark textarea:focus, .dark select:focus { border-color: #57534e !important; }
+
+      /* ── Accent bg softening (pastel → translucent) ── */
+      .dark .bg-emerald-100 { background-color: rgba(16,185,129,0.12); }
+      .dark .bg-emerald-50  { background-color: rgba(16,185,129,0.08); }
+      .dark .text-emerald-800, .dark .text-emerald-700 { color: #6ee7b7; }
+      .dark .border-emerald-300 { border-color: rgba(16,185,129,0.25); }
+
+      .dark .bg-pink-100 { background-color: rgba(236,72,153,0.12); }
+      .dark .text-pink-800, .dark .text-pink-700 { color: #f9a8d4; }
+      .dark .border-pink-300 { border-color: rgba(236,72,153,0.25); }
+
+      .dark .bg-amber-100 { background-color: rgba(245,158,11,0.12); }
+      .dark .text-amber-800, .dark .text-amber-700 { color: #fcd34d; }
+      .dark .border-amber-300 { border-color: rgba(245,158,11,0.25); }
+
+      .dark .bg-violet-100 { background-color: rgba(139,92,246,0.12); }
+      .dark .text-violet-800, .dark .text-violet-700 { color: #c4b5fd; }
+      .dark .border-violet-300 { border-color: rgba(139,92,246,0.25); }
+
+      .dark .bg-sky-100 { background-color: rgba(14,165,233,0.12); }
+      .dark .text-sky-800, .dark .text-sky-700 { color: #7dd3fc; }
+      .dark .border-sky-300 { border-color: rgba(14,165,233,0.25); }
+
+      .dark .bg-orange-100 { background-color: rgba(249,115,22,0.12); }
+      .dark .bg-orange-50  { background-color: rgba(249,115,22,0.08); }
+      .dark .text-orange-800, .dark .text-orange-700, .dark .text-orange-600 { color: #fdba74; }
+      .dark .border-orange-300 { border-color: rgba(249,115,22,0.25); }
+
+      .dark .bg-rose-100 { background-color: rgba(244,63,94,0.12); }
+      .dark .text-rose-800, .dark .text-rose-700 { color: #fda4af; }
+      .dark .border-rose-300 { border-color: rgba(244,63,94,0.25); }
+
+      .dark .bg-red-100 { background-color: rgba(239,68,68,0.12); }
+      .dark .bg-red-50  { background-color: rgba(239,68,68,0.08); }
+      .dark .text-red-800, .dark .text-red-700, .dark .text-red-600 { color: #fca5a5; }
+      .dark .border-red-300 { border-color: rgba(239,68,68,0.25); }
+
+      .dark .bg-yellow-100 { background-color: rgba(234,179,8,0.12); }
+      .dark .text-yellow-800, .dark .text-yellow-700 { color: #fde047; }
+      .dark .border-yellow-300 { border-color: rgba(234,179,8,0.25); }
+
+      .dark .bg-sky-50 { background-color: rgba(14,165,233,0.08); }
+
+      /* ── Vibrant accent colors — keep as-is ── */
+      .dark .bg-pink-500    { background-color: #ec4899; }
+      .dark .bg-emerald-500 { background-color: #10b981; }
+      .dark .bg-amber-500   { background-color: #f59e0b; }
+      .dark .bg-violet-500  { background-color: #8b5cf6; }
+      .dark .bg-sky-500     { background-color: #0ea5e9; }
+      .dark .bg-red-500     { background-color: #ef4444; }
+      .dark .bg-red-400     { background-color: #f87171; }
+      .dark .bg-yellow-500  { background-color: #eab308; }
+      .dark .bg-stone-400   { background-color: #78716c; }
+
+      /* ── Hover vibrant ── */
+      .dark .hover\\:bg-pink-600:hover    { background-color: #db2777; }
+      .dark .hover\\:bg-sky-600:hover     { background-color: #0284c7; }
+      .dark .hover\\:bg-emerald-600:hover { background-color: #059669; }
+      .dark .hover\\:bg-yellow-600:hover  { background-color: #ca8a04; }
+
+      /* ── Alert borders ── */
+      .dark .border-l-red-500    { border-left-color: #ef4444; }
+      .dark .border-l-orange-400 { border-left-color: #fb923c; }
+
+      /* ── Dividers ── */
+      .dark .divide-stone-200 > :not([hidden]) ~ :not([hidden]) { border-color: #292524; }
+
+      /* ── Overlay / modal backdrop ── */
+      .dark .bg-black.bg-opacity-40 { background-color: rgba(0,0,0,0.6); }
+
+      /* ── Default border (Tailwind .border / .border-b without explicit color) ── */
+      .dark .border, .dark .border-b, .dark .border-t { --tw-border-opacity: 1; border-color: rgb(41 37 36 / var(--tw-border-opacity)); }
+
+      /* ── Inline filter pills (bg-stone-900 in dark → invert) ── */
+      .dark .bg-stone-900.text-white { background-color: #e7e5e4; color: #1c1917; }
+      .dark .border-stone-900 { border-color: #e7e5e4; }
+
+      /* ── Scrollbar ── */
+      .dark ::-webkit-scrollbar { width: 6px; }
+      .dark ::-webkit-scrollbar-track { background: #0c0a09; }
+      .dark ::-webkit-scrollbar-thumb { background: #44403c; border-radius: 3px; }
+    `}</style>
+  );
+}
+
 function Badge({ children, variant = "default", className = "" }) {
   const variants = {
     default: "bg-stone-100 text-stone-700 border-stone-200",
@@ -406,13 +545,22 @@ function Badge({ children, variant = "default", className = "" }) {
 }
 
 function Button({ children, variant = "default", size = "default", className = "", ...props }) {
-  const variants = {
+  const { darkMode } = useContext(DarkModeContext);
+  const light = {
     default: "bg-stone-900 text-white hover:bg-stone-800",
     outline: "bg-white text-stone-900 border border-stone-300 hover:bg-stone-50",
     ghost: "bg-transparent text-stone-700 hover:bg-stone-100",
     nav: "bg-transparent text-stone-600 hover:bg-stone-100 text-sm",
     navActive: "bg-stone-900 text-white text-sm",
   };
+  const dark = {
+    default: "bg-white text-stone-900 hover:bg-stone-200",
+    outline: "bg-stone-800 text-stone-200 border border-stone-600 hover:bg-stone-700",
+    ghost: "bg-transparent text-stone-300 hover:bg-stone-800",
+    nav: "bg-transparent text-stone-400 hover:bg-stone-800 text-sm",
+    navActive: "bg-stone-200 text-stone-900 text-sm",
+  };
+  const variants = darkMode ? dark : light;
   const sizes = {
     default: "px-4 py-2",
     sm: "px-3 py-1.5 text-sm",
@@ -422,13 +570,17 @@ function Button({ children, variant = "default", size = "default", className = "
 }
 
 function Card({ children, className = "", onClick }) {
-  return <div onClick={onClick} className={`bg-white rounded-xl border border-stone-200 shadow-sm ${onClick ? "cursor-pointer hover:shadow-md transition-shadow" : ""} ${className}`}>{children}</div>;
+  const { darkMode } = useContext(DarkModeContext);
+  const base = darkMode
+    ? "bg-stone-900 rounded-xl border border-stone-800 shadow-sm"
+    : "bg-white rounded-xl border border-stone-200 shadow-sm";
+  return <div onClick={onClick} className={`${base} ${onClick ? "cursor-pointer hover:shadow-md transition-shadow" : ""} ${className}`}>{children}</div>;
 }
 
 // ============================
 // HEADER
 // ============================
-function Header({ currentView, setView, currentExecutor, setShowNotif, notifCount, onHelp, showBell = true }) {
+function Header({ currentView, setView, currentExecutor, setShowNotif, notifCount, onHelp, showBell = true, darkMode, setDarkMode }) {
   const allNavItems = [
     { label: "Executor", view: "executor" },
     { label: "QA", view: "qa_selector" },
@@ -466,12 +618,12 @@ function Header({ currentView, setView, currentExecutor, setShowNotif, notifCoun
     : null;
 
   return (
-    <header className="border-b border-stone-200 bg-white sticky top-0 z-10">
+    <header className={`border-b sticky top-0 z-10 ${darkMode ? "border-stone-800 bg-stone-950" : "border-stone-200 bg-white"}`}>
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-stone-900">{headerTitle}</h1>
-            {subtitle && <p className="text-sm text-stone-500">{subtitle}</p>}
+            <h1 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-stone-900"}`}>{headerTitle}</h1>
+            {subtitle && <p className={`text-sm ${darkMode ? "text-stone-400" : "text-stone-500"}`}>{subtitle}</p>}
           </div>
           <div className="flex items-center gap-2">
             {allNavItems.map(item => (
@@ -485,6 +637,9 @@ function Header({ currentView, setView, currentExecutor, setShowNotif, notifCoun
                 <span className="text-xs">Ajuda</span>
               </Button>
             )}
+            <button onClick={() => setDarkMode(prev => !prev)} className={`p-2 rounded-md transition-all ${darkMode ? "text-amber-400 hover:bg-stone-800" : "text-stone-400 hover:bg-stone-100 hover:text-stone-700"}`}>
+              {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
             {showBell && (
               <div className="relative ml-1">
                 <Button variant="ghost" size="icon" onClick={() => setShowNotif(prev => !prev)}>
@@ -3463,6 +3618,7 @@ function App() {
   const [showNotif, setShowNotif] = useState(false);
   const [clientPortalId, setClientPortalId] = useState("c5");
   const [viewHistory, setViewHistory] = useState([]);
+  const [darkMode, setDarkMode] = useState(false);
 
   const pushHistory = () => {
     setViewHistory(prev => [...prev.slice(-19), { view, selectedTask, selectedProject, qaArea, liderArea, clientPortalId }]);
@@ -3506,29 +3662,33 @@ function App() {
 
   return (
     <AppProvider>
-      <div className="min-h-screen bg-stone-50">
-        <div className="h-1 bg-red-400 w-full" />
-        <AppInner
-          view={view} setView={handleSetView} goBack={goBack}
-          selectedTask={selectedTask} setSelectedTask={setSelectedTask}
-          selectedProject={selectedProject} setSelectedProject={setSelectedProject}
-          projectOrigin={projectOrigin}
-          executorId={executorId} executorName={executorName}
-          setExecutorId={setExecutorId} setExecutorName={setExecutorName}
-          qaArea={qaArea} setQaArea={setQaArea}
-          liderArea={liderArea} setLiderArea={setLiderArea}
-          showNotif={showNotif} setShowNotif={setShowNotif}
-          clientPortalId={clientPortalId} setClientPortalId={setClientPortalId}
-          onProjectClick={handleProjectClick}
-          pushHistory={pushHistory}
-        />
-      </div>
+      <DarkModeContext.Provider value={{ darkMode, setDarkMode }}>
+        <DarkModeStyles />
+        <div className={`min-h-screen ${darkMode ? "dark bg-stone-950 text-stone-100" : "bg-stone-50 text-stone-900"}`}>
+          <div className="h-1 bg-red-400 w-full" />
+          <AppInner
+            view={view} setView={handleSetView} goBack={goBack}
+            selectedTask={selectedTask} setSelectedTask={setSelectedTask}
+            selectedProject={selectedProject} setSelectedProject={setSelectedProject}
+            projectOrigin={projectOrigin}
+            executorId={executorId} executorName={executorName}
+            setExecutorId={setExecutorId} setExecutorName={setExecutorName}
+            qaArea={qaArea} setQaArea={setQaArea}
+            liderArea={liderArea} setLiderArea={setLiderArea}
+            showNotif={showNotif} setShowNotif={setShowNotif}
+            clientPortalId={clientPortalId} setClientPortalId={setClientPortalId}
+            onProjectClick={handleProjectClick}
+            pushHistory={pushHistory}
+          />
+        </div>
+      </DarkModeContext.Provider>
     </AppProvider>
   );
 }
 
 function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, selectedProject, setSelectedProject, projectOrigin, executorId, executorName, setExecutorId, setExecutorName, qaArea, setQaArea, liderArea, setLiderArea, showNotif, setShowNotif, clientPortalId, setClientPortalId, onProjectClick, pushHistory }) {
   const { notifications, getSmartAlerts, getChatUnread, projects, team } = useContext(AppContext);
+  const { darkMode, setDarkMode } = useContext(DarkModeContext);
   const [showChat, setShowChat] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(null); // "executor" | "qa" | "lider" | null
 
@@ -3568,7 +3728,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   if (isProjectDetail && selectedProject) {
     return (
       <>
-        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} />
+        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} darkMode={darkMode} setDarkMode={setDarkMode} />
         {notifPanel}
         {onboardingModal}
         {chatPanel}
@@ -3582,7 +3742,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   if (isClientSelector) {
     return (
       <>
-        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} showBell={false} />
+        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} showBell={false} darkMode={darkMode} setDarkMode={setDarkMode} />
         {onboardingModal}
         <div className="max-w-7xl mx-auto px-6 py-8">
           <ClientSelectorView onSelect={(cid) => { pushHistory(); setClientPortalId(cid); setView("experiencia_cliente"); }} onBack={goBack} />
@@ -3594,7 +3754,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   if (isClientPortal) {
     return (
       <>
-        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} showBell={false} />
+        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} showBell={false} darkMode={darkMode} setDarkMode={setDarkMode} />
         {onboardingModal}
         <div className="max-w-7xl mx-auto px-6 py-8">
           <ClientPortalView clientId={clientPortalId} onBack={goBack} />
@@ -3606,7 +3766,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   if (isClientHub) {
     return (
       <>
-        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} showBell={false} />
+        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} showBell={false} darkMode={darkMode} setDarkMode={setDarkMode} />
         {notifPanel}
         {onboardingModal}
         <div className="max-w-7xl mx-auto px-6 py-8">
@@ -3620,7 +3780,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
 
   return (
     <>
-      <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} />
+      <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} darkMode={darkMode} setDarkMode={setDarkMode} />
       {notifPanel}
       {onboardingModal}
       {chatPanel}
@@ -3651,8 +3811,6 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
           <LiderPortalView
             area="eventos"
             onBack={goBack}
-            onViewClients={() => setView("clientes")}
-            onSimulateClient={() => { pushHistory(); setView("client_selector"); }}
             onProjectClick={onProjectClick}
             onViewAsClient={(cid) => { pushHistory(); setClientPortalId(cid); setView("experiencia_cliente"); }}
           />
