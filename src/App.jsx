@@ -1910,37 +1910,39 @@ function TrocarExecutorView({ currentId, onSelect, onBack }) {
 // ============================
 function NotificationPanel({ onClose, context, executorId }) {
   const { notifications, setNotifications, dismissNotification, getSmartAlerts } = useContext(AppContext);
+  const [showHistory, setShowHistory] = useState(false);
 
-  // Filter notifications by current context
   const targetFilter = context === "executor" ? "executor:" + executorId
     : context === "qa" ? "qa"
     : context === "lider" ? "lider"
     : context === "client" ? "client"
     : null;
 
-  const myNotifications = targetFilter
-    ? notifications.filter(n => n.target === targetFilter)
-    : notifications;
+  const activeNotifications = targetFilter
+    ? notifications.filter(n => n.target === targetFilter && !n.read)
+    : notifications.filter(n => !n.read);
 
-  // Smart alerts for executors (computed from task state)
+  const historyNotifications = targetFilter
+    ? notifications.filter(n => n.target === targetFilter && n.read)
+    : notifications.filter(n => n.read);
+
   const smartAlerts = context === "executor" ? getSmartAlerts(executorId) : [];
 
-  const allItems = [...smartAlerts, ...myNotifications];
-
+  const markAsRead = (notifId) => setNotifications(prev => prev.map(n => n.id === notifId ? { ...n, read: true } : n));
   const markAllRead = () => setNotifications(prev => prev.map(n => n.target === targetFilter ? { ...n, read: true } : n));
-  const clearAll = () => setNotifications(prev => prev.filter(n => n.target !== targetFilter));
 
   const priorityStyle = (p) => p === "danger" ? "bg-red-50 border-l-4 border-l-red-500 text-red-800"
     : p === "warning" ? "bg-orange-50 border-l-4 border-l-orange-400 text-orange-800"
     : "bg-blue-50 text-gray-700";
+
+  const hasContent = smartAlerts.length > 0 || activeNotifications.length > 0 || historyNotifications.length > 0;
 
   return (
     <div className="fixed top-16 right-6 w-[420px] bg-white rounded-xl shadow-xl border z-50 max-h-[480px] overflow-y-auto">
       <div className="flex items-center justify-between p-4 border-b">
         <h3 className="font-bold">Notificações</h3>
         <div className="flex gap-2">
-          {myNotifications.length > 0 && <button onClick={markAllRead} className="text-xs text-gray-500 hover:text-gray-700">Marcar lidas</button>}
-          {myNotifications.length > 0 && <button onClick={clearAll} className="text-xs text-gray-500 hover:text-red-500">Limpar</button>}
+          {activeNotifications.length > 0 && <button onClick={markAllRead} className="text-xs text-gray-500 hover:text-gray-700">Resolver todas</button>}
           <button onClick={onClose}><X size={16} /></button>
         </div>
       </div>
@@ -1960,14 +1962,32 @@ function NotificationPanel({ onClose, context, executorId }) {
         </div>
       )}
 
-      {myNotifications.length > 0 && (
-        <div>
-          {smartAlerts.length > 0 && <p className="px-4 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Histórico</p>}
-          {myNotifications.map(n => (
-            <div key={n.id} className={`px-4 py-3 border-b text-sm flex items-start gap-3 ${n.read ? "text-gray-400" : priorityStyle(n.priority)}`}>
+      {activeNotifications.length > 0 && (
+        <div className="border-b">
+          {smartAlerts.length > 0 && <p className="px-4 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Novas</p>}
+          {activeNotifications.map(n => (
+            <div key={n.id} className={`px-4 py-3 border-b text-sm flex items-start gap-3 ${priorityStyle(n.priority)}`}>
               <div className="flex-1">
                 <p>{n.text}</p>
                 <p className="text-xs text-gray-400 mt-1">{n.date}</p>
+              </div>
+              <button onClick={() => markAsRead(n.id)} className="text-gray-400 hover:text-green-600 flex-shrink-0 mt-0.5" title="Marcar como resolvida"><CheckCircle2 size={16} /></button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {historyNotifications.length > 0 && (
+        <div>
+          <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-500 hover:bg-gray-50 transition-colors">
+            <span className="font-medium">Histórico ({historyNotifications.length})</span>
+            {showHistory ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+          {showHistory && historyNotifications.map(n => (
+            <div key={n.id} className="px-4 py-2.5 border-t text-sm flex items-start gap-3 text-gray-400">
+              <div className="flex-1">
+                <p>{n.text}</p>
+                <p className="text-xs text-gray-300 mt-0.5">{n.date}</p>
               </div>
               <button onClick={() => dismissNotification(n.id)} className="text-gray-300 hover:text-red-400 flex-shrink-0 mt-0.5" title="Remover"><X size={14} /></button>
             </div>
@@ -1975,7 +1995,7 @@ function NotificationPanel({ onClose, context, executorId }) {
         </div>
       )}
 
-      {allItems.length === 0 && <p className="p-6 text-sm text-gray-400 text-center">Nenhuma notificação no momento.</p>}
+      {!hasContent && <p className="p-6 text-sm text-gray-400 text-center">Nenhuma notificação no momento.</p>}
     </div>
   );
 }
