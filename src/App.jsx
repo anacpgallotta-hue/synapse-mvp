@@ -46,22 +46,24 @@ const initialClients = [
 ];
 
 const initialProjects = [
+  // Projetos ativos — XP e Red Bull
   { id: "p1", name: "Gala de Premiação Anual", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Melissa Zambon", deadline: "2026-05-15", progress: 65 },
   { id: "p2", name: "Festival de Esportes Radicais", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Maria Eduarda Vittori", deadline: "2026-05-28", progress: 30 },
-  { id: "p3", name: "Convenção Anual de Vendas", clientId: "c1", client: "Ambev", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Carolina Guimarães", deadline: "2026-06-10", progress: 40 },
-  { id: "p4", name: "Summit Digital 2026", clientId: "c2", client: "Hotmart", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Samara Aboultaif", deadline: "2026-06-20", progress: 20 },
-  { id: "p5", name: "Happy Hour Corporativo", clientId: "c1", client: "Ambev", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Melissa Zambon", deadline: "2026-06-01", progress: 15 },
-  { id: "p6", name: "Lançamento de Produto", clientId: "c4", client: "Seara", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Carolina Guimarães", deadline: "2026-05-25", progress: 50 },
   { id: "p7", name: "Premiação Top Performers", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Maria Eduarda Vittori", deadline: "2026-07-10", progress: 10 },
   { id: "p10", name: "Operações", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Samara Aboultaif", deadline: "2026-05-30", progress: 0 },
-  { id: "p8", name: "Workshop Inovação", clientId: "c2", client: "Hotmart", type: "Evento", area: "eventos", status: "em_execucao", priority: "Baixa", responsible: "Samara Aboultaif", deadline: "2026-07-15", progress: 5 },
   { id: "p9", name: "Ativação de Marca - Evento Gastronômico", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Melissa Zambon", deadline: "2026-06-15", progress: 25 },
+  // Projetos passados — Ambev, Hotmart, Seara (histórico)
+  { id: "p3", name: "Convenção Anual de Vendas", clientId: "c1", client: "Ambev", type: "Evento", area: "eventos", status: "concluido", priority: "Alta", responsible: "Carolina Guimarães", deadline: "2026-03-10", progress: 100 },
+  { id: "p4", name: "Summit Digital 2026", clientId: "c2", client: "Hotmart", type: "Evento", area: "eventos", status: "concluido", priority: "Média", responsible: "Samara Aboultaif", deadline: "2026-02-20", progress: 100 },
+  { id: "p5", name: "Happy Hour Corporativo", clientId: "c1", client: "Ambev", type: "Evento", area: "eventos", status: "concluido", priority: "Média", responsible: "Melissa Zambon", deadline: "2026-03-01", progress: 100 },
+  { id: "p6", name: "Lançamento de Produto", clientId: "c4", client: "Seara", type: "Evento", area: "eventos", status: "concluido", priority: "Média", responsible: "Carolina Guimarães", deadline: "2026-02-25", progress: 100 },
+  { id: "p8", name: "Workshop Inovação", clientId: "c2", client: "Hotmart", type: "Evento", area: "eventos", status: "concluido", priority: "Baixa", responsible: "Samara Aboultaif", deadline: "2026-01-15", progress: 100 },
 ];
 
 const initialTasks = [
   { id: "tk5", title: "Organizar reunião de alinhamento pré-evento", projectId: "p1", project: "Gala de Premiação Anual", executor: "t2", executorName: "Maria Eduarda Vittori", priority: "Alta", status: "a_fazer", area: "eventos", deadline: "2026-04-30T12:00", description: "Agendar e organizar reunião de alinhamento com todos os stakeholders antes do evento", checklist: [{ text: "Definir pauta", done: false }, { text: "Enviar convites", done: false }, { text: "Preparar material", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
-  { id: "tk6", title: "Montar checklist de fornecedores", projectId: "p3", project: "Convenção Anual de Vendas", executor: "t3", executorName: "Carolina Guimarães", priority: "Alta", status: "em_execucao", area: "eventos", deadline: "2026-04-18T17:00", description: "Listar e confirmar todos os fornecedores para o evento", checklist: [{ text: "Buffet", done: true }, { text: "Som e luz", done: false }, { text: "Decoração", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
-  { id: "tk7", title: "Criar cronograma do evento", projectId: "p3", project: "Convenção Anual de Vendas", executor: "t4", executorName: "Samara Aboultaif", priority: "Média", status: "a_fazer", area: "eventos", deadline: "2026-04-25T12:00", description: "Desenvolver cronograma detalhado hora a hora do evento", checklist: [{ text: "Definir programação", done: false }, { text: "Alocar espaços", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
+  { id: "tk6", title: "Montar checklist de fornecedores", projectId: "p9", project: "Ativação de Marca - Evento Gastronômico", executor: "t3", executorName: "Carolina Guimarães", priority: "Alta", status: "em_execucao", area: "eventos", deadline: "2026-04-18T17:00", description: "Listar e confirmar todos os fornecedores para o evento", checklist: [{ text: "Buffet", done: true }, { text: "Som e luz", done: false }, { text: "Decoração", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
+  { id: "tk7", title: "Criar cronograma do evento", projectId: "p10", project: "Operações", executor: "t4", executorName: "Samara Aboultaif", priority: "Média", status: "a_fazer", area: "eventos", deadline: "2026-04-25T12:00", description: "Desenvolver cronograma detalhado hora a hora do evento", checklist: [{ text: "Definir programação", done: false }, { text: "Alocar espaços", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
 ];
 
 const initialLearnings = [
@@ -277,8 +279,8 @@ function Header({ currentView, setView, currentExecutor, setShowNotif, notifCoun
     { label: "Executor", view: "executor" },
     { label: "QA", view: "qa_selector" },
     { label: "Líder", view: "lider_selector" },
-    { label: "Clientes", view: "clientes" },
-    { label: "Portal do Cliente", view: "experiencia_cliente" },
+    { label: "Histórico Clientes", view: "clientes" },
+    { label: "Portal do Cliente", view: "client_selector" },
     { label: "Trocar executor", view: "trocar_executor" },
   ];
 
@@ -290,6 +292,7 @@ function Header({ currentView, setView, currentExecutor, setShowNotif, notifCoun
     if (itemView === "executor" && (currentView === "executor" || isProjectDetail)) return true;
     if (itemView === "qa_selector" && isQA) return true;
     if (itemView === "lider_selector" && isLider) return true;
+    if (itemView === "client_selector" && (currentView === "client_selector" || currentView === "experiencia_cliente")) return true;
     if (itemView === currentView) return true;
     return false;
   };
@@ -1350,6 +1353,31 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
 // ============================
 // CLIENTES VIEWS
 // ============================
+function ClientSelectorView({ onSelect, onBack }) {
+  const activeClients = [
+    { id: "c5", name: "XP", logo: "XP" },
+    { id: "c3", name: "Red Bull", logo: "RB" },
+  ];
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-6"><ArrowLeft size={16} /> Voltar</button>
+      <p className="text-sm text-gray-400 mb-1">Synapse · Portal do Cliente</p>
+      <h1 className="text-3xl font-bold mb-2">Acessar como cliente</h1>
+      <p className="text-gray-500 mb-8">Selecione o cliente para visualizar o portal com seus projetos.</p>
+      <div className="grid grid-cols-2 gap-6">
+        {activeClients.map(c => (
+          <button key={c.id} onClick={() => onSelect(c.id)} className="group border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-900 hover:shadow-lg transition-all text-left">
+            <div className="w-14 h-14 rounded-xl bg-gray-900 text-white flex items-center justify-center text-xl font-bold mb-4 group-hover:scale-105 transition-transform">{c.logo}</div>
+            <h2 className="text-xl font-bold mb-1">{c.name}</h2>
+            <p className="text-sm text-gray-500">Entrar no portal do cliente {c.name}</p>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ClientHubView({ onBack }) {
   const { clients, projects } = useContext(AppContext);
   const totalActive = projects.filter(p => p.status === "em_execucao").length;
@@ -1360,9 +1388,9 @@ function ClientHubView({ onBack }) {
       <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-4"><ArrowLeft size={16} /> Voltar</button>
       <div className="flex items-center gap-3 mb-2">
         <Users size={32} className="text-green-600" />
-        <h1 className="text-3xl font-bold">Hub de Clientes</h1>
+        <h1 className="text-3xl font-bold">Histórico de Clientes</h1>
       </div>
-      <p className="text-gray-500 mb-8">Acompanhe todos os clientes, projetos ativos e histórico de trabalhos.</p>
+      <p className="text-gray-500 mb-8">Registro de todos os clientes e projetos realizados pela agência.</p>
 
       <div className="grid grid-cols-4 gap-4 mb-8">
         {[
@@ -2071,6 +2099,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   const { notifications, getSmartAlerts } = useContext(AppContext);
 
   const isClientPortal = view === "experiencia_cliente";
+  const isClientSelector = view === "client_selector";
   const isClientHub = view === "clientes";
   const isProjectDetail = view === "project_detail";
   const isQA = view.startsWith("qa");
@@ -2100,6 +2129,18 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
         {notifPanel}
         <div className="max-w-7xl mx-auto px-6 py-8">
           <ProjectKanbanView projectId={selectedProject} onBack={goBack} onTaskClick={handleTaskClick} />
+        </div>
+      </>
+    );
+  }
+
+  if (isClientSelector) {
+    return (
+      <>
+        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} />
+        {notifPanel}
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <ClientSelectorView onSelect={(cid) => { pushHistory(); setClientPortalId(cid); setView("experiencia_cliente"); }} onBack={goBack} />
         </div>
       </>
     );
@@ -2154,7 +2195,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
             area="eventos"
             onBack={goBack}
             onViewClients={() => setView("clientes")}
-            onSimulateClient={() => { setClientPortalId("c5"); setView("experiencia_cliente"); }}
+            onSimulateClient={() => { pushHistory(); setView("client_selector"); }}
             onProjectClick={onProjectClick}
             onViewAsClient={(cid) => { pushHistory(); setClientPortalId(cid); setView("experiencia_cliente"); }}
           />
