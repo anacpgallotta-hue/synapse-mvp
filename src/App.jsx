@@ -2760,7 +2760,7 @@ function TrocarExecutorView({ currentId, onSelect, onBack }) {
 // ============================
 // NOTIFICAÇÕES
 // ============================
-function NotificationPanel({ onClose, context, executorId }) {
+function NotificationPanel({ onClose, context, executorId, onTaskClick }) {
   const { notifications, setNotifications, dismissNotification, dismissSmartAlert, getSmartAlerts } = useContext(AppContext);
   const [showHistory, setShowHistory] = useState(false);
 
@@ -2801,12 +2801,12 @@ function NotificationPanel({ onClose, context, executorId }) {
         <div className="border-b">
           <p className="px-4 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Alertas</p>
           {smartAlerts.map(a => (
-            <div key={a.id} className={`px-4 py-3 text-sm ${priorityStyle(a.priority)}`}>
+            <div key={a.id} className={`px-4 py-3 text-sm ${priorityStyle(a.priority)} ${a.taskId && onTaskClick ? "cursor-pointer hover:brightness-95 transition-all" : ""}`} onClick={() => { if (a.taskId && onTaskClick) { onTaskClick(a.taskId); onClose(); } }}>
               <div className="flex items-start gap-2">
                 {a.priority === "danger" && <AlertTriangle size={14} className="text-red-500 flex-shrink-0 mt-0.5" />}
                 {a.priority === "warning" && <Clock size={14} className="text-orange-500 flex-shrink-0 mt-0.5" />}
-                <p className="flex-1 font-medium">{a.text}</p>
-                <button onClick={() => dismissSmartAlert(a.id, a.text, targetFilter, a.priority)} className="text-gray-400 hover:text-green-600 flex-shrink-0 mt-0.5" title="Resolver alerta"><CheckCircle2 size={16} /></button>
+                <p className={`flex-1 font-medium ${a.taskId && onTaskClick ? "underline decoration-dotted underline-offset-2" : ""}`}>{a.text}</p>
+                <button onClick={(e) => { e.stopPropagation(); dismissSmartAlert(a.id, a.text, targetFilter, a.priority); }} className="text-gray-400 hover:text-green-600 flex-shrink-0 mt-0.5" title="Resolver alerta"><CheckCircle2 size={16} /></button>
               </div>
             </div>
           ))}
