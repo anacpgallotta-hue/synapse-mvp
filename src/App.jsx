@@ -1177,7 +1177,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
   const [assigningFb, setAssigningFb] = useState(null);
   const [assignForm, setAssignForm] = useState({ executor: "", priority: "Alta", deadline: "", title: "", instructions: "" });
   const [elogioNotes, setElogioNotes] = useState({});
-  const [relNote, setRelNote] = useState({ clientId: "", text: "" });
+  const [relNote, setRelNote] = useState({ clientId: "", text: "", tag: "" });
   const [showRelacionamento, setShowRelacionamento] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
   const [clientDetailTab, setClientDetailTab] = useState("projetos");
@@ -1421,18 +1421,35 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
 
           <Card className="p-5 mb-8">
             <p className="text-sm font-medium text-gray-700 mb-3">Nova anotação sobre cliente</p>
-            <div className="grid grid-cols-4 gap-3">
-              <div>
-                <select value={relNote.clientId} onChange={e => setRelNote(p => ({ ...p, clientId: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900">
-                  <option value="">Selecione cliente</option>
-                  {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-              </div>
-              <div className="col-span-2">
-                <input value={relNote.text} onChange={e => setRelNote(p => ({ ...p, text: e.target.value }))} onKeyDown={e => { if (e.key === "Enter" && relNote.clientId && relNote.text.trim()) { addClientNote(relNote.clientId, relNote.text.trim()); setRelNote({ clientId: "", text: "" }); } }} placeholder="Ex: Cliente prefere reuniões curtas e objetivas..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
-              </div>
-              <Button size="sm" onClick={() => { if (relNote.clientId && relNote.text.trim()) { addClientNote(relNote.clientId, relNote.text.trim()); setRelNote({ clientId: "", text: "" }); } }} disabled={!relNote.clientId || !relNote.text.trim()}>Salvar nota</Button>
-            </div>
+            {(() => {
+              const noteTagConfig = {
+                gostou: { label: "Gostou", color: "bg-green-100 text-green-700 border-green-300" },
+                nao_gostou: { label: "Não gostou", color: "bg-red-100 text-red-700 border-red-300" },
+                comunicacao: { label: "Comunicação", color: "bg-blue-100 text-blue-700 border-blue-300" },
+                processo: { label: "Processo", color: "bg-purple-100 text-purple-700 border-purple-300" },
+                elogio: { label: "Elogio", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
+                erro: { label: "Erro", color: "bg-red-100 text-red-700 border-red-300" },
+                insight: { label: "Insight", color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
+              };
+              return (<>
+                <div className="flex items-center gap-3 mb-3">
+                  <select value={relNote.clientId} onChange={e => setRelNote(p => ({ ...p, clientId: e.target.value }))} className="border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 min-w-[180px]">
+                    <option value="">Selecione cliente</option>
+                    {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                  <input value={relNote.text} onChange={e => setRelNote(p => ({ ...p, text: e.target.value }))} onKeyDown={e => { if (e.key === "Enter" && relNote.clientId && relNote.text.trim() && relNote.tag) { addClientNote(relNote.clientId, relNote.text.trim(), relNote.tag); setRelNote({ clientId: "", text: "", tag: "" }); } }} placeholder="Ex: Cliente prefere reuniões curtas e objetivas..." className="flex-1 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs text-gray-500 mr-1">Categoria:</span>
+                  {Object.entries(noteTagConfig).map(([key, cfg]) => (
+                    <button key={key} onClick={() => setRelNote(p => ({ ...p, tag: p.tag === key ? "" : key }))} className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${relNote.tag === key ? cfg.color + " ring-2 ring-offset-1 ring-gray-400" : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"}`}>{cfg.label}</button>
+                  ))}
+                  <div className="ml-auto">
+                    <Button size="sm" onClick={() => { if (relNote.clientId && relNote.text.trim() && relNote.tag) { addClientNote(relNote.clientId, relNote.text.trim(), relNote.tag); setRelNote({ clientId: "", text: "", tag: "" }); } }} disabled={!relNote.clientId || !relNote.text.trim() || !relNote.tag}>Salvar nota</Button>
+                  </div>
+                </div>
+              </>);
+            })()}
           </Card>
           </>}
 
@@ -1704,10 +1721,30 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                   )}
 
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Notas internas</p>
-                  <div className="flex gap-2 mb-4">
-                    <input value={relNote.clientId === client.id ? relNote.text : ""} onChange={e => setRelNote({ clientId: client.id, text: e.target.value })} onKeyDown={e => { if (e.key === "Enter" && relNote.text.trim()) { addClientNote(client.id, relNote.text.trim()); setRelNote({ clientId: "", text: "" }); } }} placeholder="Adicionar anotação sobre este cliente..." className="flex-1 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
-                    <Button size="sm" onClick={() => { if (relNote.text.trim()) { addClientNote(client.id, relNote.text.trim()); setRelNote({ clientId: "", text: "" }); } }} disabled={!relNote.text.trim()}>Salvar</Button>
-                  </div>
+                  {(() => {
+                    const dTagCfg = {
+                      gostou: { label: "Gostou", color: "bg-green-100 text-green-700 border-green-300" },
+                      nao_gostou: { label: "Não gostou", color: "bg-red-100 text-red-700 border-red-300" },
+                      comunicacao: { label: "Comunicação", color: "bg-blue-100 text-blue-700 border-blue-300" },
+                      processo: { label: "Processo", color: "bg-purple-100 text-purple-700 border-purple-300" },
+                      elogio: { label: "Elogio", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
+                      erro: { label: "Erro", color: "bg-red-100 text-red-700 border-red-300" },
+                      insight: { label: "Insight", color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
+                    };
+                    const activeTag = relNote.clientId === client.id ? relNote.tag : "";
+                    return (<div className="mb-4">
+                      <div className="flex gap-2 mb-2">
+                        <input value={relNote.clientId === client.id ? relNote.text : ""} onChange={e => setRelNote({ clientId: client.id, text: e.target.value, tag: relNote.clientId === client.id ? relNote.tag : "" })} onKeyDown={e => { if (e.key === "Enter" && relNote.text.trim() && activeTag) { addClientNote(client.id, relNote.text.trim(), activeTag); setRelNote({ clientId: "", text: "", tag: "" }); } }} placeholder="Adicionar anotação sobre este cliente..." className="flex-1 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs text-gray-500">Categoria:</span>
+                        {Object.entries(dTagCfg).map(([key, cfg]) => (
+                          <button key={key} onClick={() => setRelNote(p => ({ ...p, clientId: client.id, tag: p.tag === key ? "" : key }))} className={`px-2.5 py-0.5 rounded-full text-xs font-medium border transition-all ${activeTag === key ? cfg.color + " ring-2 ring-offset-1 ring-gray-400" : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"}`}>{cfg.label}</button>
+                        ))}
+                        <Button size="sm" className="ml-auto" onClick={() => { if (relNote.text.trim() && activeTag) { addClientNote(client.id, relNote.text.trim(), activeTag); setRelNote({ clientId: "", text: "", tag: "" }); } }} disabled={!relNote.text.trim() || !activeTag}>Salvar</Button>
+                      </div>
+                    </div>);
+                  })()}
                   <div className="space-y-2">
                     {cNotes.length === 0 && <p className="text-sm text-gray-400">Nenhuma nota ainda.</p>}
                     {cNotes.map(n => (
