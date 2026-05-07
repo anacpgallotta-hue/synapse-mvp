@@ -394,12 +394,13 @@ function AppProvider({ children }) {
 function Badge({ children, variant = "default", className = "" }) {
   const variants = {
     default: "bg-stone-100 text-stone-700 border-stone-200",
-    success: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    warning: "bg-orange-50 text-orange-600 border-orange-200",
-    danger: "bg-rose-50 text-rose-700 border-rose-200",
-    info: "bg-sky-50 text-sky-600 border-sky-200",
-    accent: "bg-amber-50 text-amber-700 border-amber-200",
-    purple: "bg-violet-50 text-violet-600 border-violet-200",
+    success: "bg-emerald-100 text-emerald-800 border-emerald-300",
+    warning: "bg-orange-100 text-orange-800 border-orange-300",
+    danger: "bg-rose-100 text-rose-800 border-rose-300",
+    info: "bg-sky-100 text-sky-800 border-sky-300",
+    accent: "bg-amber-100 text-amber-800 border-amber-300",
+    purple: "bg-violet-100 text-violet-800 border-violet-300",
+    pink: "bg-pink-100 text-pink-800 border-pink-300",
   };
   return <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium ${variants[variant] || variants.default} ${className}`}>{children}</span>;
 }
@@ -410,7 +411,7 @@ function Button({ children, variant = "default", size = "default", className = "
     outline: "bg-white text-stone-900 border border-stone-300 hover:bg-stone-50",
     ghost: "bg-transparent text-stone-700 hover:bg-stone-100",
     nav: "bg-transparent text-stone-600 hover:bg-stone-100 text-sm",
-    navActive: "bg-stone-900 text-amber-400 text-sm",
+    navActive: "bg-stone-900 text-white text-sm",
   };
   const sizes = {
     default: "px-4 py-2",
@@ -516,11 +517,11 @@ function ExecutorView({ executorId, onTaskClick }) {
   const completedTasks = myTasks.filter(t => t.status === "concluida");
 
   const statusConfig = {
-    a_fazer: { label: "A Fazer", bg: "bg-stone-100", text: "text-stone-600", border: "border-stone-200", dot: "bg-stone-400", badge: "default" },
-    em_execucao: { label: "Em execução", bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200", dot: "bg-amber-500", badge: "accent" },
-    em_qa: { label: "Em QA", bg: "bg-violet-50", text: "text-violet-700", border: "border-violet-200", dot: "bg-violet-500", badge: "purple" },
-    devolvida: { label: "Devolvida", bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200", dot: "bg-rose-500", badge: "danger" },
-    concluida: { label: "Concluída", bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200", dot: "bg-emerald-500", badge: "success" },
+    a_fazer: { label: "A Fazer", bg: "bg-stone-100", text: "text-stone-700", border: "border-stone-300", dot: "bg-stone-400", badge: "default" },
+    em_execucao: { label: "Em execução", bg: "bg-amber-100", text: "text-amber-800", border: "border-amber-300", dot: "bg-amber-500", badge: "accent" },
+    em_qa: { label: "Em QA", bg: "bg-violet-100", text: "text-violet-800", border: "border-violet-300", dot: "bg-violet-500", badge: "purple" },
+    devolvida: { label: "Devolvida", bg: "bg-pink-100", text: "text-pink-800", border: "border-pink-300", dot: "bg-pink-500", badge: "pink" },
+    concluida: { label: "Concluída", bg: "bg-emerald-100", text: "text-emerald-800", border: "border-emerald-300", dot: "bg-emerald-500", badge: "success" },
   };
 
   // For list view, filters apply only to active tasks
@@ -658,7 +659,7 @@ function ExecutorView({ executorId, onTaskClick }) {
                   <div className="h-2.5 w-2.5 rounded-full bg-violet-500" />
                   <h3 className="text-lg font-semibold text-stone-900">Aguardando QA</h3>
                 </div>
-                <span className="text-xs font-medium bg-purple-100 text-violet-700 rounded-full px-2.5 py-0.5">{qaTasksList.length}</span>
+                <span className="text-xs font-medium bg-violet-100 text-violet-700 rounded-full px-2.5 py-0.5">{qaTasksList.length}</span>
               </div>
               <div className="space-y-3">
                 {qaTasksList.map(task => (
@@ -971,8 +972,8 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
     gostou: { label: "Gostou", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
     nao_gostou: { label: "Não gostou", color: "bg-red-100 text-red-700 border-red-300" },
     comunicacao: { label: "Comunicação", color: "bg-sky-100 text-sky-700 border-sky-300" },
-    processo: { label: "Processo", color: "bg-purple-100 text-violet-700 border-purple-300" },
-    elogio: { label: "Elogio", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
+    processo: { label: "Processo", color: "bg-violet-100 text-violet-700 border-violet-300" },
+    elogio: { label: "Elogio", color: "bg-pink-100 text-pink-700 border-pink-300" },
     erro: { label: "Erro", color: "bg-red-100 text-red-700 border-red-300" },
     insight: { label: "Insight", color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
   };
@@ -1026,7 +1027,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
           {pendingTasks.length > 0 && (
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">Entregas aguardando sua revisão</h2>
+                <h2 className="text-lg font-semibold flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-amber-500"></span>Entregas aguardando sua revisão</h2>
                 {pendingTasks.length > 2 && <button onClick={() => setTab("revisao")} className="text-sm text-stone-500 hover:text-stone-900">Ver todas →</button>}
               </div>
               {pendingTasks.slice(0, 3).map(task => (
@@ -1047,7 +1048,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
           )}
           {pendingTasks.length === 0 && (
             <Card className="p-8 text-center mb-8 bg-emerald-50 border-emerald-200">
-              <CheckCircle2 size={32} className="text-green-500 mx-auto mb-2" />
+              <CheckCircle2 size={32} className="text-emerald-500 mx-auto mb-2" />
               <p className="font-medium text-emerald-700">Nenhuma entrega pendente de revisão</p>
               <p className="text-sm text-emerald-600 mt-1">Todas as entregas foram revisadas.</p>
             </Card>
@@ -1056,7 +1057,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
           {/* Tarefas em risco */}
           {atRisk.length > 0 && (
             <div className="mb-8">
-              <h2 className="text-lg font-semibold mb-4">Tarefas em risco de atraso</h2>
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-pink-500"></span>Tarefas em risco de atraso</h2>
               {atRisk.map(task => (
                 <Card key={task.id} className="p-4 mb-2 border-l-4 border-l-red-400">
                   <div className="flex items-center justify-between">
@@ -1193,7 +1194,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
           <div className="flex gap-2 mb-6">
             {[
               ["pendentes", `Pendentes (${pendingTasks.length})`, pendingTasks.length > 0 ? "bg-violet-50 text-violet-700 border-violet-200" : ""],
-              ["devolvidas", `Devolvidas (${allDevolvidas.length})`, allDevolvidas.length > 0 ? "bg-rose-50 text-rose-700 border-rose-200" : ""],
+              ["devolvidas", `Devolvidas (${allDevolvidas.length})`, allDevolvidas.length > 0 ? "bg-pink-100 text-pink-800 border-pink-300" : ""],
               ["aprovadas", `Aprovadas (${allCompleted.length})`, "bg-emerald-50 text-emerald-700 border-emerald-200"],
             ].map(([key, label, activeColor]) => (
               <button key={key} onClick={() => setReviewTab(key)} className={`px-4 py-2 text-sm font-medium rounded-lg border transition-colors ${reviewTab === key ? (activeColor || "bg-stone-100 text-stone-700 border-stone-300") : "bg-white text-stone-500 border-stone-200 hover:border-stone-300"}`}>{label}</button>
@@ -1293,7 +1294,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                   <div><p className="font-medium text-sm">{task.title}</p><p className="text-xs text-stone-500 mt-0.5">{task.project} · {task.executorName}</p></div>
                   <button onClick={() => revertFromDevolvida(task.id)} className="text-xs text-stone-400 hover:text-red-500 px-3 py-1.5 rounded-lg border border-stone-200 hover:border-red-300 transition-colors">Reverter devolução</button>
                 </div>
-                {task.qaComment && <div className="mt-2 p-2.5 bg-rose-50 rounded-lg border border-rose-100"><p className="text-xs text-rose-700">{task.qaComment}</p></div>}
+                {task.qaComment && <div className="mt-2 p-2.5 bg-pink-50 rounded-lg border border-pink-200"><p className="text-xs text-pink-700">{task.qaComment}</p></div>}
               </Card>
             ))
           )}
@@ -1373,8 +1374,8 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                   <div className="space-y-2">
                     {filtered.map((entry, i) => {
                       const cfg = getTagInfo(entry._tag);
-                      const borderColors = { gostou: "border-l-emerald-500", nao_gostou: "border-l-red-500", comunicacao: "border-l-sky-500", processo: "border-l-violet-500", elogio: "border-l-emerald-500", erro: "border-l-red-500", insight: "border-l-yellow-500" };
-                      const bgColors = { gostou: "bg-emerald-50", nao_gostou: "bg-red-50", comunicacao: "bg-sky-50", processo: "bg-violet-50", elogio: "bg-emerald-50", erro: "bg-red-50", insight: "bg-yellow-50" };
+                      const borderColors = { gostou: "border-l-emerald-500", nao_gostou: "border-l-red-500", comunicacao: "border-l-sky-500", processo: "border-l-violet-500", elogio: "border-l-pink-500", erro: "border-l-red-500", insight: "border-l-yellow-500" };
+                      const bgColors = { gostou: "bg-emerald-50", nao_gostou: "bg-red-50", comunicacao: "bg-sky-50", processo: "bg-violet-50", elogio: "bg-pink-50", erro: "bg-red-50", insight: "bg-yellow-50" };
                       return (
                         <div key={i} className={`p-4 rounded-lg border-l-4 ${borderColors[entry._tag] || "border-l-gray-300"} ${bgColors[entry._tag] || "bg-stone-50"}`}>
                           <div className="flex items-center justify-between mb-1.5">
@@ -1529,13 +1530,13 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
       <p className="text-sm text-stone-400 mb-6">Você está vendo todos os projetos de eventos.</p>
 
       <div className="flex gap-2 mb-6">
-        <Button variant={tab === "geral" ? "outline" : "ghost"} size="sm" onClick={() => setTab("geral")} className={tab === "geral" ? "border-amber-500 text-amber-700" : ""}>Visão geral</Button>
-        <Button variant={tab === "portal" ? "outline" : "ghost"} size="sm" onClick={() => setTab("portal")} className={tab === "portal" ? "border-amber-500 text-amber-700" : ""}>Portal do cliente</Button>
+        <Button variant={tab === "geral" ? "outline" : "ghost"} size="sm" onClick={() => setTab("geral")} className={tab === "geral" ? "border-pink-500 text-pink-700" : ""}>Visão geral</Button>
+        <Button variant={tab === "portal" ? "outline" : "ghost"} size="sm" onClick={() => setTab("portal")} className={tab === "portal" ? "border-violet-500 text-violet-700" : ""}>Portal do cliente</Button>
       </div>
 
       {tab === "geral" && (
         <>
-          <h2 className="text-xl font-bold mb-4">Projetos ativos</h2>
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-amber-500"></span>Projetos ativos</h2>
           <Card className="mb-8 overflow-hidden">
             <table className="w-full text-sm">
               <thead><tr className="border-b"><th className="text-left p-4 font-medium">Projeto</th><th className="text-left p-4 font-medium">Cliente</th><th className="text-left p-4 font-medium">Tipo</th><th className="text-left p-4 font-medium">Status</th><th className="text-left p-4 font-medium">Prioridade</th><th className="text-left p-4 font-medium">Responsável</th><th className="text-left p-4 font-medium">Prazo</th></tr></thead>
@@ -1558,7 +1559,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
             </table>
           </Card>
 
-          <h2 className="text-xl font-bold mb-4">Feedbacks de clientes</h2>
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-pink-500"></span>Feedbacks de clientes</h2>
           <div className="flex gap-2 mb-4">
             <Button variant={feedFilter === "pendentes" ? "default" : "outline"} size="sm" onClick={() => setFeedFilter("pendentes")}>Pendentes ({pendingFeedbacks.length})</Button>
             <Button variant={feedFilter === "atribuidos" ? "default" : "outline"} size="sm" onClick={() => setFeedFilter("atribuidos")}>Atribuídos ({assignedFeedbacks.length})</Button>
@@ -1720,8 +1721,8 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                 gostou: { label: "Gostou", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
                 nao_gostou: { label: "Não gostou", color: "bg-red-100 text-red-700 border-red-300" },
                 comunicacao: { label: "Comunicação", color: "bg-sky-100 text-sky-700 border-sky-300" },
-                processo: { label: "Processo", color: "bg-purple-100 text-violet-700 border-purple-300" },
-                elogio: { label: "Elogio", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
+                processo: { label: "Processo", color: "bg-violet-100 text-violet-700 border-violet-300" },
+                elogio: { label: "Elogio", color: "bg-pink-100 text-pink-700 border-pink-300" },
                 erro: { label: "Erro", color: "bg-red-100 text-red-700 border-red-300" },
                 insight: { label: "Insight", color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
               };
@@ -1747,7 +1748,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
           </Card>
           </>}
 
-          <h2 className="text-xl font-bold mt-8 mb-4">Carga do time</h2>
+          <h2 className="text-xl font-bold mt-8 mb-4 flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-violet-500"></span>Carga do time</h2>
           <Card className="p-6 mb-8">
             <div className="grid grid-cols-3 gap-4">
               {areaTeam.map(m => (
@@ -1824,7 +1825,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                   <p className="text-xs text-stone-400 mt-0.5 mb-2">Anexe briefings, manuais, referências visuais ou qualquer arquivo útil para o executor.</p>
                   {createFiles.map((f, i) => (
                     <div key={i} className="flex items-center gap-3 p-2.5 bg-stone-50 border border-stone-100 rounded-lg mb-1.5">
-                      <div className="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-emerald-700" /></div>
+                      <div className="h-8 w-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-amber-600" /></div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-stone-900 truncate">{f.name}</p>
                         <p className="text-xs text-stone-400">{f.type} · {f.size}</p>
@@ -1867,7 +1868,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
               <button onClick={() => { setSelectedClient(null); setClientDetailTab("projetos"); }} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 mb-4"><ArrowLeft size={16} /> Voltar</button>
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-stone-900 text-white flex items-center justify-center text-lg font-bold">{client.name.slice(0, 2).toUpperCase()}</div>
+                  <div className="w-12 h-12 rounded-xl bg-pink-500 text-white flex items-center justify-center text-lg font-bold">{client.name.slice(0, 2).toUpperCase()}</div>
                   <div>
                     <h2 className="text-2xl font-bold">{client.name}</h2>
                     <p className="text-sm text-stone-500">Contato: {client.contact} · Responsável: {client.responsible}</p>
@@ -1943,7 +1944,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                     const assignedTask = fb.assignedTaskId ? tasks.find(t => t.id === fb.assignedTaskId) : null;
 
                     return (
-                      <Card key={fb.id} className={`overflow-hidden border-l-4 ${fb.type === "Elogio" ? "border-l-emerald-500" : fb.type === "Ajuste" ? "border-l-orange-500" : "border-l-sky-500"}`}>
+                      <Card key={fb.id} className={`overflow-hidden border-l-4 ${fb.type === "Elogio" ? "border-l-pink-500" : fb.type === "Ajuste" ? "border-l-orange-500" : "border-l-sky-500"}`}>
                         <div className="p-4">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
@@ -2021,8 +2022,8 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                       gostou: { label: "Gostou", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
                       nao_gostou: { label: "Não gostou", color: "bg-red-100 text-red-700 border-red-300" },
                       comunicacao: { label: "Comunicação", color: "bg-sky-100 text-sky-700 border-sky-300" },
-                      processo: { label: "Processo", color: "bg-purple-100 text-violet-700 border-purple-300" },
-                      elogio: { label: "Elogio", color: "bg-emerald-100 text-emerald-700 border-emerald-300" },
+                      processo: { label: "Processo", color: "bg-violet-100 text-violet-700 border-violet-300" },
+                      elogio: { label: "Elogio", color: "bg-pink-100 text-pink-700 border-pink-300" },
                       erro: { label: "Erro", color: "bg-red-100 text-red-700 border-red-300" },
                       insight: { label: "Insight", color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
                     };
@@ -2095,6 +2096,8 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
 // CLIENTES VIEWS
 // ============================
 function ClientSelectorView({ onSelect, onBack }) {
+  const brandColors = ["bg-pink-500", "bg-amber-500", "bg-violet-500", "bg-emerald-500", "bg-sky-500"];
+  const hoverBorders = ["hover:border-pink-400", "hover:border-amber-400", "hover:border-violet-400", "hover:border-emerald-400", "hover:border-sky-400"];
   const activeClients = [
     { id: "c5", name: "XP", logo: "XP" },
     { id: "c3", name: "Red Bull", logo: "RB" },
@@ -2108,8 +2111,8 @@ function ClientSelectorView({ onSelect, onBack }) {
       <p className="text-stone-500 mb-8">Selecione o cliente para visualizar o portal com seus projetos.</p>
       <div className="grid grid-cols-2 gap-6">
         {activeClients.map(c => (
-          <button key={c.id} onClick={() => onSelect(c.id)} className="group border-2 border-stone-200 rounded-2xl p-8 hover:border-stone-900 hover:shadow-lg transition-all text-left">
-            <div className="w-14 h-14 rounded-xl bg-stone-900 text-white flex items-center justify-center text-xl font-bold mb-4 group-hover:scale-105 transition-transform">{c.logo}</div>
+          <button key={c.id} onClick={() => onSelect(c.id)} className={`group border-2 border-stone-200 rounded-2xl p-8 ${hoverBorders[activeClients.indexOf(c) % 5]} hover:shadow-lg transition-all text-left`}>
+            <div className={`w-14 h-14 rounded-xl ${brandColors[activeClients.indexOf(c) % 5]} text-white flex items-center justify-center text-xl font-bold mb-4 group-hover:scale-105 transition-transform`}>{c.logo}</div>
             <h2 className="text-xl font-bold mb-1">{c.name}</h2>
             <p className="text-sm text-stone-500">Entrar no portal do cliente {c.name}</p>
           </button>
@@ -2163,10 +2166,10 @@ function ClientHubView({ onBack }) {
 
       <div className="grid grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Total de clientes", value: clients.length, icon: <Users size={20} className="text-stone-400" /> },
-          { label: "Clientes ativos", value: activeClientIds.size, icon: <CheckCircle2 size={20} className="text-green-400" /> },
-          { label: "Projetos ativos", value: totalActive, icon: <FolderOpen size={20} className="text-amber-400" /> },
-          { label: "Projetos concluídos", value: totalDone, icon: <CheckCircle2 size={20} className="text-stone-400" /> },
+          { label: "Total de clientes", value: clients.length, icon: <Users size={20} className="text-pink-500" /> },
+          { label: "Clientes ativos", value: activeClientIds.size, icon: <CheckCircle2 size={20} className="text-emerald-500" /> },
+          { label: "Projetos ativos", value: totalActive, icon: <FolderOpen size={20} className="text-amber-500" /> },
+          { label: "Projetos concluídos", value: totalDone, icon: <CheckCircle2 size={20} className="text-violet-500" /> },
         ].map((s, i) => (
           <Card key={i} className="p-5">
             <div className="flex items-center justify-between"><p className="text-sm text-stone-500">{s.label}</p>{s.icon}</div>
@@ -2186,7 +2189,7 @@ function ClientHubView({ onBack }) {
             <Card key={c.id} className="overflow-hidden">
               <button onClick={() => handleExpand(c.id)} className="w-full p-5 flex items-center justify-between text-left hover:bg-stone-50 transition-colors">
                 <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold ${isActive ? "bg-stone-900 text-white" : "bg-stone-200 text-stone-500"}`}>
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold ${isActive ? ["bg-pink-500 text-white", "bg-amber-500 text-white", "bg-violet-500 text-white", "bg-emerald-500 text-white", "bg-sky-500 text-white"][clients.indexOf(c) % 5] : "bg-stone-200 text-stone-500"}`}>
                     {c.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div>
@@ -2260,8 +2263,8 @@ function ClientHubView({ onBack }) {
                         gostou: { label: "Gostou", color: "bg-emerald-100 text-emerald-700 border-emerald-300", border: "border-l-emerald-500", bg: "bg-emerald-50" },
                         nao_gostou: { label: "Não gostou", color: "bg-red-100 text-red-700 border-red-300", border: "border-l-red-500", bg: "bg-red-50" },
                         comunicacao: { label: "Comunicação", color: "bg-sky-100 text-sky-700 border-sky-300", border: "border-l-sky-500", bg: "bg-sky-50" },
-                        processo: { label: "Processo", color: "bg-purple-100 text-violet-700 border-purple-300", border: "border-l-violet-500", bg: "bg-violet-50" },
-                        elogio: { label: "Elogio", color: "bg-emerald-100 text-emerald-700 border-emerald-300", border: "border-l-emerald-500", bg: "bg-emerald-50" },
+                        processo: { label: "Processo", color: "bg-violet-100 text-violet-700 border-violet-300", border: "border-l-violet-500", bg: "bg-violet-50" },
+                        elogio: { label: "Elogio", color: "bg-pink-100 text-pink-700 border-pink-300", border: "border-l-pink-500", bg: "bg-pink-50" },
                         erro: { label: "Erro", color: "bg-red-100 text-red-700 border-red-300", border: "border-l-red-500", bg: "bg-red-50" },
                         insight: { label: "Insight", color: "bg-yellow-100 text-yellow-700 border-yellow-300", border: "border-l-yellow-500", bg: "bg-yellow-50" },
                       };
@@ -2487,7 +2490,7 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
                   <Card key={task.id} className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <CheckCircle2 size={18} className="text-green-500" />
+                        <CheckCircle2 size={18} className="text-emerald-500" />
                         <div>
                           <p className="font-medium text-sm">{clientTitle(task.title)}</p>
                           <p className="text-xs text-stone-400">{new Date(task.deadline).toLocaleDateString("pt-BR")}</p>
@@ -2727,7 +2730,7 @@ function KanbanCreateTask({ projectId, project, team, addTask }) {
               <p className="text-xs text-stone-400 mt-0.5 mb-2">Anexe briefings, manuais ou referências úteis para o executor.</p>
               {kbFiles.map((f, i) => (
                 <div key={i} className="flex items-center gap-3 p-2.5 bg-stone-50 border border-stone-100 rounded-lg mb-1.5">
-                  <div className="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-emerald-700" /></div>
+                  <div className="h-8 w-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0"><FolderOpen size={16} className="text-amber-600" /></div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-stone-900 truncate">{f.name}</p>
                     <p className="text-xs text-stone-400">{f.type} · {f.size}</p>
@@ -2775,11 +2778,11 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
   let projectChannels = [];
 
   if (isQA) {
-    directChannels = [{ id: "qa-lider", label: "Ana Gallotta", subtitle: "Líder Eventos", avatar: "AG", color: "bg-sky-100 text-sky-700" }];
+    directChannels = [{ id: "qa-lider", label: "Ana Gallotta", subtitle: "Líder Eventos", avatar: "AG", color: "bg-pink-100 text-pink-700" }];
   } else if (isLider) {
     directChannels = [
-      { id: "qa-lider", label: "QA", subtitle: "Gestão de qualidade", avatar: "QA", color: "bg-purple-100 text-violet-700" },
-      ...team.map(t => ({ id: "lider-" + t.id, label: t.name.split(" ").slice(0, 2).join(" "), subtitle: t.role, avatar: t.name.split(" ").map(n => n[0]).join("").substring(0, 2), color: "bg-emerald-100 text-emerald-700" })),
+      { id: "qa-lider", label: "QA", subtitle: "Gestão de qualidade", avatar: "QA", color: "bg-violet-100 text-violet-700" },
+      ...team.map((t, i) => ({ id: "lider-" + t.id, label: t.name.split(" ").slice(0, 2).join(" "), subtitle: t.role, avatar: t.name.split(" ").map(n => n[0]).join("").substring(0, 2), color: ["bg-emerald-100 text-emerald-700", "bg-amber-100 text-amber-700", "bg-sky-100 text-sky-700", "bg-pink-100 text-pink-700"][i % 4] })),
     ];
     projectChannels = activeProjects.filter(p => p.squad && p.squad.length > 0).map(p => {
       const client = clients.find(c => c.id === p.clientId);
@@ -2788,7 +2791,7 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
     });
   } else {
     // Executor: direct channel with líder + project channels they're part of
-    directChannels = [{ id: "lider-" + role, label: "Ana Gallotta", subtitle: "Líder Eventos", avatar: "AG", color: "bg-sky-100 text-sky-700" }];
+    directChannels = [{ id: "lider-" + role, label: "Ana Gallotta", subtitle: "Líder Eventos", avatar: "AG", color: "bg-pink-100 text-pink-700" }];
     projectChannels = activeProjects.filter(p => p.squad && p.squad.includes(role)).map(p => {
       const client = clients.find(c => c.id === p.clientId);
       const squadMembers = team.filter(t => p.squad.includes(t.id));
@@ -2922,7 +2925,7 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
                         </div>
                       )}
                       <div>
-                        <div className={`px-3.5 py-2.5 rounded-2xl text-sm ${isMe ? "bg-stone-900 text-white rounded-br-md" : "bg-stone-100 text-stone-800 rounded-bl-md"}`}>
+                        <div className={`px-3.5 py-2.5 rounded-2xl text-sm ${isMe ? "bg-pink-500 text-white rounded-br-md" : "bg-stone-100 text-stone-800 rounded-bl-md"}`}>
                           <p>{item.text}</p>
                         </div>
                         <p className={`text-[10px] mt-0.5 px-1 ${isMe ? "text-right text-stone-400" : "text-stone-400"}`}>{item.author} · {item.time}</p>
@@ -2938,7 +2941,7 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
             <div className="border-t border-stone-200 p-4 flex-shrink-0">
               <div className="flex gap-2">
                 <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={`Mensagem para ${activeInfo?.label || ""}...`} className="flex-1 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent" />
-                <button onClick={send} disabled={!input.trim()} className={`p-2.5 rounded-xl transition-colors ${input.trim() ? "bg-stone-900 text-white hover:bg-stone-800" : "bg-stone-100 text-stone-400 cursor-not-allowed"}`}>
+                <button onClick={send} disabled={!input.trim()} className={`p-2.5 rounded-xl transition-colors ${input.trim() ? "bg-pink-500 text-white hover:bg-pink-600" : "bg-stone-100 text-stone-400 cursor-not-allowed"}`}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                 </button>
               </div>
@@ -2976,10 +2979,10 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
 
   const columns = [
     { key: "a_fazer", label: "A Fazer", headerColor: "bg-stone-100 text-stone-700", dotColor: "bg-stone-400" },
-    { key: "em_execucao", label: "Em Execução", headerColor: "bg-amber-50 text-amber-700", dotColor: "bg-amber-500" },
-    { key: "em_qa", label: "Em QA", headerColor: "bg-violet-50 text-violet-700", dotColor: "bg-violet-500" },
-    { key: "devolvida", label: "Devolvida", headerColor: "bg-rose-50 text-rose-700", dotColor: "bg-rose-500" },
-    { key: "concluida", label: "Concluída", headerColor: "bg-emerald-50 text-emerald-700", dotColor: "bg-emerald-500" },
+    { key: "em_execucao", label: "Em Execução", headerColor: "bg-amber-100 text-amber-800", dotColor: "bg-amber-500" },
+    { key: "em_qa", label: "Em QA", headerColor: "bg-violet-100 text-violet-800", dotColor: "bg-violet-500" },
+    { key: "devolvida", label: "Devolvida", headerColor: "bg-pink-100 text-pink-800", dotColor: "bg-pink-500" },
+    { key: "concluida", label: "Concluída", headerColor: "bg-emerald-100 text-emerald-800", dotColor: "bg-emerald-500" },
   ];
 
   return (
@@ -2991,7 +2994,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
           <div className="flex items-center gap-3 mb-1">
             <h1 className="text-3xl font-bold text-stone-900">{project.name}</h1>
             <Badge variant="purple">Evento</Badge>
-            {isQAView && <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-violet-700 border border-violet-200 font-medium">Visão QA</span>}
+            {isQAView && <span className="text-xs px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 border border-violet-200 font-medium">Visão QA</span>}
           </div>
           <p className="text-stone-500">Cliente: <strong>{project.client}</strong> · Responsável: <strong>{project.responsible}</strong> · Prazo: <strong>{new Date(project.deadline).toLocaleDateString("pt-BR")}</strong></p>
         </div>
@@ -3121,7 +3124,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-300 hover:text-red-500"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
                     </button>
                     <div className="flex items-center gap-2.5 mb-2">
-                      <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-xs font-bold text-emerald-700">{member.name.split(" ").map(n => n[0]).join("").substring(0, 2)}</div>
+                      <div className="h-8 w-8 rounded-full bg-violet-100 flex items-center justify-center text-xs font-bold text-violet-700">{member.name.split(" ").map(n => n[0]).join("").substring(0, 2)}</div>
                       <div>
                         <p className="font-medium text-sm">{member.name}</p>
                         <p className="text-[10px] text-stone-500">{member.role}</p>
@@ -3627,7 +3630,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
       {chatPanel}
       {/* Floating chat button for QA and Líder */}
       {showChatFab && !showChat && (
-        <button onClick={() => setShowChat(true)} className="fixed bottom-6 right-6 z-30 bg-stone-900 text-white rounded-full p-4 shadow-lg hover:bg-stone-800 transition-all hover:scale-105 flex items-center gap-2" title={isQA ? "Chat com Líder" : isLider ? "Mensagens" : "Chat"}>
+        <button onClick={() => setShowChat(true)} className="fixed bottom-6 right-6 z-30 bg-sky-500 text-white rounded-full p-4 shadow-lg hover:bg-sky-600 transition-all hover:scale-105 flex items-center gap-2" title={isQA ? "Chat com Líder" : isLider ? "Mensagens" : "Chat"}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           {chatUnread > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse">{chatUnread}</span>}
         </button>
