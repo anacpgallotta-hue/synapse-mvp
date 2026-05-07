@@ -491,7 +491,13 @@ function ExecutorView({ executorId, onTaskClick }) {
   const [timeFilter, setTimeFilter] = useState("todos");
   const [statusFilter, setStatusFilter] = useState("todos");
   const [viewMode, setViewMode] = useState("lista");
+  const [showHistory, setShowHistory] = useState(false);
   const myTasks = tasks.filter(t => t.executor === executorId).sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+
+  // Split: active tasks vs history (em_qa + concluida)
+  const activeTasks = myTasks.filter(t => t.status !== "concluida" && t.status !== "em_qa");
+  const qaTasksList = myTasks.filter(t => t.status === "em_qa");
+  const completedTasks = myTasks.filter(t => t.status === "concluida");
 
   const statusConfig = {
     a_fazer: { label: "A Fazer", bg: "bg-gray-100", text: "text-gray-700", border: "border-gray-200", dot: "bg-gray-400", badge: "default" },
@@ -501,11 +507,12 @@ function ExecutorView({ executorId, onTaskClick }) {
     concluida: { label: "Concluída", bg: "bg-green-50", text: "text-green-700", border: "border-green-200", dot: "bg-green-500", badge: "success" },
   };
 
+  // For list view, filters apply only to active tasks
   let filtered = timeFilter === "hoje"
-    ? myTasks.filter(t => new Date(t.deadline).toDateString() === new Date().toDateString())
+    ? activeTasks.filter(t => new Date(t.deadline).toDateString() === new Date().toDateString())
     : timeFilter === "2semanas"
-    ? myTasks.filter(t => { const d = new Date(t.deadline); const now = new Date(); const twoWeeks = new Date(now.getTime() + 14 * 86400000); return d >= now && d <= twoWeeks; })
-    : myTasks;
+    ? activeTasks.filter(t => { const d = new Date(t.deadline); const now = new Date(); const twoWeeks = new Date(now.getTime() + 14 * 86400000); return d >= now && d <= twoWeeks; })
+    : activeTasks;
 
   if (statusFilter !== "todos") {
     filtered = filtered.filter(t => t.status === statusFilter);
@@ -523,17 +530,55 @@ function ExecutorView({ executorId, onTaskClick }) {
     return `${date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })} – ${date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }).replace(":", "h")}`;
   };
 
+  // Status counts for active tasks only
+  const activeStatuses = ["a_fazer", "em_execucao", "devolvida"];
   const statusCounts = {};
   const timeFiltered = timeFilter === "hoje"
-    ? myTasks.filter(t => new Date(t.deadline).toDateString() === new Date().toDateString())
+    ? activeTasks.filter(t => new Date(t.deadline).toDateString() === new Date().toDateString())
     : timeFilter === "2semanas"
-    ? myTasks.filter(t => { const d = new Date(t.deadline); const now = new Date(); const twoWeeks = new Date(now.getTime() + 14 * 86400000); return d >= now && d <= twoWeeks; })
-    : myTasks;
-  Object.keys(statusConfig).forEach(k => { statusCounts[k] = timeFiltered.filter(t => t.status === k).length; });
+    ? activeTasks.filter(t => { const d = new Date(t.deadline); const now = new Date(); const twoWeeks = new Date(now.getTime() + 14 * 86400000); return d >= now && d <= twoWeeks; })
+    : activeTasks;
+  activeStatuses.forEach(k => { statusCounts[k] = timeFiltered.filter(t => t.status === k).length; });
 
   const months = [...new Set(filtered.map(t => { const d = new Date(t.deadline); return `${d.toLocaleString("pt-BR", { month: "long" })} de ${d.getFullYear()}`; }))];
 
   const kanbanColumns = ["a_fazer", "em_execucao", "em_qa", "devolvida", "concluida"];
+
+  // Task card renderer (shared between main list and history)
+  const TaskCard = ({ task, showRevert }) => {
+    const cfg = statusConfig[task.status] || statusConfig.a_fazer;
+    return (
+      <Card key={task.id} onClick={() => onTaskClick(task.id)} className="p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start gap-3">
+              <div className={`h-3 w-3 rounded-full ${priorityColor(task.priority)} flex-shrink-0 mt-1`} title={task.priority} />
+              <div>
+                <h4 className="font-medium leading-tight mb-1">{task.title}</h4>
+                <p className="text-sm text-gray-500">{task.project}</p>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col items-end gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2">
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full border ${cfg.bg} ${cfg.text} ${cfg.border}`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
+                {cfg.label}
+              </span>
+              {showRevert && task.status === "em_qa" && (
+                <button onClick={e => { e.stopPropagation(); revertFromQA(task.id); }} className="p-1 rounded-md hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors" title="Cancelar envio ao QA">
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-1 text-xs text-gray-500"><Clock size={12} />{formatDeadline(task.deadline)}</div>
+            {task.feedbackOrigin && <Badge variant="accent">Feedback do cliente</Badge>}
+            {task.status === "devolvida" && task.qaComment && <span className="text-xs text-red-500 max-w-[200px] truncate">{task.qaComment}</span>}
+          </div>
+        </div>
+      </Card>
+    );
+  };
 
   return (
     <div>
@@ -557,7 +602,7 @@ function ExecutorView({ executorId, onTaskClick }) {
           <button onClick={() => setStatusFilter("todos")} className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${statusFilter === "todos" ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}>
             Todos ({timeFiltered.length})
           </button>
-          {kanbanColumns.map(key => {
+          {activeStatuses.map(key => {
             const cfg = statusConfig[key];
             const count = statusCounts[key] || 0;
             if (count === 0 && key !== "a_fazer" && key !== "em_execucao") return null;
@@ -573,49 +618,62 @@ function ExecutorView({ executorId, onTaskClick }) {
       </div>
 
       {viewMode === "lista" && (
-        <div className="space-y-8">
-          {months.map(month => (
-            <div key={month}>
-              <h3 className="mb-4 text-lg font-semibold capitalize">{month}</h3>
+        <div>
+          {/* Active tasks by month */}
+          <div className="space-y-8">
+            {months.map(month => (
+              <div key={month}>
+                <h3 className="mb-4 text-lg font-semibold capitalize">{month}</h3>
+                <div className="space-y-3">
+                  {filtered.filter(t => { const d = new Date(t.deadline); return `${d.toLocaleString("pt-BR", { month: "long" })} de ${d.getFullYear()}` === month; }).map(task => (
+                    <TaskCard key={task.id} task={task} showRevert={false} />
+                  ))}
+                </div>
+              </div>
+            ))}
+            {filtered.length === 0 && <p className="text-center text-gray-400 py-12">Nenhuma tarefa pendente.</p>}
+          </div>
+
+          {/* Aguardando QA section */}
+          {qaTasksList.length > 0 && (
+            <div className="mt-10 border-t pt-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-2.5 w-2.5 rounded-full bg-purple-500" />
+                  <h3 className="text-lg font-semibold text-gray-900">Aguardando QA</h3>
+                </div>
+                <span className="text-xs font-medium bg-purple-100 text-purple-700 rounded-full px-2.5 py-0.5">{qaTasksList.length}</span>
+              </div>
               <div className="space-y-3">
-                {filtered.filter(t => { const d = new Date(t.deadline); return `${d.toLocaleString("pt-BR", { month: "long" })} de ${d.getFullYear()}` === month; }).map(task => {
-                  const cfg = statusConfig[task.status] || statusConfig.a_fazer;
-                  return (
-                    <Card key={task.id} onClick={() => onTaskClick(task.id)} className="p-5">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start gap-3">
-                            <div className={`h-3 w-3 rounded-full ${priorityColor(task.priority)} flex-shrink-0 mt-1`} title={task.priority} />
-                            <div>
-                              <h4 className="font-medium leading-tight mb-1">{task.title}</h4>
-                              <p className="text-sm text-gray-500">{task.project}</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                          <div className="flex items-center gap-2">
-                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full border ${cfg.bg} ${cfg.text} ${cfg.border}`}>
-                              <span className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
-                              {cfg.label}
-                            </span>
-                            {task.status === "em_qa" && (
-                              <button onClick={e => { e.stopPropagation(); revertFromQA(task.id); }} className="p-1 rounded-md hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors" title="Cancelar envio ao QA">
-                                <X size={14} />
-                              </button>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-1 text-xs text-gray-500"><Clock size={12} />{formatDeadline(task.deadline)}</div>
-                          {task.feedbackOrigin && <Badge variant="accent">Feedback do cliente</Badge>}
-                          {task.status === "devolvida" && task.qaComment && <span className="text-xs text-red-500 max-w-[200px] truncate">{task.qaComment}</span>}
-                        </div>
-                      </div>
-                    </Card>
-                  );
-                })}
+                {qaTasksList.map(task => (
+                  <TaskCard key={task.id} task={task} showRevert={true} />
+                ))}
               </div>
             </div>
-          ))}
-          {filtered.length === 0 && <p className="text-center text-gray-400 py-12">Nenhuma tarefa encontrada com esse filtro.</p>}
+          )}
+
+          {/* Completed history — collapsible */}
+          {completedTasks.length > 0 && (
+            <div className="mt-10 border-t pt-6">
+              <button onClick={() => setShowHistory(!showHistory)} className="flex items-center gap-3 mb-4 group w-full text-left">
+                <div className="flex items-center gap-2">
+                  <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
+                  <h3 className="text-lg font-semibold text-gray-900">Concluídas</h3>
+                </div>
+                <span className="text-xs font-medium bg-green-100 text-green-700 rounded-full px-2.5 py-0.5">{completedTasks.length}</span>
+                <span className="ml-auto text-gray-400 group-hover:text-gray-600 transition-colors">
+                  {showHistory ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                </span>
+              </button>
+              {showHistory && (
+                <div className="space-y-3">
+                  {completedTasks.map(task => (
+                    <TaskCard key={task.id} task={task} showRevert={false} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -623,7 +681,7 @@ function ExecutorView({ executorId, onTaskClick }) {
         <div className="grid grid-cols-5 gap-3" style={{ minHeight: "350px" }}>
           {kanbanColumns.map(key => {
             const cfg = statusConfig[key];
-            const colTasks = timeFiltered.filter(t => t.status === key).sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+            const colTasks = myTasks.filter(t => t.status === key).sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
             return (
               <div key={key} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
                 <div className={`flex items-center gap-2 px-3 py-2 rounded-lg mb-3 ${cfg.bg}`}>
