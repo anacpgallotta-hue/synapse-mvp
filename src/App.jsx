@@ -1991,28 +1991,9 @@ function ClientHubView({ onBack }) {
 
                       return (
                         <div>
-                          {/* Add new note */}
-                          <Card className="p-4 mb-5">
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Nova anotação</p>
-                            <div className="flex gap-2 mb-2">
-                              {["gostou", "nao_gostou", "comunicacao", "processo"].map(t => {
-                                const cfg = getTag(t);
-                                return (
-                                  <button key={t} onClick={() => setNoteTag(t)} className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-all ${noteTag === t ? cfg.color + " border-current ring-2 ring-offset-1 ring-gray-300" : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"}`}>
-                                    {cfg.label}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                            <div className="flex gap-2">
-                              <input value={newNote} onChange={e => setNewNote(e.target.value)} onKeyDown={e => { if (e.key === "Enter") handleAddNote(c.id); }} placeholder="O que aprendemos sobre este cliente?" className="flex-1 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
-                              <Button size="sm" onClick={() => handleAddNote(c.id)} disabled={!newNote.trim()}>Salvar</Button>
-                            </div>
-                          </Card>
-
                           {/* Filter */}
                           <div className="flex flex-wrap gap-1.5 mb-4">
-                            {filterTags.filter(t => t === "todos" || tagCounts[t]).map(t => {
+                            {filterTags.map(t => {
                               const cfg = t === "todos" ? { label: "Todos", color: "bg-gray-100 text-gray-700 border-gray-300" } : getTag(t);
                               const count = t === "todos" ? entries.length : (tagCounts[t] || 0);
                               return (
