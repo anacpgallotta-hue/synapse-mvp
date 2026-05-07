@@ -87,6 +87,7 @@ function AppProvider({ children }) {
   // Notifications: target = "executor:t1", "qa", "lider", "client:c5"
   // priority = "info" | "warning" | "danger"
   const [notifications, setNotifications] = useState([]);
+  const [dismissedAlerts, setDismissedAlerts] = useState(new Set());
 
   const notify = useCallback((text, target, priority = "info") => {
     setNotifications(prev => [{ id: "n" + Date.now() + Math.random(), text, date: new Date().toISOString().split("T")[0], read: false, target, priority }, ...prev]);
@@ -110,8 +111,14 @@ function AppProvider({ children }) {
         alerts.push({ id: "smart-risk-" + t.id, text: `Em risco: "${t.title}" — prazo em ${Math.round(diffHours)}h`, priority: "warning", date: t.deadline });
       }
     });
-    return alerts.sort((a, b) => (a.priority === "danger" ? 0 : 1) - (b.priority === "danger" ? 0 : 1));
-  }, [tasks]);
+    return alerts.filter(a => !dismissedAlerts.has(a.id)).sort((a, b) => (a.priority === "danger" ? 0 : 1) - (b.priority === "danger" ? 0 : 1));
+  }, [tasks, dismissedAlerts]);
+
+  const dismissSmartAlert = useCallback((alertId, alertText, target, priority) => {
+    setDismissedAlerts(prev => new Set([...prev, alertId]));
+    // Move to history as a read notification
+    setNotifications(prev => [{ id: "hist-" + alertId, text: alertText, date: new Date().toISOString().split("T")[0], read: true, target, priority }, ...prev]);
+  }, []);
 
   const addTask = useCallback((task) => {
     const newTask = { ...task, id: "tk" + Date.now(), status: "a_fazer", submittedLink: "", qaComment: "", feedbackOrigin: null };
@@ -220,7 +227,7 @@ function AppProvider({ children }) {
   }, [team, tasks]);
 
   return (
-    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, resubmitTask, revertFromQA, revertFromCompleted, dismissNotification, getTeamWithLoad, getSmartAlerts, setNotifications }}>
+    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, resubmitTask, revertFromQA, revertFromCompleted, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
       {children}
     </AppContext.Provider>
   );
@@ -1909,7 +1916,7 @@ function TrocarExecutorView({ currentId, onSelect, onBack }) {
 // NOTIFICAÇÕES
 // ============================
 function NotificationPanel({ onClose, context, executorId }) {
-  const { notifications, setNotifications, dismissNotification, getSmartAlerts } = useContext(AppContext);
+  const { notifications, setNotifications, dismissNotification, dismissSmartAlert, getSmartAlerts } = useContext(AppContext);
   const [showHistory, setShowHistory] = useState(false);
 
   const targetFilter = context === "executor" ? "executor:" + executorId
@@ -1918,31 +1925,29 @@ function NotificationPanel({ onClose, context, executorId }) {
     : context === "client" ? "client"
     : null;
 
-  const activeNotifications = targetFilter
-    ? notifications.filter(n => n.target === targetFilter && !n.read)
-    : notifications.filter(n => !n.read);
-
   const historyNotifications = targetFilter
-    ? notifications.filter(n => n.target === targetFilter && n.read)
-    : notifications.filter(n => n.read);
+    ? notifications.filter(n => n.target === targetFilter)
+    : [...notifications];
 
   const smartAlerts = context === "executor" ? getSmartAlerts(executorId) : [];
 
-  const markAsRead = (notifId) => setNotifications(prev => prev.map(n => n.id === notifId ? { ...n, read: true } : n));
-  const markAllRead = () => setNotifications(prev => prev.map(n => n.target === targetFilter ? { ...n, read: true } : n));
+  const markAllRead = () => {
+    // Dismiss all smart alerts
+    smartAlerts.forEach(a => dismissSmartAlert(a.id, a.text, targetFilter, a.priority));
+  };
 
   const priorityStyle = (p) => p === "danger" ? "bg-red-50 border-l-4 border-l-red-500 text-red-800"
     : p === "warning" ? "bg-orange-50 border-l-4 border-l-orange-400 text-orange-800"
     : "bg-blue-50 text-gray-700";
 
-  const hasContent = smartAlerts.length > 0 || activeNotifications.length > 0 || historyNotifications.length > 0;
+  const hasContent = smartAlerts.length > 0 || historyNotifications.length > 0;
 
   return (
     <div className="fixed top-16 right-6 w-[420px] bg-white rounded-xl shadow-xl border z-50 max-h-[480px] overflow-y-auto">
       <div className="flex items-center justify-between p-4 border-b">
         <h3 className="font-bold">Notificações</h3>
         <div className="flex gap-2">
-          {activeNotifications.length > 0 && <button onClick={markAllRead} className="text-xs text-gray-500 hover:text-gray-700">Resolver todas</button>}
+          {smartAlerts.length > 0 && <button onClick={markAllRead} className="text-xs text-gray-500 hover:text-gray-700">Resolver todas</button>}
           <button onClick={onClose}><X size={16} /></button>
         </div>
       </div>
@@ -1956,22 +1961,8 @@ function NotificationPanel({ onClose, context, executorId }) {
                 {a.priority === "danger" && <AlertTriangle size={14} className="text-red-500 flex-shrink-0 mt-0.5" />}
                 {a.priority === "warning" && <Clock size={14} className="text-orange-500 flex-shrink-0 mt-0.5" />}
                 <p className="flex-1 font-medium">{a.text}</p>
+                <button onClick={() => dismissSmartAlert(a.id, a.text, targetFilter, a.priority)} className="text-gray-400 hover:text-green-600 flex-shrink-0 mt-0.5" title="Resolver alerta"><CheckCircle2 size={16} /></button>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {activeNotifications.length > 0 && (
-        <div className="border-b">
-          {smartAlerts.length > 0 && <p className="px-4 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Novas</p>}
-          {activeNotifications.map(n => (
-            <div key={n.id} className={`px-4 py-3 border-b text-sm flex items-start gap-3 ${priorityStyle(n.priority)}`}>
-              <div className="flex-1">
-                <p>{n.text}</p>
-                <p className="text-xs text-gray-400 mt-1">{n.date}</p>
-              </div>
-              <button onClick={() => markAsRead(n.id)} className="text-gray-400 hover:text-green-600 flex-shrink-0 mt-0.5" title="Marcar como resolvida"><CheckCircle2 size={16} /></button>
             </div>
           ))}
         </div>
@@ -2090,9 +2081,9 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   const notifTarget = notifContext === "executor" ? "executor:" + executorId : notifContext;
 
   // Count: targeted notifications + smart alerts for executor
-  const targetedNotifs = notifications.filter(n => n.target === notifTarget && !n.read);
+
   const smartAlerts = notifContext === "executor" ? getSmartAlerts(executorId) : [];
-  const unreadCount = targetedNotifs.length + smartAlerts.length;
+  const unreadCount = smartAlerts.length;
 
   // Task click with history
   const handleTaskClick = (taskId) => {
