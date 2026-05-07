@@ -1861,7 +1861,7 @@ function ClientHubView({ onBack }) {
                       <Badge variant={isActive ? "success" : "default"}>{isActive ? "Ativo" : "Inativo"}</Badge>
                       <Badge variant={rel.variant}>{rel.label}</Badge>
                     </div>
-                    <p className="text-sm text-gray-500">Contato: {c.contact} · Responsável: {c.responsible} · {data.allP.length} projetos · {data.notes.length} notas</p>
+                    <p className="text-sm text-gray-500">Contato: {c.contact} · Responsável: {c.responsible} · {data.allP.length} projetos · {data.clientLearnings.length + data.notes.length} registros</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -1876,8 +1876,7 @@ function ClientHubView({ onBack }) {
                   <div className="flex border-b">
                     {[
                       { key: "projetos", label: "Projetos (" + data.allP.length + ")" },
-                      { key: "aprendizados", label: "Aprendizados (" + data.clientLearnings.length + ")" },
-                      { key: "notas", label: "Notas internas (" + data.notes.length + ")" },
+                      { key: "conhecimento", label: "Base de conhecimento (" + (data.clientLearnings.length + data.notes.length) + ")" },
                     ].map(t => (
                       <button key={t.key} onClick={() => setClientTab(t.key)} className={`px-5 py-3 text-sm font-medium transition-colors ${clientTab === t.key ? "border-b-2 border-gray-900 text-gray-900" : "text-gray-500 hover:text-gray-700"}`}>{t.label}</button>
                     ))}
@@ -1922,46 +1921,80 @@ function ClientHubView({ onBack }) {
                       </div>
                     )}
 
-                    {clientTab === "aprendizados" && (
-                      <div className="space-y-3">
-                        {data.clientLearnings.length === 0 && <p className="text-sm text-gray-400">Nenhum aprendizado registrado para este cliente.</p>}
-                        {data.clientLearnings.map(l => (
-                          <div key={l.id} className={`p-4 rounded-lg border-l-4 ${l.type === "erro" ? "bg-red-50 border-l-red-500" : "bg-yellow-50 border-l-yellow-500"}`}>
-                            <div className="flex items-center justify-between mb-1">
-                              <div className="flex items-center gap-2">
-                                <Badge variant={l.type === "erro" ? "danger" : "warning"}>{l.type === "erro" ? "Erro" : "Aprendizado"}</Badge>
-                                <span className="text-xs text-gray-500">Registrado por: {l.origin}</span>
-                              </div>
-                              <span className="text-xs text-gray-400">{l.date}</span>
-                            </div>
-                            <p className="font-medium text-sm mt-1">{l.title}</p>
-                            <p className="text-sm text-gray-600 mt-1">{l.description}</p>
-                            {l.tags && l.tags.length > 0 && <div className="flex gap-1 mt-2">{l.tags.map((tag, i) => <span key={i} className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">{tag}</span>)}</div>}
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {clientTab === "conhecimento" && (() => {
+                      const [kbFilter, setKbFilter] = [clientTab + "_filter", null]; // use inline state workaround
+                      // Build unified timeline
+                      const entries = [
+                        ...data.notes.filter(n => n.text.startsWith("[Elogio]")).map(n => ({ ...n, _type: "elogio", _sort: n.date })),
+                        ...data.notes.filter(n => !n.text.startsWith("[Elogio]")).map(n => ({ ...n, _type: "anotacao", _sort: n.date })),
+                        ...data.clientLearnings.map(l => ({ ...l, _type: l.type === "erro" ? "erro" : "insight", _sort: l.date })),
+                      ].sort((a, b) => b._sort.localeCompare(a._sort));
 
-                    {clientTab === "notas" && (
-                      <div>
-                        <div className="flex gap-2 mb-4">
-                          <input value={newNote} onChange={e => setNewNote(e.target.value)} onKeyDown={e => { if (e.key === "Enter") handleAddNote(c.id); }} placeholder="Adicionar nota interna sobre este cliente..." className="flex-1 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
-                          <Button size="sm" onClick={() => handleAddNote(c.id)} disabled={!newNote.trim()}>Salvar</Button>
-                        </div>
-                        <div className="space-y-3">
-                          {data.notes.length === 0 && <p className="text-sm text-gray-400">Nenhuma nota interna ainda.</p>}
-                          {data.notes.map(n => (
-                            <div key={n.id} className="p-3 bg-gray-50 rounded-lg">
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="text-xs font-medium text-gray-500">{n.author}</span>
-                                <span className="text-xs text-gray-400">{n.date}</span>
-                              </div>
-                              <p className="text-sm">{n.text}</p>
+                      return (
+                        <div>
+                          <div className="flex gap-2 mb-4">
+                            <input value={newNote} onChange={e => setNewNote(e.target.value)} onKeyDown={e => { if (e.key === "Enter") handleAddNote(c.id); }} placeholder="Adicionar anotação sobre este cliente..." className="flex-1 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                            <Button size="sm" onClick={() => handleAddNote(c.id)} disabled={!newNote.trim()}>Salvar</Button>
+                          </div>
+
+                          {entries.length === 0 ? (
+                            <p className="text-sm text-gray-400">Nenhum registro ainda.</p>
+                          ) : (
+                            <div className="space-y-3">
+                              {entries.map((entry, i) => {
+                                if (entry._type === "elogio") {
+                                  return (
+                                    <div key={"n-" + entry.id} className="p-4 rounded-lg border-l-4 border-l-green-500 bg-green-50">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <div className="flex items-center gap-2"><Badge variant="success">Elogio do cliente</Badge><span className="text-xs text-gray-500">{entry.author}</span></div>
+                                        <span className="text-xs text-gray-400">{entry.date}</span>
+                                      </div>
+                                      <p className="text-sm mt-1">{entry.text.replace(/^\[Elogio\]\s*/, "")}</p>
+                                    </div>
+                                  );
+                                }
+                                if (entry._type === "anotacao") {
+                                  return (
+                                    <div key={"n-" + entry.id} className="p-4 rounded-lg border-l-4 border-l-gray-300 bg-gray-50">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <div className="flex items-center gap-2"><Badge variant="default">Anotação</Badge><span className="text-xs text-gray-500">{entry.author}</span></div>
+                                        <span className="text-xs text-gray-400">{entry.date}</span>
+                                      </div>
+                                      <p className="text-sm mt-1">{entry.text}</p>
+                                    </div>
+                                  );
+                                }
+                                if (entry._type === "erro") {
+                                  return (
+                                    <div key={"l-" + entry.id} className="p-4 rounded-lg border-l-4 border-l-red-500 bg-red-50">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <div className="flex items-center gap-2"><Badge variant="danger">Erro</Badge><span className="text-xs text-gray-500">{entry.origin}</span></div>
+                                        <span className="text-xs text-gray-400">{entry.date}</span>
+                                      </div>
+                                      <p className="font-medium text-sm mt-1">{entry.title}</p>
+                                      <p className="text-sm text-gray-600 mt-1">{entry.description}</p>
+                                      {entry.tags && entry.tags.length > 0 && <div className="flex gap-1 mt-2">{entry.tags.map((tag, ti) => <span key={ti} className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">{tag}</span>)}</div>}
+                                    </div>
+                                  );
+                                }
+                                // insight
+                                return (
+                                  <div key={"l-" + entry.id} className="p-4 rounded-lg border-l-4 border-l-yellow-500 bg-yellow-50">
+                                    <div className="flex items-center justify-between mb-1">
+                                      <div className="flex items-center gap-2"><Badge variant="warning">Insight</Badge><span className="text-xs text-gray-500">{entry.origin}</span></div>
+                                      <span className="text-xs text-gray-400">{entry.date}</span>
+                                    </div>
+                                    <p className="font-medium text-sm mt-1">{entry.title}</p>
+                                    <p className="text-sm text-gray-600 mt-1">{entry.description}</p>
+                                    {entry.tags && entry.tags.length > 0 && <div className="flex gap-1 mt-2">{entry.tags.map((tag, ti) => <span key={ti} className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">{tag}</span>)}</div>}
+                                  </div>
+                                );
+                              })}
                             </div>
-                          ))}
+                          )}
                         </div>
-                      </div>
-                    )}
+                      );
+                    })()}
                   </div>
                 </div>
               )}
