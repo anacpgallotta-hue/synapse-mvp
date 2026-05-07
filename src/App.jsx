@@ -1415,7 +1415,7 @@ function QAErrorsView({ area, onBack }) {
 // ============================
 // LiderSquadSelector removed — only eventos squad exists now
 
-function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProjectClick, onViewAsClient }) {
+function LiderPortalView({ area, onBack, onProjectClick, onViewAsClient }) {
   const { projects, tasks, feedbacks, clients, clientNotes, addTask, assignFeedbackAsTask, addClientNote, archiveElogio, getTeamWithLoad, team: rawTeam } = useContext(AppContext);
   const [tab, setTab] = useState("geral");
   const [showCreate, setShowCreate] = useState(false);
@@ -1518,10 +1518,6 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-2">
         <button onClick={onBack} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900"><ArrowLeft size={16} /> Voltar ao modo executor</button>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={onViewClients}><Users size={16} /> Clientes</Button>
-          <Button variant="outline" size="sm" onClick={onSimulateClient}><Sparkles size={16} /> Simular visão do cliente</Button>
-        </div>
       </div>
       <div className="flex items-center gap-3 mb-1">
         <h1 className="text-3xl font-bold">Líder Eventos</h1>
