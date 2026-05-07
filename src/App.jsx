@@ -1,4 +1,4 @@
-import { useState, useContext, createContext, useCallback, useRef } from 'react'
+import { useState, useContext, createContext, useCallback, useRef, useEffect } from 'react'
 
 // Lucide-style icon components (inline SVG to avoid CDN issues)
 const iconProps = { width: 20, height: 20, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" };
@@ -2657,41 +2657,63 @@ function KanbanCreateTask({ projectId, project, team, addTask }) {
 }
 
 // ============================
-// QA ↔ LÍDER CHAT PANEL (slide-out)
+// CHAT PANEL (slide-out, role-based)
 // ============================
 function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
   // role: "qa" | "lider" | executorId (e.g. "t1")
-  const { chatMessages, chatLastRead, sendChatMsg, markChatRead, getChatUnread, team } = useContext(AppContext);
+  const { chatMessages, chatLastRead, sendChatMsg, markChatRead, getChatUnread, team, projects, clients } = useContext(AppContext);
   const [input, setInput] = useState("");
+  const [showChannelList, setShowChannelList] = useState(!initialChannel);
   const chatEndRef = useRef(null);
 
-  // Determine channels based on role
   const isQA = role === "qa";
   const isLider = role === "lider";
   const isExecutor = !isQA && !isLider;
-
-  // QA: single channel "qa-lider"
-  // Líder: "qa-lider" + "lider-t1", "lider-t2", etc.
-  // Executor: single channel "lider-{executorId}"
-  let channels;
-  if (isQA) {
-    channels = [{ id: "qa-lider", label: "Ana Gallotta", subtitle: "Líder Eventos", avatar: "L", color: "bg-blue-100 text-blue-700" }];
-  } else if (isLider) {
-    channels = [
-      { id: "qa-lider", label: "QA", subtitle: "Gestão de qualidade", avatar: "QA", color: "bg-purple-100 text-purple-700" },
-      ...team.map(t => ({ id: "lider-" + t.id, label: t.name, subtitle: t.role, avatar: t.name.split(" ").map(n => n[0]).join("").substring(0, 2), color: "bg-green-100 text-green-700" })),
-    ];
-  } else {
-    channels = [{ id: "lider-" + role, label: "Ana Gallotta", subtitle: "Líder", avatar: "L", color: "bg-blue-100 text-blue-700" }];
-  }
-
-  const [activeChannel, setActiveChannel] = useState(initialChannel || channels[0]?.id || "qa-lider");
-  const activeInfo = channels.find(c => c.id === activeChannel) || channels[0];
   const myRole = isQA ? "qa" : isLider ? "lider" : role;
   const myAuthor = isQA ? "QA" : isLider ? "Ana Gallotta" : (team.find(t => t.id === role)?.name || "Executor");
 
+  const activeProjects = projects.filter(p => p.status === "em_execucao");
+
+  // Build channel structure by role
+  let directChannels = [];
+  let projectChannels = [];
+
+  if (isQA) {
+    directChannels = [{ id: "qa-lider", label: "Ana Gallotta", subtitle: "Líder Eventos", avatar: "AG", color: "bg-blue-100 text-blue-700" }];
+  } else if (isLider) {
+    directChannels = [
+      { id: "qa-lider", label: "QA", subtitle: "Gestão de qualidade", avatar: "QA", color: "bg-purple-100 text-purple-700" },
+      ...team.map(t => ({ id: "lider-" + t.id, label: t.name.split(" ").slice(0, 2).join(" "), subtitle: t.role, avatar: t.name.split(" ").map(n => n[0]).join("").substring(0, 2), color: "bg-green-100 text-green-700" })),
+    ];
+    projectChannels = activeProjects.filter(p => p.squad && p.squad.length > 0).map(p => {
+      const client = clients.find(c => c.id === p.clientId);
+      const squadMembers = team.filter(t => p.squad.includes(t.id));
+      return { id: "proj-" + p.id, label: p.name, subtitle: client ? client.name : "", avatar: p.name.substring(0, 2).toUpperCase(), color: "bg-amber-100 text-amber-700", members: squadMembers, projectId: p.id };
+    });
+  } else {
+    // Executor: direct channel with líder + project channels they're part of
+    directChannels = [{ id: "lider-" + role, label: "Ana Gallotta", subtitle: "Líder Eventos", avatar: "AG", color: "bg-blue-100 text-blue-700" }];
+    projectChannels = activeProjects.filter(p => p.squad && p.squad.includes(role)).map(p => {
+      const client = clients.find(c => c.id === p.clientId);
+      const squadMembers = team.filter(t => p.squad.includes(t.id));
+      return { id: "proj-" + p.id, label: p.name, subtitle: client ? client.name : "", avatar: p.name.substring(0, 2).toUpperCase(), color: "bg-amber-100 text-amber-700", members: squadMembers, projectId: p.id };
+    });
+  }
+
+  const allChannels = [...directChannels, ...projectChannels];
+  const [activeChannel, setActiveChannel] = useState(initialChannel || allChannels[0]?.id || "qa-lider");
+  const activeInfo = allChannels.find(c => c.id === activeChannel) || allChannels[0];
+
   // Mark as read when panel opens or channel changes
-  if (isOpen) setTimeout(() => markChatRead(activeChannel, myRole), 100);
+  useEffect(() => {
+    if (isOpen && activeChannel && !showChannelList) setTimeout(() => markChatRead(activeChannel, myRole), 100);
+  }, [isOpen, activeChannel, showChannelList]);
+
+  const selectChannel = (chId) => {
+    setActiveChannel(chId);
+    setShowChannelList(false);
+    setTimeout(() => markChatRead(chId, myRole), 50);
+  };
 
   const send = () => {
     if (!input.trim()) return;
@@ -2701,8 +2723,6 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
   };
 
   const msgs = chatMessages[activeChannel] || [];
-
-  // Group messages by date
   const grouped = [];
   let lastDate = "";
   msgs.forEach(m => {
@@ -2710,89 +2730,125 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
     grouped.push({ type: "msg", ...m });
   });
 
-  // Total unread across all channels
-  const totalUnread = channels.reduce((sum, c) => sum + getChatUnread(c.id, myRole), 0);
+  const totalUnread = allChannels.reduce((sum, c) => sum + getChatUnread(c.id, myRole), 0);
+
+  // Channel list item renderer
+  const ChannelRow = ({ ch, isProject }) => {
+    const unread = getChatUnread(ch.id, myRole);
+    const lastMsg = (chatMessages[ch.id] || []).slice(-1)[0];
+    return (
+      <button onClick={() => selectChannel(ch.id)} className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left ${activeChannel === ch.id && !showChannelList ? "bg-gray-50" : ""}`}>
+        <div className={`h-10 w-10 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${ch.color}`}>{ch.avatar}</div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-900 truncate">{ch.label}</span>
+            {lastMsg && <span className="text-[10px] text-gray-400 flex-shrink-0 ml-2">{lastMsg.time}</span>}
+          </div>
+          <div className="flex items-center justify-between mt-0.5">
+            <span className="text-xs text-gray-400 truncate">{lastMsg ? `${lastMsg.author}: ${lastMsg.text}` : ch.subtitle}</span>
+            {unread > 0 && <span className="flex-shrink-0 ml-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-5 min-w-[20px] flex items-center justify-center px-1.5">{unread}</span>}
+          </div>
+        </div>
+      </button>
+    );
+  };
 
   return (
     <>
       {isOpen && <div className="fixed inset-0 bg-black bg-opacity-20 z-40 transition-opacity" onClick={onClose} />}
-      <div className={`fixed top-0 right-0 h-full w-[420px] bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
-        {/* Header */}
-        <div className="border-b border-gray-200 px-5 py-4 flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <div className={`h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold ${activeInfo?.color || "bg-gray-100 text-gray-700"}`}>
-              {activeInfo?.avatar || "?"}
+      <div className={`fixed top-0 right-0 h-full w-[440px] bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
+        {/* Channel list view */}
+        {showChannelList ? (
+          <>
+            <div className="border-b border-gray-200 px-5 py-4 flex items-center justify-between flex-shrink-0">
+              <h3 className="font-semibold text-gray-900">Mensagens</h3>
+              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><X size={18} className="text-gray-400" /></button>
             </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 text-sm">{activeInfo?.label || "Chat"}</h3>
-              <p className="text-xs text-gray-500">{activeInfo?.subtitle || ""}</p>
-            </div>
-          </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><X size={18} className="text-gray-400" /></button>
-        </div>
-
-        {/* Channel tabs (only show if more than 1 channel) */}
-        {channels.length > 1 && (
-          <div className="border-b border-gray-100 px-3 py-2 flex gap-1 overflow-x-auto flex-shrink-0">
-            {channels.map(ch => {
-              const unread = getChatUnread(ch.id, myRole);
-              return (
-                <button key={ch.id} onClick={() => { setActiveChannel(ch.id); setTimeout(() => markChatRead(ch.id, myRole), 50); }} className={`px-3 py-1.5 text-xs font-medium rounded-lg border whitespace-nowrap transition-colors flex items-center gap-1.5 ${activeChannel === ch.id ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"}`}>
-                  <span className={`h-5 w-5 rounded-full flex items-center justify-center text-[9px] font-bold ${activeChannel === ch.id ? "bg-white bg-opacity-20 text-white" : ch.color}`}>{ch.avatar}</span>
-                  <span className="truncate max-w-[100px]">{ch.label}</span>
-                  {unread > 0 && <span className={`text-[9px] rounded-full px-1.5 py-0.5 font-bold ${activeChannel === ch.id ? "bg-white text-gray-900" : "bg-red-500 text-white"}`}>{unread}</span>}
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
-          {msgs.length === 0 && (
-            <div className="text-center py-12">
-              <div className={`h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-3 ${activeInfo?.color || "bg-gray-100"}`}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="opacity-60"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <div className="flex-1 overflow-y-auto">
+              {/* Direct messages section */}
+              <div className="px-4 pt-4 pb-1"><p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Direto</p></div>
+              <div className="divide-y divide-gray-100">
+                {directChannels.map(ch => <ChannelRow key={ch.id} ch={ch} />)}
               </div>
-              <p className="text-sm text-gray-500 font-medium">Conversa com {activeInfo?.label}</p>
-              <p className="text-xs text-gray-400 mt-1">Envie a primeira mensagem.</p>
-            </div>
-          )}
-          {grouped.map((item, i) => {
-            if (item.type === "date") {
-              return <div key={"d" + i} className="flex items-center gap-3 py-3"><div className="flex-1 h-px bg-gray-200" /><span className="text-[10px] text-gray-400 font-medium uppercase">{item.date === new Date().toISOString().split("T")[0] ? "Hoje" : item.date}</span><div className="flex-1 h-px bg-gray-200" /></div>;
-            }
-            const isMe = item.from === myRole;
-            return (
-              <div key={item.id} className={`flex ${isMe ? "justify-end" : "justify-start"} mb-1`}>
-                <div className={`max-w-[80%] ${isMe ? "" : "flex gap-2"}`}>
-                  {!isMe && (
-                    <div className={`h-7 w-7 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0 mt-1 ${activeInfo?.color || "bg-gray-100 text-gray-600"}`}>
-                      {activeInfo?.avatar || "?"}
-                    </div>
-                  )}
-                  <div>
-                    <div className={`px-3.5 py-2.5 rounded-2xl text-sm ${isMe ? "bg-blue-600 text-white rounded-br-md" : "bg-gray-100 text-gray-800 rounded-bl-md"}`}>
-                      <p>{item.text}</p>
-                    </div>
-                    <p className={`text-[10px] mt-0.5 px-1 ${isMe ? "text-right text-gray-400" : "text-gray-400"}`}>{item.author} · {item.time}</p>
+
+              {/* Project channels section */}
+              {projectChannels.length > 0 && (
+                <>
+                  <div className="px-4 pt-5 pb-1"><p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Projetos</p></div>
+                  <div className="divide-y divide-gray-100">
+                    {projectChannels.map(ch => <ChannelRow key={ch.id} ch={ch} isProject />)}
                   </div>
-                </div>
+                </>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Conversation header */}
+            <div className="border-b border-gray-200 px-4 py-3 flex items-center gap-3 flex-shrink-0">
+              {allChannels.length > 1 && (
+                <button onClick={() => setShowChannelList(true)} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors -ml-1">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+              )}
+              <div className={`h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold ${activeInfo?.color || "bg-gray-100 text-gray-700"}`}>
+                {activeInfo?.avatar || "?"}
               </div>
-            );
-          })}
-          <div ref={chatEndRef} />
-        </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-gray-900 text-sm truncate">{activeInfo?.label || "Chat"}</h3>
+                <p className="text-xs text-gray-400 truncate">{activeInfo?.members ? activeInfo.members.map(m => m.name.split(" ")[0]).join(", ") : activeInfo?.subtitle || ""}</p>
+              </div>
+              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><X size={18} className="text-gray-400" /></button>
+            </div>
 
-        {/* Input */}
-        <div className="border-t border-gray-200 p-4 flex-shrink-0">
-          <div className="flex gap-2">
-            <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={`Mensagem para ${activeInfo?.label || ""}...`} className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
-            <button onClick={send} disabled={!input.trim()} className={`p-2.5 rounded-xl transition-colors ${input.trim() ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            </button>
-          </div>
-        </div>
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+              {msgs.length === 0 && (
+                <div className="text-center py-12">
+                  <div className={`h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-3 ${activeInfo?.color || "bg-gray-100"}`}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="opacity-60"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  </div>
+                  <p className="text-sm text-gray-500 font-medium">Conversa com {activeInfo?.label}</p>
+                  <p className="text-xs text-gray-400 mt-1">Envie a primeira mensagem.</p>
+                </div>
+              )}
+              {grouped.map((item, i) => {
+                if (item.type === "date") {
+                  return <div key={"d" + i} className="flex items-center gap-3 py-3"><div className="flex-1 h-px bg-gray-200" /><span className="text-[10px] text-gray-400 font-medium uppercase">{item.date === new Date().toISOString().split("T")[0] ? "Hoje" : item.date}</span><div className="flex-1 h-px bg-gray-200" /></div>;
+                }
+                const isMe = item.from === myRole;
+                return (
+                  <div key={item.id} className={`flex ${isMe ? "justify-end" : "justify-start"} mb-1`}>
+                    <div className={`max-w-[80%] ${isMe ? "" : "flex gap-2"}`}>
+                      {!isMe && (
+                        <div className={`h-7 w-7 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0 mt-1 ${activeInfo?.color || "bg-gray-100 text-gray-600"}`}>
+                          {item.author.split(" ").map(n => n[0]).join("").substring(0, 2)}
+                        </div>
+                      )}
+                      <div>
+                        <div className={`px-3.5 py-2.5 rounded-2xl text-sm ${isMe ? "bg-blue-600 text-white rounded-br-md" : "bg-gray-100 text-gray-800 rounded-bl-md"}`}>
+                          <p>{item.text}</p>
+                        </div>
+                        <p className={`text-[10px] mt-0.5 px-1 ${isMe ? "text-right text-gray-400" : "text-gray-400"}`}>{item.author} · {item.time}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              <div ref={chatEndRef} />
+            </div>
+
+            {/* Input */}
+            <div className="border-t border-gray-200 p-4 flex-shrink-0">
+              <div className="flex gap-2">
+                <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={`Mensagem para ${activeInfo?.label || ""}...`} className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
+                <button onClick={send} disabled={!input.trim()} className={`p-2.5 rounded-xl transition-colors ${input.trim() ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </>
   );
@@ -3214,7 +3270,7 @@ function App() {
 }
 
 function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, selectedProject, setSelectedProject, projectOrigin, executorId, executorName, setExecutorId, setExecutorName, qaArea, setQaArea, liderArea, setLiderArea, showNotif, setShowNotif, clientPortalId, setClientPortalId, onProjectClick, pushHistory }) {
-  const { notifications, getSmartAlerts, getChatUnread } = useContext(AppContext);
+  const { notifications, getSmartAlerts, getChatUnread, projects, team } = useContext(AppContext);
   const [showChat, setShowChat] = useState(false);
 
   const isClientPortal = view === "experiencia_cliente";
@@ -3224,8 +3280,9 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   const isQA = view.startsWith("qa") || projectOrigin === "qa";
   const isLider = view.startsWith("lider") || (projectOrigin === "lider");
   const chatRole = isQA ? "qa" : "lider";
-  // Count unread: QA sees qa-lider only; Líder sees qa-lider + all lider-* channels
-  const chatUnread = isQA ? getChatUnread("qa-lider", "qa") : (getChatUnread("qa-lider", "lider") + ["t1","t2","t3","t4"].reduce((s, t) => s + getChatUnread("lider-" + t, "lider"), 0));
+  // Count unread: QA sees qa-lider only; Líder sees qa-lider + all lider-* + proj-* channels
+  const activeProjs = projects.filter(p => p.status === "em_execucao" && p.squad && p.squad.length > 0);
+  const chatUnread = isQA ? getChatUnread("qa-lider", "qa") : (getChatUnread("qa-lider", "lider") + team.reduce((s, t) => s + getChatUnread("lider-" + t.id, "lider"), 0) + activeProjs.reduce((s, p) => s + getChatUnread("proj-" + p.id, "lider"), 0));
 
   // Determine current notification context
   const notifContext = view.startsWith("qa") ? "qa" : view.startsWith("lider") ? "lider" : isClientPortal ? "client" : "executor";
