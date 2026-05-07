@@ -427,7 +427,7 @@ function Card({ children, className = "", onClick }) {
 // ============================
 // HEADER
 // ============================
-function Header({ currentView, setView, currentExecutor, setShowNotif, notifCount }) {
+function Header({ currentView, setView, currentExecutor, setShowNotif, notifCount, onHelp }) {
   const allNavItems = [
     { label: "Executor", view: "executor" },
     { label: "QA", view: "qa_selector" },
@@ -478,6 +478,12 @@ function Header({ currentView, setView, currentExecutor, setShowNotif, notifCoun
                 {item.label}
               </Button>
             ))}
+            {onHelp && (
+              <Button variant="ghost" size="sm" onClick={onHelp} className="text-gray-400 hover:text-gray-700 gap-1">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span className="text-xs">Ajuda</span>
+              </Button>
+            )}
             <div className="relative ml-1">
               <Button variant="ghost" size="icon" onClick={() => setShowNotif(prev => !prev)}>
                 <Bell size={20} />
@@ -3200,6 +3206,128 @@ function TrocarExecutorView({ currentId, onSelect, onBack }) {
 }
 
 // ============================
+// ONBOARDING MODAL
+// ============================
+const onboardingData = {
+  executor: {
+    title: "Portal do Executor",
+    slides: [
+      { icon: "clipboard", title: "Suas tarefas", desc: "Aqui você encontra todas as tarefas atribuídas a você pelo líder. Elas são organizadas por mês e mostram prioridade (bolinha colorida), projeto e prazo." },
+      { icon: "filter", title: "Filtros inteligentes", desc: "Use os filtros de tempo (Hoje, 2 semanas, Todos) e de status (A Fazer, Em execução, Devolvida) para focar no que importa agora. O Kanban é outra forma visual de ver seu progresso." },
+      { icon: "check", title: "Checklist e entrega", desc: "Ao abrir uma tarefa, complete cada item do checklist. Quando tudo estiver marcado, anexe o link da entrega ou arquivos e clique em 'Enviar ao QA' para revisão." },
+      { icon: "refresh", title: "Tarefa devolvida", desc: "Se o QA encontrar algo para ajustar, a tarefa volta como 'Devolvida' com o comentário do que precisa ser corrigido. Corrija e reenvie." },
+      { icon: "clock", title: "Aguardando QA", desc: "Tarefas enviadas ao QA ficam na seção 'Aguardando QA' — separadas das suas tarefas ativas. Você pode cancelar o envio se precisar fazer ajustes." },
+      { icon: "bell", title: "Alertas e notificações", desc: "O sininho no topo mostra alertas importantes: tarefas em risco de atraso, cobranças do QA e feedbacks de clientes. Clique em qualquer alerta para ir direto à tarefa." },
+      { icon: "chat", title: "Chat", desc: "Use o botão de chat (canto inferior direito) para falar diretamente com a líder ou nos canais dos projetos em que você faz parte do squad." },
+      { icon: "archive", title: "Histórico", desc: "Tarefas concluídas e validadas pelo QA vão para o 'Histórico' no final da página — colapsável para manter tudo limpo." },
+    ],
+  },
+  qa: {
+    title: "Portal QA",
+    slides: [
+      { icon: "shield", title: "Visão geral", desc: "O Portal QA é o centro de controle de qualidade. Aqui você revisa entregas, acompanha projetos e garante que tudo sai no padrão." },
+      { icon: "inbox", title: "Entregas para revisar", desc: "Na aba 'Entregas', veja todas as tarefas enviadas pelos executores aguardando revisão. Aprove ou devolva com comentário." },
+      { icon: "folder", title: "Projetos", desc: "Acompanhe o kanban de cada projeto, veja o progresso e use o sininho para alertar executores sobre tarefas em risco." },
+      { icon: "bell", title: "Alertas ao executor", desc: "No kanban do projeto, clique no sininho de qualquer tarefa para enviar um alerta direto ao executor responsável." },
+      { icon: "book", title: "Base de conhecimento", desc: "Registre aprendizados e erros encontrados para que o time evolua. Tudo fica salvo e pesquisável." },
+      { icon: "chat", title: "Chat com o Líder", desc: "Use o chat para alinhar prioridades, passar briefings e dar orientações ao líder de forma rápida e organizada." },
+    ],
+  },
+  lider: {
+    title: "Portal Líder",
+    slides: [
+      { icon: "layout", title: "Painel do Líder", desc: "Visão completa da operação: projetos ativos, feedbacks de clientes, carga do time e criação de tarefas — tudo em um só lugar." },
+      { icon: "users", title: "Squad do projeto", desc: "Dentro de cada projeto, monte o squad de executores. Só membros do squad podem receber tarefas daquele projeto." },
+      { icon: "plus", title: "Criar tarefas", desc: "Crie tarefas com nome, projeto, executor (filtrado pelo squad), prazo, prioridade, descrição, checklist e anexos." },
+      { icon: "message", title: "Feedbacks de clientes", desc: "Quando o cliente dá feedback sobre uma entrega, devolva a tarefa original ao executor com instruções — sem criar duplicatas." },
+      { icon: "bar", title: "Carga do time", desc: "Acompanhe quantas tarefas cada executor tem e seu nível de carga (Disponível, Moderado, Sobrecarregado)." },
+      { icon: "chat", title: "Chat", desc: "Converse diretamente com QA, com cada executor individual, ou nos canais dos projetos com todo o squad." },
+    ],
+  },
+};
+
+function OnboardingModal({ portal, onClose }) {
+  const [step, setStep] = useState(0);
+  const data = onboardingData[portal];
+  if (!data) return null;
+  const slide = data.slides[step];
+  const total = data.slides.length;
+
+  const iconMap = {
+    clipboard: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>,
+    filter: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>,
+    check: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+    refresh: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>,
+    clock: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+    bell: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>,
+    chat: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>,
+    archive: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+    shield: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+    inbox: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>,
+    folder: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>,
+    book: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>,
+    layout: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>,
+    users: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>,
+    plus: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>,
+    message: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>,
+    bar: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
+  };
+
+  return (
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-40 z-50" onClick={onClose} />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden" onClick={e => e.stopPropagation()}>
+          {/* Progress bar */}
+          <div className="h-1 bg-gray-100">
+            <div className="h-1 bg-gray-900 transition-all duration-300 rounded-r" style={{ width: `${((step + 1) / total) * 100}%` }} />
+          </div>
+
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 pt-5 pb-2">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{data.title} · Passo {step + 1} de {total}</p>
+            <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-lg transition-colors"><X size={16} className="text-gray-400" /></button>
+          </div>
+
+          {/* Content */}
+          <div className="px-6 py-6 text-center">
+            <div className="h-16 w-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-5 text-gray-700">
+              {iconMap[slide.icon] || iconMap.clipboard}
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-3">{slide.title}</h3>
+            <p className="text-sm text-gray-600 leading-relaxed max-w-sm mx-auto">{slide.desc}</p>
+          </div>
+
+          {/* Navigation */}
+          <div className="px-6 pb-6 flex items-center justify-between">
+            <button onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0} className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${step === 0 ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:bg-gray-100"}`}>
+              Anterior
+            </button>
+
+            {/* Dots */}
+            <div className="flex gap-1.5">
+              {data.slides.map((_, i) => (
+                <button key={i} onClick={() => setStep(i)} className={`h-2 rounded-full transition-all ${i === step ? "w-6 bg-gray-900" : "w-2 bg-gray-200 hover:bg-gray-400"}`} />
+              ))}
+            </div>
+
+            {step < total - 1 ? (
+              <button onClick={() => setStep(s => s + 1)} className="px-4 py-2 text-sm font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors">
+                Próximo
+              </button>
+            ) : (
+              <button onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors">
+                Entendi!
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ============================
 // NOTIFICAÇÕES
 // ============================
 function NotificationPanel({ onClose, context, executorId, onTaskClick }) {
@@ -3369,6 +3497,7 @@ function App() {
 function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, selectedProject, setSelectedProject, projectOrigin, executorId, executorName, setExecutorId, setExecutorName, qaArea, setQaArea, liderArea, setLiderArea, showNotif, setShowNotif, clientPortalId, setClientPortalId, onProjectClick, pushHistory }) {
   const { notifications, getSmartAlerts, getChatUnread, projects, team } = useContext(AppContext);
   const [showChat, setShowChat] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(null); // "executor" | "qa" | "lider" | null
 
   const isClientPortal = view === "experiencia_cliente";
   const isClientSelector = view === "client_selector";
@@ -3399,12 +3528,16 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
 
   const notifPanel = showNotif && <NotificationPanel onClose={() => setShowNotif(false)} context={notifContext} executorId={executorId} onTaskClick={handleTaskClick} />;
   const chatPanel = <ChatPanel isOpen={showChat} onClose={() => setShowChat(false)} role={chatRole} />;
+  const currentPortal = isQA ? "qa" : isLider ? "lider" : isExecutorView ? "executor" : null;
+  const helpButton = currentPortal ? () => setShowOnboarding(currentPortal) : undefined;
+  const onboardingModal = showOnboarding && <OnboardingModal portal={showOnboarding} onClose={() => setShowOnboarding(null)} />;
 
   if (isProjectDetail && selectedProject) {
     return (
       <>
-        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} />
+        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} />
         {notifPanel}
+        {onboardingModal}
         {chatPanel}
         <div className="max-w-7xl mx-auto px-6 py-8">
           <ProjectKanbanView projectId={selectedProject} onBack={goBack} onTaskClick={handleTaskClick} isQAView={projectOrigin === "qa"} onOpenChat={() => setShowChat(true)} />
@@ -3416,8 +3549,9 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   if (isClientSelector) {
     return (
       <>
-        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} />
+        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} />
         {notifPanel}
+        {onboardingModal}
         <div className="max-w-7xl mx-auto px-6 py-8">
           <ClientSelectorView onSelect={(cid) => { pushHistory(); setClientPortalId(cid); setView("experiencia_cliente"); }} onBack={goBack} />
         </div>
@@ -3428,8 +3562,9 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   if (isClientPortal) {
     return (
       <>
-        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} />
+        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} />
         {notifPanel}
+        {onboardingModal}
         <div className="max-w-7xl mx-auto px-6 py-8">
           <ClientPortalView clientId={clientPortalId} onBack={goBack} />
         </div>
@@ -3440,8 +3575,9 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   if (isClientHub) {
     return (
       <>
-        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} />
+        <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} />
         {notifPanel}
+        {onboardingModal}
         <div className="max-w-7xl mx-auto px-6 py-8">
           <ClientHubView onBack={goBack} />
         </div>
@@ -3453,8 +3589,9 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
 
   return (
     <>
-      <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} />
+      <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} />
       {notifPanel}
+      {onboardingModal}
       {chatPanel}
       {/* Floating chat button for QA and Líder */}
       {showChatFab && !showChat && (
