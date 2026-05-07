@@ -134,6 +134,28 @@ function AppProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
   const [dismissedAlerts, setDismissedAlerts] = useState(new Set());
   const [qaAlerts, setQaAlerts] = useState([]);
+  const [qaLiderMessages, setQaLiderMessages] = useState([
+    { id: 1, from: "qa", author: "QA", text: "Pessoal, briefing do Festival de Esportes Radicais enviado. Prioridade alta — cliente espera retorno até sexta.", time: "09:30", date: new Date().toISOString().split("T")[0], projectId: null },
+    { id: 2, from: "lider", author: "Ana Gallotta", text: "Recebi! Vou distribuir as tarefas hoje. Alguma restrição de orçamento que devo saber?", time: "09:45", date: new Date().toISOString().split("T")[0], projectId: null },
+    { id: 3, from: "qa", author: "QA", text: "Orçamento aprovado sem restrições. Foco na qualidade visual — Red Bull é exigente com isso.", time: "10:02", date: new Date().toISOString().split("T")[0], projectId: null },
+  ]);
+  const [qaLiderLastRead, setQaLiderLastRead] = useState({ qa: 3, lider: 2 });
+
+  const sendQaLiderMsg = useCallback((from, author, text, projectId = null) => {
+    const msg = { id: Date.now(), from, author, text, time: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }), date: new Date().toISOString().split("T")[0], projectId };
+    setQaLiderMessages(prev => [...prev, msg]);
+    // Auto-mark as read for sender
+    setQaLiderLastRead(prev => ({ ...prev, [from]: msg.id }));
+    return msg;
+  }, []);
+
+  const markQaLiderRead = useCallback((role) => {
+    setQaLiderMessages(prev => {
+      if (prev.length === 0) return prev;
+      setQaLiderLastRead(p => ({ ...p, [role]: prev[prev.length - 1].id }));
+      return prev;
+    });
+  }, []);
 
   const addQaAlert = useCallback((taskId, executorId, text) => {
     setQaAlerts(prev => [...prev, { id: "qa-alert-" + Date.now(), taskId, executorId, text, date: new Date().toISOString().split("T")[0] }]);
@@ -318,7 +340,7 @@ function AppProvider({ children }) {
   }, [team, tasks]);
 
   return (
-    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, notify, addQaAlert, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, createProject, updateProject, deleteTask, resubmitTask, revertFromQA, revertFromCompleted, revertFromDevolvida, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
+    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, notify, addQaAlert, qaLiderMessages, qaLiderLastRead, sendQaLiderMsg, markQaLiderRead, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, createProject, updateProject, deleteTask, resubmitTask, revertFromQA, revertFromCompleted, revertFromDevolvida, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
       {children}
     </AppContext.Provider>
   );
@@ -960,7 +982,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
               const inQa = pTasks.filter(t => t.status === "em_qa").length;
               const pct = pTasks.length > 0 ? Math.round((done / pTasks.length) * 100) : 0;
               return (
-                <Card key={p.id} className="p-5 cursor-pointer hover:shadow-md transition-all" onClick={() => { if (onProjectClick) onProjectClick(p.id); }}>
+                <Card key={p.id} className="p-5 cursor-pointer hover:shadow-md transition-all" onClick={() => { if (onProjectClick) onProjectClick(p.id, "qa"); }}>
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <h3 className="font-semibold text-gray-900">{p.name}</h3>
@@ -1028,7 +1050,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
               const done = pTasks.filter(t => t.status === "concluida").length;
               const pct = pTasks.length > 0 ? Math.round((done / pTasks.length) * 100) : 0;
               return (
-                <Card key={p.id} className="p-5 cursor-pointer hover:shadow-md transition-all" onClick={() => { if (onProjectClick) onProjectClick(p.id); }}>
+                <Card key={p.id} className="p-5 cursor-pointer hover:shadow-md transition-all" onClick={() => { if (onProjectClick) onProjectClick(p.id, "qa"); }}>
                   <div className="flex items-start justify-between mb-3">
                     <div><h3 className="font-semibold text-gray-900">{p.name}</h3><p className="text-xs text-gray-500 mt-0.5">{p.client} · Líder: {p.responsible}</p></div>
                     <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${p.priority === "Alta" ? "bg-red-50 text-red-700 border-red-200" : p.priority === "Média" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : "bg-green-50 text-green-700 border-green-200"}`}>{p.priority}</span>
@@ -2610,8 +2632,112 @@ function KanbanCreateTask({ projectId, project, team, addTask }) {
   );
 }
 
-function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = false }) {
-  const { projects, tasks, clients, team, addTask, deleteTask } = useContext(AppContext);
+// ============================
+// QA ↔ LÍDER CHAT PANEL (slide-out)
+// ============================
+function QaLiderChatPanel({ isOpen, onClose, role }) {
+  const { qaLiderMessages, sendQaLiderMsg, markQaLiderRead, projects } = useContext(AppContext);
+  const [input, setInput] = useState("");
+  const [filter, setFilter] = useState("todos");
+  const chatEndRef = useRef(null);
+  const author = role === "qa" ? "QA" : "Ana Gallotta";
+
+  // Mark as read when panel opens
+  useState(() => { if (isOpen) markQaLiderRead(role); });
+  // Also mark on every render while open
+  if (isOpen) setTimeout(() => markQaLiderRead(role), 100);
+
+  const send = () => {
+    if (!input.trim()) return;
+    sendQaLiderMsg(role, author, input.trim());
+    setInput("");
+    setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
+  };
+
+  const filtered = filter === "todos" ? qaLiderMessages : qaLiderMessages.filter(m => m.projectId === filter);
+
+  // Group messages by date
+  const grouped = [];
+  let lastDate = "";
+  filtered.forEach(m => {
+    if (m.date !== lastDate) { grouped.push({ type: "date", date: m.date }); lastDate = m.date; }
+    grouped.push({ type: "msg", ...m });
+  });
+
+  return (
+    <>
+      {/* Backdrop */}
+      {isOpen && <div className="fixed inset-0 bg-black bg-opacity-20 z-40 transition-opacity" onClick={onClose} />}
+      {/* Panel */}
+      <div className={`fixed top-0 right-0 h-full w-[420px] bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
+        {/* Header */}
+        <div className="border-b border-gray-200 px-5 py-4 flex items-center justify-between flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 text-sm">Canal QA ↔ Líder</h3>
+              <p className="text-xs text-gray-500">{role === "qa" ? "Ana Gallotta (Líder)" : "QA"} · Área de Eventos</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><X size={18} className="text-gray-400" /></button>
+        </div>
+
+        {/* Project filter tabs */}
+        <div className="border-b border-gray-100 px-4 py-2 flex gap-1.5 overflow-x-auto flex-shrink-0">
+          <button onClick={() => setFilter("todos")} className={`px-3 py-1.5 text-xs font-medium rounded-full border whitespace-nowrap transition-colors ${filter === "todos" ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"}`}>Todas</button>
+          {projects.filter(p => p.area === "eventos").map(p => (
+            <button key={p.id} onClick={() => setFilter(p.id)} className={`px-3 py-1.5 text-xs font-medium rounded-full border whitespace-nowrap transition-colors ${filter === p.id ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"}`}>{p.name.length > 20 ? p.name.substring(0, 20) + "…" : p.name}</button>
+          ))}
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+          {grouped.map((item, i) => {
+            if (item.type === "date") {
+              return <div key={"d" + i} className="flex items-center gap-3 py-3"><div className="flex-1 h-px bg-gray-200" /><span className="text-[10px] text-gray-400 font-medium uppercase">{item.date === new Date().toISOString().split("T")[0] ? "Hoje" : item.date}</span><div className="flex-1 h-px bg-gray-200" /></div>;
+            }
+            const isMe = item.from === role;
+            return (
+              <div key={item.id} className={`flex ${isMe ? "justify-end" : "justify-start"} mb-1`}>
+                <div className={`max-w-[80%] ${isMe ? "" : "flex gap-2"}`}>
+                  {!isMe && (
+                    <div className={`h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-1 ${item.from === "qa" ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`}>
+                      {item.from === "qa" ? "QA" : "L"}
+                    </div>
+                  )}
+                  <div>
+                    <div className={`px-3.5 py-2.5 rounded-2xl text-sm ${isMe ? "bg-blue-600 text-white rounded-br-md" : "bg-gray-100 text-gray-800 rounded-bl-md"}`}>
+                      {item.projectId && (() => { const proj = projects.find(p => p.id === item.projectId); return proj ? <p className={`text-[10px] font-semibold mb-1 ${isMe ? "text-blue-200" : "text-blue-500"}`}>#{proj.name}</p> : null; })()}
+                      <p>{item.text}</p>
+                    </div>
+                    <p className={`text-[10px] mt-0.5 px-1 ${isMe ? "text-right text-gray-400" : "text-gray-400"}`}>{item.author} · {item.time}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          <div ref={chatEndRef} />
+          {filtered.length === 0 && <p className="text-center text-gray-400 text-sm py-8">Nenhuma mensagem ainda.</p>}
+        </div>
+
+        {/* Input */}
+        <div className="border-t border-gray-200 p-4 flex-shrink-0">
+          <div className="flex gap-2">
+            <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={role === "qa" ? "Briefing, instrução ou feedback..." : "Responder ao QA..."} className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
+            <button onClick={send} disabled={!input.trim()} className={`p-2.5 rounded-xl transition-colors ${input.trim() ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = false, isQAView = false, onOpenChat }) {
+  const { projects, tasks, clients, team, addTask, deleteTask, addQaAlert, qaLiderMessages, qaLiderLastRead } = useContext(AppContext);
   const project = projects.find(p => p.id === projectId);
   if (!project) return <div className="text-center py-12 text-gray-400">Projeto não encontrado.</div>;
 
@@ -2619,6 +2745,20 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
   const projectTasks = tasks.filter(t => t.projectId === projectId);
   const doneCount = projectTasks.filter(t => t.status === "concluida").length;
   const progress = projectTasks.length > 0 ? Math.round((doneCount / projectTasks.length) * 100) : project.progress;
+
+  // QA bell alert state
+  const [qaBellTask, setQaBellTask] = useState(null);
+  const [qaBellMsg, setQaBellMsg] = useState("");
+  const [qaBellSent, setQaBellSent] = useState(new Set());
+
+  const sendQaBell = (task) => {
+    const baseMsg = `QA está te alertando: "${task.title}" (${project.name}).`;
+    const fullMsg = qaBellMsg.trim() ? `${baseMsg} — "${qaBellMsg.trim()}"` : baseMsg;
+    addQaAlert(task.id, task.executor, fullMsg);
+    setQaBellSent(prev => new Set([...prev, task.id]));
+    setQaBellTask(null);
+    setQaBellMsg("");
+  };
 
   const columns = [
     { key: "a_fazer", label: "A Fazer", headerColor: "bg-gray-100 text-gray-700", dotColor: "bg-gray-400" },
@@ -2637,10 +2777,24 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
           <div className="flex items-center gap-3 mb-1">
             <h1 className="text-3xl font-bold text-gray-900">{project.name}</h1>
             <Badge variant="purple">Evento</Badge>
+            {isQAView && <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200 font-medium">Visão QA</span>}
           </div>
           <p className="text-gray-500">Cliente: <strong>{project.client}</strong> · Responsável: <strong>{project.responsible}</strong> · Prazo: <strong>{new Date(project.deadline).toLocaleDateString("pt-BR")}</strong></p>
         </div>
-        <Badge variant={project.priority === "Alta" ? "danger" : project.priority === "Média" ? "warning" : "success"}>{project.priority}</Badge>
+        <div className="flex items-center gap-2">
+          {(isQAView || !isClientView) && onOpenChat && (() => {
+            const role = isQAView ? "qa" : "lider";
+            const unread = qaLiderMessages.filter(m => m.from !== role && m.id > (qaLiderLastRead[role] || 0)).length;
+            return (
+              <button onClick={onOpenChat} className="px-3 py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-600 hover:border-blue-300 hover:bg-blue-50 transition-all flex items-center gap-2 relative">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                {isQAView ? "Chat com Líder" : "Chat com QA"}
+                {unread > 0 && <span className="bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5 font-bold animate-pulse">{unread}</span>}
+              </button>
+            );
+          })()}
+          <Badge variant={project.priority === "Alta" ? "danger" : project.priority === "Média" ? "warning" : "success"}>{project.priority}</Badge>
+        </div>
       </div>
 
       <div className="grid grid-cols-4 gap-4 mb-8">
@@ -2663,8 +2817,9 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
         </Card>
       </div>
 
-      {!isClientView && <h2 className="text-xl font-bold mb-4">Quadro de tarefas</h2>}
+      {!isClientView && !isQAView && <h2 className="text-xl font-bold mb-4">Quadro de tarefas</h2>}
       {isClientView && <h2 className="text-xl font-bold mb-4">Acompanhamento das entregas</h2>}
+      {isQAView && <h2 className="text-xl font-bold mb-4">Acompanhamento do projeto</h2>}
 
       <div className="grid grid-cols-5 gap-3" style={{ minHeight: "400px" }}>
         {columns.map(col => {
@@ -2679,9 +2834,16 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
               <div className="space-y-2">
                 {colTasks.map(task => (
                   <Card key={task.id} className="p-3 group relative" onClick={!isClientView && onTaskClick ? () => onTaskClick(task.id) : undefined}>
-                    {!isClientView && (
+                    {/* Líder: trash icon */}
+                    {!isClientView && !isQAView && (
                       <button onClick={(e) => { e.stopPropagation(); if (confirm(`Excluir tarefa "${task.title}"?`)) deleteTask(task.id); }} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-red-50" title="Excluir tarefa">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300 hover:text-red-500"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                      </button>
+                    )}
+                    {/* QA: bell icon */}
+                    {isQAView && task.status !== "concluida" && (
+                      <button onClick={(e) => { e.stopPropagation(); if (qaBellSent.has(task.id)) return; setQaBellTask(qaBellTask === task.id ? null : task.id); }} className={`absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all p-1 rounded ${qaBellSent.has(task.id) ? "opacity-100 text-yellow-500" : "hover:bg-yellow-50 text-gray-300 hover:text-yellow-500"}`} title={qaBellSent.has(task.id) ? "Alerta enviado" : "Alertar executor"}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill={qaBellSent.has(task.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                       </button>
                     )}
                     <div className="flex items-start gap-2 mb-2">
@@ -2693,6 +2855,17 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
                       <span className="text-xs text-gray-400"><Clock size={10} className="inline" /> {new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
                     </div>
                     {task.feedbackOrigin && <Badge variant="accent" className="mt-2 text-[10px]">Feedback</Badge>}
+                    {/* QA bell inline input */}
+                    {isQAView && qaBellTask === task.id && (
+                      <div className="mt-2 pt-2 border-t border-gray-100" onClick={e => e.stopPropagation()}>
+                        <div className="flex gap-1.5">
+                          <input value={qaBellMsg} onChange={e => setQaBellMsg(e.target.value)} placeholder="Msg (opcional)" className="flex-1 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-400" onKeyDown={e => { if (e.key === "Enter") sendQaBell(task); }} />
+                          <button onClick={() => sendQaBell(task)} className="px-2 py-1 text-xs font-medium rounded bg-yellow-500 text-white hover:bg-yellow-600">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </Card>
                 ))}
                 {colTasks.length === 0 && <p className="text-xs text-gray-300 text-center py-4">Nenhuma</p>}
@@ -2702,11 +2875,11 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
         })}
       </div>
 
-      {!isClientView && (
+      {!isClientView && !isQAView && (
         <KanbanCreateTask projectId={projectId} project={project} team={team} addTask={addTask} />
       )}
 
-      {!isClientView && (
+      {!isClientView && !isQAView && (
         <>
           <h2 className="text-xl font-bold mt-8 mb-4">Membros do projeto</h2>
           <div className="grid grid-cols-4 gap-3">
@@ -2843,6 +3016,7 @@ function App() {
   const [view, setView] = useState("executor");
   const [selectedTask, setSelectedTask] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [projectOrigin, setProjectOrigin] = useState(null); // "qa" | "lider" | null
   const [executorId, setExecutorId] = useState("t1");
   const [executorName, setExecutorName] = useState("Melissa Zambon");
   const [qaArea, setQaArea] = useState(null);
@@ -2884,9 +3058,10 @@ function App() {
     });
   };
 
-  const handleProjectClick = (projectId) => {
+  const handleProjectClick = (projectId, origin) => {
     pushHistory();
     setSelectedProject(projectId);
+    setProjectOrigin(origin || null);
     setView("project_detail");
   };
 
@@ -2898,6 +3073,7 @@ function App() {
           view={view} setView={handleSetView} goBack={goBack}
           selectedTask={selectedTask} setSelectedTask={setSelectedTask}
           selectedProject={selectedProject} setSelectedProject={setSelectedProject}
+          projectOrigin={projectOrigin}
           executorId={executorId} executorName={executorName}
           setExecutorId={setExecutorId} setExecutorName={setExecutorName}
           qaArea={qaArea} setQaArea={setQaArea}
@@ -2912,18 +3088,21 @@ function App() {
   );
 }
 
-function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, selectedProject, setSelectedProject, executorId, executorName, setExecutorId, setExecutorName, qaArea, setQaArea, liderArea, setLiderArea, showNotif, setShowNotif, clientPortalId, setClientPortalId, onProjectClick, pushHistory }) {
-  const { notifications, getSmartAlerts } = useContext(AppContext);
+function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, selectedProject, setSelectedProject, projectOrigin, executorId, executorName, setExecutorId, setExecutorName, qaArea, setQaArea, liderArea, setLiderArea, showNotif, setShowNotif, clientPortalId, setClientPortalId, onProjectClick, pushHistory }) {
+  const { notifications, getSmartAlerts, qaLiderMessages, qaLiderLastRead } = useContext(AppContext);
+  const [showQaChat, setShowQaChat] = useState(false);
 
   const isClientPortal = view === "experiencia_cliente";
   const isClientSelector = view === "client_selector";
   const isClientHub = view === "clientes";
   const isProjectDetail = view === "project_detail";
-  const isQA = view.startsWith("qa");
-  const isLider = view.startsWith("lider");
+  const isQA = view.startsWith("qa") || projectOrigin === "qa";
+  const isLider = view.startsWith("lider") || (projectOrigin === "lider");
+  const chatRole = isQA ? "qa" : "lider";
+  const chatUnread = qaLiderMessages.filter(m => m.from !== chatRole && m.id > (qaLiderLastRead[chatRole] || 0)).length;
 
   // Determine current notification context
-  const notifContext = isQA ? "qa" : isLider ? "lider" : isClientPortal ? "client" : "executor";
+  const notifContext = view.startsWith("qa") ? "qa" : view.startsWith("lider") ? "lider" : isClientPortal ? "client" : "executor";
   const notifTarget = notifContext === "executor" ? "executor:" + executorId : notifContext;
 
   // Count: targeted notifications + smart alerts for executor
@@ -2938,14 +3117,16 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   };
 
   const notifPanel = showNotif && <NotificationPanel onClose={() => setShowNotif(false)} context={notifContext} executorId={executorId} onTaskClick={handleTaskClick} />;
+  const chatPanel = <QaLiderChatPanel isOpen={showQaChat} onClose={() => setShowQaChat(false)} role={chatRole} />;
 
   if (isProjectDetail && selectedProject) {
     return (
       <>
         <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} />
         {notifPanel}
+        {chatPanel}
         <div className="max-w-7xl mx-auto px-6 py-8">
-          <ProjectKanbanView projectId={selectedProject} onBack={goBack} onTaskClick={handleTaskClick} />
+          <ProjectKanbanView projectId={selectedProject} onBack={goBack} onTaskClick={handleTaskClick} isQAView={projectOrigin === "qa"} onOpenChat={() => setShowQaChat(true)} />
         </div>
       </>
     );
@@ -2987,10 +3168,20 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
     );
   }
 
+  const showChatFab = view.startsWith("qa") || view.startsWith("lider");
+
   return (
     <>
       <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} />
       {notifPanel}
+      {chatPanel}
+      {/* Floating chat button for QA and Líder */}
+      {showChatFab && !showQaChat && (
+        <button onClick={() => setShowQaChat(true)} className="fixed bottom-6 right-6 z-30 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-all hover:scale-105 flex items-center gap-2" title={view.startsWith("qa") ? "Chat com Líder" : "Chat com QA"}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          {chatUnread > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse">{chatUnread}</span>}
+        </button>
+      )}
       <main className="max-w-7xl mx-auto px-6 py-8">
         {selectedTask && (
           <TaskDetailView taskId={selectedTask} onBack={goBack} />
