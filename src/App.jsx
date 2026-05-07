@@ -3248,6 +3248,19 @@ const onboardingData = {
       { icon: "chat", title: "Chat organizado", desc: "Seu chat tem duas seções: 'Direto' para falar com QA e cada executor individualmente, e 'Projetos' para canais de grupo com todo o squad. Quando um executor entra no squad, já aparece no chat." },
     ],
   },
+  cliente: {
+    title: "Portal do Cliente",
+    slides: [
+      { icon: "eye", title: "Seu espaço de acompanhamento", desc: "O Portal do Cliente é onde você acompanha todas as entregas dos seus projetos em tempo real. Aqui você vê o que está sendo produzido, o que já foi entregue e pode dar feedback direto — sem precisar de e-mail ou WhatsApp." },
+      { icon: "folder", title: "Seus projetos", desc: "Na tela inicial, você vê todos os projetos da sua empresa. Clique em qualquer projeto para abrir o painel de entregas com tudo que está em andamento e o que já foi concluído." },
+      { icon: "inbox", title: "Entregas concluídas", desc: "As entregas que passaram por controle de qualidade aparecem na lista do projeto. Cada entrega mostra o nome da tarefa, a descrição do que foi feito e o link/arquivo para você visualizar o resultado." },
+      { icon: "check", title: "Aprovar entregas", desc: "Quando estiver satisfeito com uma entrega, clique em 'Aprovar'. A entrega é marcada como aprovada pelo cliente e a equipe é notificada de que aquele item está finalizado." },
+      { icon: "message", title: "Dar feedback", desc: "Se algo precisa de ajuste, use o botão de feedback para descrever o que precisa mudar. Seu comentário vai direto para o líder do projeto, que reabre a tarefa com suas instruções — sem perder o histórico." },
+      { icon: "star", title: "Elogiar o trabalho", desc: "Gostou muito de uma entrega? Use o feedback do tipo 'Elogio' para reconhecer o trabalho da equipe. Elogios são visíveis para o time e ajudam a manter a motivação alta." },
+      { icon: "shield", title: "Transparência total", desc: "Você não precisa cobrar atualizações. O portal mostra o status real de cada projeto — quantas tarefas estão em produção, em revisão e concluídas. Tudo atualizado automaticamente." },
+      { icon: "bell", title: "Notificações", desc: "Quando uma nova entrega fica pronta para sua revisão, você recebe uma notificação. O sininho no topo mostra quantos itens precisam da sua atenção." },
+    ],
+  },
 };
 
 function OnboardingModal({ portal, onClose }) {
@@ -3275,6 +3288,8 @@ function OnboardingModal({ portal, onClose }) {
     plus: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>,
     message: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>,
     bar: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
+    eye: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
+    star: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
   };
 
   return (
@@ -3532,7 +3547,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
 
   const notifPanel = showNotif && <NotificationPanel onClose={() => setShowNotif(false)} context={notifContext} executorId={executorId} onTaskClick={handleTaskClick} />;
   const chatPanel = <ChatPanel isOpen={showChat} onClose={() => setShowChat(false)} role={chatRole} />;
-  const currentPortal = isQA ? "qa" : isLider ? "lider" : isExecutorView ? "executor" : null;
+  const currentPortal = isQA ? "qa" : isLider ? "lider" : isExecutorView ? "executor" : (isClientPortal || isClientHub || isClientSelector) ? "cliente" : null;
   const helpButton = currentPortal ? () => setShowOnboarding(currentPortal) : undefined;
   const onboardingModal = showOnboarding && <OnboardingModal portal={showOnboarding} onClose={() => setShowOnboarding(null)} />;
 
