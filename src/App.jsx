@@ -309,7 +309,7 @@ function AppProvider({ children }) {
   }, [team, tasks]);
 
   return (
-    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, createProject, updateProject, deleteTask, resubmitTask, revertFromQA, revertFromCompleted, revertFromDevolvida, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
+    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, notify, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, createProject, updateProject, deleteTask, resubmitTask, revertFromQA, revertFromCompleted, revertFromDevolvida, clientApproveTask, clientRejectTask, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
       {children}
     </AppContext.Provider>
   );
@@ -777,7 +777,7 @@ function TaskDetailView({ taskId, onBack }) {
 // QASquadSelector removed — only eventos squad exists now
 
 function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
-  const { tasks, projects, clients, team, learnings, feedbacks, clientNotes, approveTask, rejectTask, revertFromCompleted, revertFromDevolvida, createProject, updateProject, addLearning, addClientNote } = useContext(AppContext);
+  const { tasks, projects, clients, team, learnings, feedbacks, clientNotes, approveTask, rejectTask, revertFromCompleted, revertFromDevolvida, createProject, updateProject, addLearning, addClientNote, notify } = useContext(AppContext);
   const [comments, setComments] = useState({});
   const [expandedId, setExpandedId] = useState(null);
   const [tab, setTab] = useState("visao_geral");
@@ -788,6 +788,16 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
   const [noteTag, setNoteTag] = useState("");
   const [kbF, setKbF] = useState("todos");
   const [reviewTab, setReviewTab] = useState("pendentes");
+  const [alertTaskId, setAlertTaskId] = useState(null);
+  const [alertMsg, setAlertMsg] = useState("");
+
+  const sendRiskAlert = (task) => {
+    const baseMsg = `QA está te alertando: a tarefa "${task.title}" está em risco de atraso (prazo: ${new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}).`;
+    const fullMsg = alertMsg.trim() ? `${baseMsg} Mensagem: "${alertMsg.trim()}"` : baseMsg;
+    notify(fullMsg, "executor:" + task.executor, "warning");
+    setAlertTaskId(null);
+    setAlertMsg("");
+  };
 
   const areaProjects = projects.filter(p => p.area === area);
   const areaTasks = tasks.filter(t => t.area === area);
@@ -906,8 +916,25 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                       <p className="font-medium text-sm">{task.title}</p>
                       <p className="text-xs text-gray-500 mt-0.5">{task.project} · {task.executorName} · Prazo: {new Date(task.deadline).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</p>
                     </div>
-                    <Badge variant={task.status === "a_fazer" ? "default" : "info"}>{task.status === "a_fazer" ? "A fazer" : "Em execução"}</Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={task.status === "a_fazer" ? "default" : "info"}>{task.status === "a_fazer" ? "A fazer" : "Em execução"}</Badge>
+                      <button onClick={() => setAlertTaskId(alertTaskId === task.id ? null : task.id)} className={`p-2 rounded-lg border transition-all ${alertTaskId === task.id ? "bg-yellow-50 border-yellow-300 text-yellow-600" : "border-gray-200 text-gray-400 hover:text-yellow-600 hover:border-yellow-300 hover:bg-yellow-50"}`} title="Alertar executor">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                      </button>
+                    </div>
                   </div>
+                  {alertTaskId === task.id && (
+                    <div className="mt-3 pt-3 border-t border-gray-100">
+                      <p className="text-xs text-gray-500 mb-2">Enviar alerta para <span className="font-medium text-gray-700">{task.executorName}</span></p>
+                      <div className="flex gap-2">
+                        <input value={alertMsg} onChange={e => setAlertMsg(e.target.value)} placeholder="Mensagem adicional (opcional)" className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400" onKeyDown={e => { if (e.key === "Enter") sendRiskAlert(task); }} />
+                        <button onClick={() => sendRiskAlert(task)} className="px-4 py-2 text-sm font-medium rounded-lg bg-yellow-500 text-white hover:bg-yellow-600 transition-colors flex items-center gap-1.5">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                          Alertar
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </Card>
               ))}
             </div>
