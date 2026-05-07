@@ -2048,12 +2048,22 @@ function App() {
 }
 
 function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, selectedProject, setSelectedProject, executorId, executorName, setExecutorId, setExecutorName, qaArea, setQaArea, liderArea, setLiderArea, showNotif, setShowNotif, clientPortalId, setClientPortalId, onProjectClick, pushHistory }) {
-  const { notifications } = useContext(AppContext);
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const { notifications, getSmartAlerts } = useContext(AppContext);
 
   const isClientPortal = view === "experiencia_cliente";
   const isClientHub = view === "clientes";
   const isProjectDetail = view === "project_detail";
+  const isQA = view.startsWith("qa");
+  const isLider = view.startsWith("lider");
+
+  // Determine current notification context
+  const notifContext = isQA ? "qa" : isLider ? "lider" : isClientPortal ? "client" : "executor";
+  const notifTarget = notifContext === "executor" ? "executor:" + executorId : notifContext;
+
+  // Count: targeted notifications + smart alerts for executor
+  const targetedNotifs = notifications.filter(n => n.target === notifTarget && !n.read);
+  const smartAlerts = notifContext === "executor" ? getSmartAlerts(executorId) : [];
+  const unreadCount = targetedNotifs.length + smartAlerts.length;
 
   // Task click with history
   const handleTaskClick = (taskId) => {
@@ -2061,11 +2071,13 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
     setSelectedTask(taskId);
   };
 
+  const notifPanel = showNotif && <NotificationPanel onClose={() => setShowNotif(false)} context={notifContext} executorId={executorId} />;
+
   if (isProjectDetail && selectedProject) {
     return (
       <>
         <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} />
-        {showNotif && <NotificationPanel onClose={() => setShowNotif(false)} />}
+        {notifPanel}
         <div className="max-w-7xl mx-auto px-6 py-8">
           <ProjectKanbanView projectId={selectedProject} onBack={goBack} onTaskClick={handleTaskClick} />
         </div>
@@ -2077,7 +2089,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
     return (
       <>
         <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} />
-        {showNotif && <NotificationPanel onClose={() => setShowNotif(false)} />}
+        {notifPanel}
         <div className="max-w-7xl mx-auto px-6 py-8">
           <ClientPortalView clientId={clientPortalId} onBack={goBack} />
         </div>
@@ -2089,7 +2101,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
     return (
       <>
         <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} />
-        {showNotif && <NotificationPanel onClose={() => setShowNotif(false)} />}
+        {notifPanel}
         <div className="max-w-7xl mx-auto px-6 py-8">
           <ClientHubView onBack={goBack} />
         </div>
@@ -2100,7 +2112,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
   return (
     <>
       <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} />
-      {showNotif && <NotificationPanel onClose={() => setShowNotif(false)} />}
+      {notifPanel}
       <main className="max-w-7xl mx-auto px-6 py-8">
         {selectedTask && (
           <TaskDetailView taskId={selectedTask} onBack={goBack} />
