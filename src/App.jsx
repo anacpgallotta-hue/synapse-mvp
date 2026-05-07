@@ -113,6 +113,11 @@ function AppProvider({ children }) {
   const addClientNote = useCallback((clientId, text) => {
     setClientNotes(prev => [{ id: "cn" + Date.now(), clientId, author: "Ana Gallotta", date: new Date().toISOString().split("T")[0], text }, ...prev]);
   }, []);
+
+  const archiveElogio = useCallback((feedbackId, noteText, clientId) => {
+    addClientNote(clientId, noteText);
+    setFeedbacks(prev => prev.filter(f => f.id !== feedbackId));
+  }, [addClientNote]);
   // Notifications: target = "executor:t1", "qa", "lider", "client:c5"
   // priority = "info" | "warning" | "danger"
   const [notifications, setNotifications] = useState([]);
@@ -205,9 +210,13 @@ function AppProvider({ children }) {
       const newTask = { ...taskData, id: "tk" + Date.now(), status: "a_fazer", submittedLink: "", qaComment: "", feedbackOrigin: { type: fb.type, text: fb.text } };
       setTasks(t => [...t, newTask]);
       notify(`Nova tarefa de feedback: "${taskData.title}"`, "executor:" + taskData.executor, "warning");
-      return prev.map(f => f.id === feedbackId ? { ...f, status: "atribuido", assignedTaskId: newTask.id } : f);
+      // Register in client history
+      if (fb?.clientId) {
+        addClientNote(fb.clientId, `[Feedback ${fb.type}] "${fb.text}" — Atribuído como tarefa para ${taskData.executorName}`);
+      }
+      return prev.filter(f => f.id !== feedbackId);
     });
-  }, [notify]);
+  }, [notify, addClientNote]);
 
   const addLearning = useCallback((learning) => {
     setLearnings(prev => [...prev, { ...learning, id: "l" + Date.now() }]);
@@ -256,7 +265,7 @@ function AppProvider({ children }) {
   }, [team, tasks]);
 
   return (
-    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, resubmitTask, revertFromQA, revertFromCompleted, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
+    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, archiveElogio, resubmitTask, revertFromQA, revertFromCompleted, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
       {children}
     </AppContext.Provider>
   );
@@ -1053,7 +1062,7 @@ function QAErrorsView({ area, onBack }) {
 // LiderSquadSelector removed — only eventos squad exists now
 
 function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProjectClick, onViewAsClient }) {
-  const { projects, tasks, feedbacks, clients, clientNotes, addTask, assignFeedbackAsTask, addClientNote, getTeamWithLoad, team: rawTeam } = useContext(AppContext);
+  const { projects, tasks, feedbacks, clients, clientNotes, addTask, assignFeedbackAsTask, addClientNote, archiveElogio, getTeamWithLoad, team: rawTeam } = useContext(AppContext);
   const [tab, setTab] = useState("geral");
   const [showCreate, setShowCreate] = useState(false);
   const [feedFilter, setFeedFilter] = useState("pendentes");
@@ -1105,7 +1114,6 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
   const [assigningFb, setAssigningFb] = useState(null);
   const [assignForm, setAssignForm] = useState({ executor: "", priority: "Alta", deadline: "", title: "" });
   const [elogioNotes, setElogioNotes] = useState({});
-  const [archivedElogios, setArchivedElogios] = useState(new Set());
   const [relNote, setRelNote] = useState({ clientId: "", text: "" });
   const [showRelacionamento, setShowRelacionamento] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
@@ -1291,7 +1299,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
           <button onClick={() => setShowRelacionamento(!showRelacionamento)} className="w-full flex items-center justify-between mt-8 mb-4 group">
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-bold">Relacionamento com cliente</h2>
-              {elogios.filter(e => !archivedElogios.has(e.id)).length > 0 && <Badge variant="success">{elogios.filter(e => !archivedElogios.has(e.id)).length} elogio{elogios.filter(e => !archivedElogios.has(e.id)).length > 1 ? "s" : ""}</Badge>}
+              {elogios.length > 0 && <Badge variant="success">{elogios.length} elogio{elogios.length > 1 ? "s" : ""}</Badge>}
             </div>
             {showRelacionamento ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
           </button>
@@ -1299,10 +1307,10 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
           {showRelacionamento && <>
           <p className="text-sm text-gray-500 mb-4">Elogios recebidos e anotações sobre preferências dos clientes. Ao registrar, a informação vai para o Histórico de Clientes.</p>
 
-          {elogios.filter(e => !archivedElogios.has(e.id)).length > 0 && (
+          {elogios.length > 0 && (
             <div className="mb-4">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Elogios recebidos</p>
-              {elogios.filter(e => !archivedElogios.has(e.id)).map(fb => {
+              {elogios.map(fb => {
                 const proj = projects.find(p => p.id === fb.projectId);
                 return (
                   <Card key={fb.id} className="mb-3 border-l-4 border-l-green-500">
@@ -1325,8 +1333,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                             const noteText = elogioNotes[fb.id]?.trim()
                               ? `[Elogio] ${fb.text} — Anotação: ${elogioNotes[fb.id].trim()}`
                               : `[Elogio] ${fb.text}`;
-                            addClientNote(fb.clientId, noteText);
-                            setArchivedElogios(prev => new Set([...prev, fb.id]));
+                            archiveElogio(fb.id, noteText, fb.clientId);
                             setElogioNotes(prev => { const n = { ...prev }; delete n[fb.id]; return n; });
                           }}>
                             <CheckCircle2 size={14} /> Registrar no histórico
@@ -1340,7 +1347,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
             </div>
           )}
 
-          {elogios.filter(e => !archivedElogios.has(e.id)).length === 0 && (
+          {elogios.length === 0 && (
             <Card className="p-6 text-center text-gray-400 mb-4">Nenhum elogio pendente de registro</Card>
           )}
 
@@ -1465,7 +1472,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
           const cDone = cTasks.filter(t => t.status === "concluida");
           const cFeedbacks = feedbacks.filter(f => f.clientId === client.id);
           const cPendingFb = cFeedbacks.filter(f => f.status === "pendente");
-          const cElogios = cFeedbacks.filter(f => f.type === "Elogio" && !archivedElogios.has(f.id));
+          const cElogios = cFeedbacks.filter(f => f.type === "Elogio");
           const cNotes = clientNotes.filter(n => n.clientId === client.id);
 
           return (
@@ -1542,15 +1549,54 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                   {cFeedbacks.length === 0 && <p className="text-sm text-gray-400">Nenhum feedback registrado.</p>}
                   {cFeedbacks.map(fb => {
                     const relTask = fb.relatedTaskId ? tasks.find(t => t.id === fb.relatedTaskId) : null;
+                    const isAssigning = assigningFb === fb.id;
+                    const canAssign = fb.status === "pendente" && fb.type !== "Elogio";
+                    const isElogio = fb.type === "Elogio";
+                    const assignedTask = fb.assignedTaskId ? tasks.find(t => t.id === fb.assignedTaskId) : null;
+
                     return (
-                      <Card key={fb.id} className={`p-4 border-l-4 ${fb.type === "Elogio" ? "border-l-green-500" : fb.type === "Ajuste" ? "border-l-orange-500" : "border-l-blue-500"}`}>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge variant={fb.type === "Elogio" ? "success" : fb.type === "Ajuste" ? "danger" : "warning"}>{fb.type}</Badge>
-                          <Badge variant={fb.status === "pendente" ? "warning" : "success"}>{fb.status === "pendente" ? "Pendente" : "Atribuído"}</Badge>
-                          <span className="text-xs text-gray-400">{fb.date}</span>
+                      <Card key={fb.id} className={`overflow-hidden border-l-4 ${fb.type === "Elogio" ? "border-l-green-500" : fb.type === "Ajuste" ? "border-l-orange-500" : "border-l-blue-500"}`}>
+                        <div className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Badge variant={fb.type === "Elogio" ? "success" : fb.type === "Ajuste" ? "danger" : "warning"}>{fb.type}</Badge>
+                                <Badge variant={fb.status === "pendente" ? "warning" : "success"}>{fb.status === "pendente" ? "Pendente" : "Atribuído"}</Badge>
+                                {relTask && <Badge variant="purple">Sobre entrega</Badge>}
+                                <span className="text-xs text-gray-400">{fb.date}</span>
+                              </div>
+                              <p className="text-sm text-gray-800">{fb.text}</p>
+                              {relTask && <p className="text-xs text-gray-500 mt-1">Entrega: {relTask.title} (por {relTask.executorName})</p>}
+                              {assignedTask && <p className="text-xs text-green-600 mt-1">Tarefa criada: {assignedTask.title} → {assignedTask.executorName}</p>}
+                            </div>
+                            {canAssign && !isAssigning && <Button size="sm" onClick={() => openAssign(fb)}>Atribuir</Button>}
+                          </div>
+                          {isElogio && (
+                            <div className="mt-3 pt-3 border-t border-gray-100">
+                              <textarea value={elogioNotes[fb.id] || ""} onChange={e => setElogioNotes(prev => ({ ...prev, [fb.id]: e.target.value }))} placeholder="O que aprendemos com esse elogio?" className="w-full border border-gray-200 rounded-lg p-2.5 text-sm min-h-[50px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50" />
+                              <div className="flex justify-end mt-2">
+                                <Button size="sm" variant="outline" onClick={() => { const txt = elogioNotes[fb.id]?.trim() ? `[Elogio] ${fb.text} — ${elogioNotes[fb.id].trim()}` : `[Elogio] ${fb.text}`; archiveElogio(fb.id, txt, fb.clientId); setElogioNotes(prev => { const n = { ...prev }; delete n[fb.id]; return n; }); }}><CheckCircle2 size={14} /> Registrar no histórico</Button>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        <p className="text-sm text-gray-800">{fb.text}</p>
-                        {relTask && <p className="text-xs text-gray-500 mt-1">Entrega: {relTask.title} (por {relTask.executorName})</p>}
+                        {isAssigning && (
+                          <div className="border-t bg-gray-50 p-4 space-y-3">
+                            <div><label className="text-xs font-medium text-gray-600">Título da tarefa</label><input value={assignForm.title} onChange={e => setAssignForm(p => ({ ...p, title: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
+                            <div className="grid grid-cols-3 gap-3">
+                              <div>
+                                <label className="text-xs font-medium text-gray-600">Executor</label>
+                                <select value={assignForm.executor} onChange={e => setAssignForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                                  <option value="">Selecione</option>
+                                  {areaTeam.map(m => <option key={m.id} value={m.id}>{m.name} ({m.activeTasks} tarefas){relTask && relTask.executor === m.id ? " ★" : ""}</option>)}
+                                </select>
+                              </div>
+                              <div><label className="text-xs font-medium text-gray-600">Prioridade</label><select value={assignForm.priority} onChange={e => setAssignForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900"><option>Alta</option><option>Média</option><option>Baixa</option></select></div>
+                              <div><label className="text-xs font-medium text-gray-600">Prazo</label><input type="datetime-local" value={assignForm.deadline} onChange={e => setAssignForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
+                            </div>
+                            <div className="flex gap-2"><Button size="sm" onClick={handleAssignFeedback} disabled={!assignForm.executor || !assignForm.title.trim()}>Confirmar</Button><Button variant="outline" size="sm" onClick={() => setAssigningFb(null)}>Cancelar</Button></div>
+                          </div>
+                        )}
                       </Card>
                     );
                   })}
@@ -1571,7 +1617,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                               {proj && <p className="text-xs text-gray-400 mb-3">Projeto: {proj.name} · {fb.date}</p>}
                               <textarea value={elogioNotes[fb.id] || ""} onChange={e => setElogioNotes(prev => ({ ...prev, [fb.id]: e.target.value }))} placeholder="O que aprendemos? Ex: 'Cliente valoriza agilidade — manter padrão'" className="w-full border border-gray-200 rounded-lg p-2.5 text-sm min-h-[50px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50" />
                               <div className="flex justify-end mt-2">
-                                <Button size="sm" variant="outline" onClick={() => { const txt = elogioNotes[fb.id]?.trim() ? `[Elogio] ${fb.text} — ${elogioNotes[fb.id].trim()}` : `[Elogio] ${fb.text}`; addClientNote(fb.clientId, txt); setArchivedElogios(prev => new Set([...prev, fb.id])); setElogioNotes(prev => { const n = { ...prev }; delete n[fb.id]; return n; }); }}><CheckCircle2 size={14} /> Registrar no histórico</Button>
+                                <Button size="sm" variant="outline" onClick={() => { const txt = elogioNotes[fb.id]?.trim() ? `[Elogio] ${fb.text} — ${elogioNotes[fb.id].trim()}` : `[Elogio] ${fb.text}`; archiveElogio(fb.id, txt, fb.clientId); setElogioNotes(prev => { const n = { ...prev }; delete n[fb.id]; return n; }); }}><CheckCircle2 size={14} /> Registrar no histórico</Button>
                               </div>
                             </div>
                           </Card>
