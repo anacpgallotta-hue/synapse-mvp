@@ -47,10 +47,10 @@ const initialClients = [
 
 const initialProjects = [
   { id: "p1", name: "Gala de Premiação Anual", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Ana Gallotta", deadline: "2026-05-15", progress: 65, squad: ["t1", "t4"] },
-  { id: "p2", name: "Festival de Esportes Radicais", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Ana Gallotta", deadline: "2026-05-28", progress: 30, squad: [] },
-  { id: "p7", name: "Premiação Top Performers", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Ana Gallotta", deadline: "2026-07-10", progress: 10, squad: [] },
+  { id: "p2", name: "Festival de Esportes Radicais", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Ana Gallotta", deadline: "2026-05-28", progress: 30, squad: ["t2", "t3"] },
+  { id: "p7", name: "Premiação Top Performers", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Ana Gallotta", deadline: "2026-07-10", progress: 10, squad: ["t1", "t2"] },
   { id: "p10", name: "Operações", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Ana Gallotta", deadline: "2026-05-30", progress: 0, squad: ["t3", "t4"] },
-  { id: "p9", name: "Ativação de Marca - Evento Gastronômico", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Ana Gallotta", deadline: "2026-06-15", progress: 25, squad: ["t2"] },
+  { id: "p9", name: "Ativação de Marca - Evento Gastronômico", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Ana Gallotta", deadline: "2026-06-15", progress: 25, squad: ["t2", "t4"] },
 ];
 
 // Projetos históricos — concluídos (clientes passados)
@@ -63,9 +63,14 @@ const historicProjects = [
 ];
 
 const initialTasks = [
-  { id: "tk5", title: "Organizar reunião de alinhamento pré-evento", projectId: "p1", project: "Gala de Premiação Anual", executor: "t2", executorName: "Maria Eduarda Vittori", priority: "Alta", status: "a_fazer", area: "eventos", deadline: "2026-04-30T12:00", description: "Agendar e organizar reunião de alinhamento com todos os stakeholders antes do evento", checklist: [{ text: "Definir pauta", done: false }, { text: "Enviar convites", done: false }, { text: "Preparar material", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
-  { id: "tk6", title: "Montar checklist de fornecedores", projectId: "p9", project: "Ativação de Marca - Evento Gastronômico", executor: "t3", executorName: "Carolina Guimarães", priority: "Alta", status: "em_execucao", area: "eventos", deadline: "2026-04-18T17:00", description: "Listar e confirmar todos os fornecedores para o evento", checklist: [{ text: "Buffet", done: true }, { text: "Som e luz", done: false }, { text: "Decoração", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
-  { id: "tk7", title: "Criar cronograma do evento", projectId: "p10", project: "Operações", executor: "t4", executorName: "Samara Aboultaif", priority: "Média", status: "a_fazer", area: "eventos", deadline: "2026-04-25T12:00", description: "Desenvolver cronograma detalhado hora a hora do evento", checklist: [{ text: "Definir programação", done: false }, { text: "Alocar espaços", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
+  { id: "tk5", title: "Organizar reunião de alinhamento pré-evento", projectId: "p1", project: "Gala de Premiação Anual", executor: "t1", executorName: "Melissa Zambon", priority: "Alta", status: "a_fazer", area: "eventos", deadline: "2026-04-30T12:00", description: "Agendar e organizar reunião de alinhamento com todos os stakeholders antes do evento", checklist: [{ text: "Definir pauta", done: false }, { text: "Enviar convites", done: false }, { text: "Preparar material", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
+  { id: "tk8", title: "Definir decoração e ambientação", projectId: "p1", project: "Gala de Premiação Anual", executor: "t4", executorName: "Samara Aboultaif", priority: "Alta", status: "em_execucao", area: "eventos", deadline: "2026-05-10T14:00", description: "Pesquisar e definir conceito visual, decoração e ambientação da Gala", checklist: [{ text: "Levantar referências visuais", done: true }, { text: "Orçar fornecedores de decoração", done: false }, { text: "Apresentar proposta ao líder", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
+  { id: "tk6", title: "Montar checklist de fornecedores", projectId: "p9", project: "Ativação de Marca - Evento Gastronômico", executor: "t2", executorName: "Maria Eduarda Vittori", priority: "Alta", status: "em_execucao", area: "eventos", deadline: "2026-04-18T17:00", description: "Listar e confirmar todos os fornecedores para o evento gastronômico", checklist: [{ text: "Buffet", done: true }, { text: "Som e luz", done: false }, { text: "Decoração", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
+  { id: "tk9", title: "Planejar logística do espaço", projectId: "p9", project: "Ativação de Marca - Evento Gastronômico", executor: "t4", executorName: "Samara Aboultaif", priority: "Média", status: "a_fazer", area: "eventos", deadline: "2026-05-20T12:00", description: "Definir layout do espaço, mapa de áreas e fluxo de convidados", checklist: [{ text: "Visitar local", done: false }, { text: "Criar mapa de áreas", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
+  { id: "tk7", title: "Criar cronograma do evento", projectId: "p10", project: "Operações", executor: "t4", executorName: "Samara Aboultaif", priority: "Média", status: "em_qa", area: "eventos", deadline: "2026-04-25T12:00", description: "Desenvolver cronograma detalhado hora a hora do evento", checklist: [{ text: "Definir programação", done: true }, { text: "Alocar espaços", done: true }], attachments: [], submittedLink: "https://docs.google.com/spreadsheets/cronograma", qaComment: "", feedbackOrigin: null },
+  { id: "tk10", title: "Contratar equipe de apoio operacional", projectId: "p10", project: "Operações", executor: "t3", executorName: "Carolina Guimarães", priority: "Alta", status: "a_fazer", area: "eventos", deadline: "2026-05-15T10:00", description: "Selecionar e contratar equipe de apoio para o dia do evento", checklist: [{ text: "Definir perfis necessários", done: false }, { text: "Contatar agências", done: false }, { text: "Confirmar equipe", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
+  { id: "tk11", title: "Mapear atividades radicais", projectId: "p2", project: "Festival de Esportes Radicais", executor: "t2", executorName: "Maria Eduarda Vittori", priority: "Alta", status: "a_fazer", area: "eventos", deadline: "2026-05-12T14:00", description: "Pesquisar e definir quais atividades radicais estarão disponíveis no festival", checklist: [{ text: "Listar modalidades", done: false }, { text: "Orçar fornecedores especializados", done: false }, { text: "Avaliar segurança", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
+  { id: "tk12", title: "Criar plano de comunicação visual", projectId: "p2", project: "Festival de Esportes Radicais", executor: "t3", executorName: "Carolina Guimarães", priority: "Média", status: "em_execucao", area: "eventos", deadline: "2026-05-18T16:00", description: "Desenvolver identidade visual e materiais de comunicação do festival", checklist: [{ text: "Criar mood board", done: true }, { text: "Definir paleta de cores", done: true }, { text: "Produzir peças gráficas", done: false }], attachments: [], submittedLink: "", qaComment: "", feedbackOrigin: null },
 ];
 
 const initialLearnings = [
@@ -77,8 +82,8 @@ const initialLearnings = [
 ];
 
 const initialFeedbacks = [
-  // Feedback sobre entrega específica (tem relatedTaskId)
-  { id: "f2", projectId: "p2", clientId: "c3", clientName: "Red Bull", type: "Sugestão", text: "Incluir opção de atividade alternativa para participantes com menor preparo físico.", date: "2026-04-14", status: "pendente", assignedTaskId: null, relatedTaskId: null },
+  // Feedback sobre entrega específica (tem relatedTaskId) — executor do relatedTask deve estar no squad do projeto
+  { id: "f2", projectId: "p2", clientId: "c3", clientName: "Red Bull", type: "Sugestão", text: "Incluir opção de atividade alternativa para participantes com menor preparo físico.", date: "2026-04-14", status: "pendente", assignedTaskId: null, relatedTaskId: "tk11" },
   { id: "f5", projectId: "p1", clientId: "c5", clientName: "XP", type: "Ajuste", text: "A reunião de alinhamento pré-evento não cobriu o tema de logística de transporte. Refazer com esse ponto.", date: "2026-05-02", status: "pendente", assignedTaskId: null, relatedTaskId: "tk5" },
   // Feedback geral sobre projeto (sem relatedTaskId)
   { id: "f3", projectId: "p1", clientId: "c5", clientName: "XP", type: "Elogio", text: "Excelente organização do cronograma da Gala. Time muito ágil nas respostas.", date: "2026-04-20", status: "pendente", assignedTaskId: null, relatedTaskId: null },
@@ -1521,7 +1526,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                         <label className="text-xs font-medium text-gray-600">Atribuir para</label>
                         <select value={assignForm.executor} onChange={e => setAssignForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                           <option value="">Selecione executor</option>
-                          {areaTeam.map(m => (
+                          {(proj?.squad && proj.squad.length > 0 ? areaTeam.filter(m => proj.squad.includes(m.id)) : areaTeam).map(m => (
                             <option key={m.id} value={m.id}>
                               {m.name} ({m.activeTasks} tarefas){relatedTask && relatedTask.executor === m.id ? " ★ executor original" : ""}
                             </option>
@@ -1691,7 +1696,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                     </select>
                   </div>
                   <div><label className="text-sm font-medium text-gray-700">Projeto</label>
-                    <select value={form.projectId} onChange={e => setForm(p => ({ ...p, projectId: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                    <select value={form.projectId} onChange={e => setForm(p => ({ ...p, projectId: e.target.value, executor: "" }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                       <option value="">Selecione um projeto</option>
                       {areaProjects.filter(p => !createClientFilter || p.client === createClientFilter).map(p => <option key={p.id} value={p.id}>{p.client} — {p.name}</option>)}
                     </select>
@@ -1701,7 +1706,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                   <div><label className="text-sm font-medium text-gray-700">Responsável</label>
                     <select value={form.executor} onChange={e => setForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                       <option value="">Selecione</option>
-                      {areaTeam.map(m => <option key={m.id} value={m.id}>{m.name} ({m.role} · {m.activeTasks} tarefas)</option>)}
+                      {(() => { const selProj = areaProjects.find(p => p.id === form.projectId); return selProj?.squad && selProj.squad.length > 0 ? areaTeam.filter(m => selProj.squad.includes(m.id)) : areaTeam; })().map(m => <option key={m.id} value={m.id}>{m.name} ({m.role} · {m.activeTasks} tarefas)</option>)}
                     </select>
                   </div>
                 </div>
@@ -1848,6 +1853,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                   {cFeedbacks.length === 0 && <p className="text-sm text-gray-400">Nenhum feedback registrado.</p>}
                   {cFeedbacks.map(fb => {
                     const relTask = fb.relatedTaskId ? tasks.find(t => t.id === fb.relatedTaskId) : null;
+                    const fbProj = projects.find(p => p.id === fb.projectId);
                     const isAssigning = assigningFb === fb.id;
                     const canAssign = fb.status === "pendente" && fb.type !== "Elogio";
                     const isElogio = fb.type === "Elogio";
@@ -1887,7 +1893,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                                 <label className="text-xs font-medium text-gray-600">Executor</label>
                                 <select value={assignForm.executor} onChange={e => setAssignForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                                   <option value="">Selecione</option>
-                                  {areaTeam.map(m => <option key={m.id} value={m.id}>{m.name} ({m.activeTasks} tarefas){relTask && relTask.executor === m.id ? " ★" : ""}</option>)}
+                                  {(fbProj?.squad && fbProj.squad.length > 0 ? areaTeam.filter(m => fbProj.squad.includes(m.id)) : areaTeam).map(m => <option key={m.id} value={m.id}>{m.name} ({m.activeTasks} tarefas){relTask && relTask.executor === m.id ? " ★" : ""}</option>)}
                                 </select>
                               </div>
                               <div><label className="text-xs font-medium text-gray-600">Prioridade</label><select value={assignForm.priority} onChange={e => setAssignForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900"><option>Alta</option><option>Média</option><option>Baixa</option></select></div>
