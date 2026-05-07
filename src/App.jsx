@@ -38,26 +38,28 @@ const initialTeam = [
 ];
 
 const initialClients = [
-  { id: "c1", name: "Ambev", contact: "João Mendes", whatsapp: "+5511999990001", responsible: "Ana Silva", nextMeeting: "2026-04-22T15:00", relationship: "estável" },
-  { id: "c2", name: "Hotmart", contact: "Camila Torres", whatsapp: "+5511999990002", responsible: "Ana Silva", nextMeeting: "2026-04-25T10:00", relationship: "estável" },
-  { id: "c3", name: "Red Bull", contact: "Lucas Braga", whatsapp: "+5511999990003", responsible: "Ana Silva", nextMeeting: "2026-04-28T14:00", relationship: "estável" },
-  { id: "c4", name: "Seara", contact: "Fernanda Lopes", whatsapp: "+5511999990004", responsible: "Ana Silva", nextMeeting: "2026-05-02T11:00", relationship: "atenção" },
-  { id: "c5", name: "XP", contact: "Ricardo Alves", whatsapp: "+5511999990005", responsible: "Ana Silva", nextMeeting: "2026-04-30T15:00", relationship: "estável" },
+  { id: "c1", name: "Ambev", contact: "João Mendes", whatsapp: "+5511999990001", responsible: "Ana Gallotta", nextMeeting: "2026-04-22T15:00", relationship: "estável" },
+  { id: "c2", name: "Hotmart", contact: "Camila Torres", whatsapp: "+5511999990002", responsible: "Ana Gallotta", nextMeeting: "2026-04-25T10:00", relationship: "estável" },
+  { id: "c3", name: "Red Bull", contact: "Lucas Braga", whatsapp: "+5511999990003", responsible: "Ana Gallotta", nextMeeting: "2026-04-28T14:00", relationship: "estável" },
+  { id: "c4", name: "Seara", contact: "Fernanda Lopes", whatsapp: "+5511999990004", responsible: "Ana Gallotta", nextMeeting: "2026-05-02T11:00", relationship: "atenção" },
+  { id: "c5", name: "XP", contact: "Ricardo Alves", whatsapp: "+5511999990005", responsible: "Ana Gallotta", nextMeeting: "2026-04-30T15:00", relationship: "estável" },
 ];
 
 const initialProjects = [
-  // Projetos ativos — XP e Red Bull
-  { id: "p1", name: "Gala de Premiação Anual", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Melissa Zambon", deadline: "2026-05-15", progress: 65 },
-  { id: "p2", name: "Festival de Esportes Radicais", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Maria Eduarda Vittori", deadline: "2026-05-28", progress: 30 },
-  { id: "p7", name: "Premiação Top Performers", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Maria Eduarda Vittori", deadline: "2026-07-10", progress: 10 },
-  { id: "p10", name: "Operações", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Samara Aboultaif", deadline: "2026-05-30", progress: 0 },
-  { id: "p9", name: "Ativação de Marca - Evento Gastronômico", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Melissa Zambon", deadline: "2026-06-15", progress: 25 },
-  // Projetos passados — Ambev, Hotmart, Seara (histórico)
-  { id: "p3", name: "Convenção Anual de Vendas", clientId: "c1", client: "Ambev", type: "Evento", area: "eventos", status: "concluido", priority: "Alta", responsible: "Carolina Guimarães", deadline: "2026-03-10", progress: 100 },
-  { id: "p4", name: "Summit Digital 2026", clientId: "c2", client: "Hotmart", type: "Evento", area: "eventos", status: "concluido", priority: "Média", responsible: "Samara Aboultaif", deadline: "2026-02-20", progress: 100 },
-  { id: "p5", name: "Happy Hour Corporativo", clientId: "c1", client: "Ambev", type: "Evento", area: "eventos", status: "concluido", priority: "Média", responsible: "Melissa Zambon", deadline: "2026-03-01", progress: 100 },
-  { id: "p6", name: "Lançamento de Produto", clientId: "c4", client: "Seara", type: "Evento", area: "eventos", status: "concluido", priority: "Média", responsible: "Carolina Guimarães", deadline: "2026-02-25", progress: 100 },
-  { id: "p8", name: "Workshop Inovação", clientId: "c2", client: "Hotmart", type: "Evento", area: "eventos", status: "concluido", priority: "Baixa", responsible: "Samara Aboultaif", deadline: "2026-01-15", progress: 100 },
+  { id: "p1", name: "Gala de Premiação Anual", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Ana Gallotta", deadline: "2026-05-15", progress: 65 },
+  { id: "p2", name: "Festival de Esportes Radicais", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Ana Gallotta", deadline: "2026-05-28", progress: 30 },
+  { id: "p7", name: "Premiação Top Performers", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Ana Gallotta", deadline: "2026-07-10", progress: 10 },
+  { id: "p10", name: "Operações", clientId: "c5", client: "XP", type: "Evento", area: "eventos", status: "em_execucao", priority: "Alta", responsible: "Ana Gallotta", deadline: "2026-05-30", progress: 0 },
+  { id: "p9", name: "Ativação de Marca - Evento Gastronômico", clientId: "c3", client: "Red Bull", type: "Evento", area: "eventos", status: "em_execucao", priority: "Média", responsible: "Ana Gallotta", deadline: "2026-06-15", progress: 25 },
+];
+
+// Projetos históricos — concluídos (clientes passados)
+const historicProjects = [
+  { id: "hp1", name: "Convenção Anual de Vendas", clientId: "c1", client: "Ambev", type: "Evento", status: "concluido", responsible: "Ana Gallotta", deadline: "2026-03-10" },
+  { id: "hp2", name: "Summit Digital 2026", clientId: "c2", client: "Hotmart", type: "Evento", status: "concluido", responsible: "Ana Gallotta", deadline: "2026-02-20" },
+  { id: "hp3", name: "Happy Hour Corporativo", clientId: "c1", client: "Ambev", type: "Evento", status: "concluido", responsible: "Ana Gallotta", deadline: "2026-03-01" },
+  { id: "hp4", name: "Lançamento de Produto", clientId: "c4", client: "Seara", type: "Evento", status: "concluido", responsible: "Ana Gallotta", deadline: "2026-02-25" },
+  { id: "hp5", name: "Workshop Inovação", clientId: "c2", client: "Hotmart", type: "Evento", status: "concluido", responsible: "Ana Gallotta", deadline: "2026-01-15" },
 ];
 
 const initialTasks = [
@@ -67,11 +69,31 @@ const initialTasks = [
 ];
 
 const initialLearnings = [
-  { id: "l1", title: "Checklist de fornecedores incompleto", description: "Item reprovado em QA: fornecedor de som e iluminação não tinha contrato confirmado. Precisou ser refeito antes da entrega ao cliente.", client: "Ambev", date: "2025-12-18", type: "erro", origin: "QA", tags: ["fornecedores", "qa", "checklist"], area: "eventos" },
+  { id: "l1", title: "Checklist de fornecedores incompleto", description: "Item reprovado em QA: fornecedor de som e iluminação não tinha contrato confirmado. Precisou ser refeito antes da entrega ao cliente.", client: "Ambev", clientId: "c1", date: "2025-12-18", type: "erro", origin: "QA", tags: ["fornecedores", "qa", "checklist"], area: "eventos" },
+  { id: "l2", title: "Prazo de aprovação subestimado", description: "Cliente Hotmart levou 5 dias úteis para aprovar roteiro. Considerar buffer maior em cronogramas futuros.", client: "Hotmart", clientId: "c2", date: "2026-01-10", type: "aprendizado", origin: "Líder", tags: ["prazo", "aprovação", "cronograma"], area: "eventos" },
+  { id: "l3", title: "Briefing incompleto causou retrabalho", description: "Red Bull pediu alterações no conceito visual após ver primeira entrega. Briefing não detalhava preferências visuais. Incluir referências visuais obrigatórias no briefing.", client: "Red Bull", clientId: "c3", date: "2026-03-05", type: "erro", origin: "QA", tags: ["briefing", "retrabalho", "visual"], area: "eventos" },
+  { id: "l4", title: "Formato de apresentação ideal para XP", description: "XP prefere decks curtos (max 10 slides) com dados concretos e ROI projetado. Evitar slides muito conceituais.", client: "XP", clientId: "c5", date: "2026-02-20", type: "aprendizado", origin: "Líder", tags: ["apresentação", "formato", "xp"], area: "eventos" },
+  { id: "l5", title: "Seara exige aprovação jurídica", description: "Todo material com marca Seara precisa de aprovação do jurídico deles. Adicionar 3 dias úteis ao prazo.", client: "Seara", clientId: "c4", date: "2025-11-15", type: "aprendizado", origin: "Líder", tags: ["jurídico", "aprovação", "prazo"], area: "eventos" },
 ];
 
 const initialFeedbacks = [
-  { id: "f2", projectId: "p2", clientId: "c3", clientName: "Red Bull", type: "Sugestão", text: "Incluir opção de atividade alternativa para participantes com menor preparo físico.", date: "2026-04-14", status: "pendente", assignedTaskId: null },
+  // Feedback sobre entrega específica (tem relatedTaskId)
+  { id: "f2", projectId: "p2", clientId: "c3", clientName: "Red Bull", type: "Sugestão", text: "Incluir opção de atividade alternativa para participantes com menor preparo físico.", date: "2026-04-14", status: "pendente", assignedTaskId: null, relatedTaskId: null },
+  { id: "f5", projectId: "p1", clientId: "c5", clientName: "XP", type: "Ajuste", text: "A reunião de alinhamento pré-evento não cobriu o tema de logística de transporte. Refazer com esse ponto.", date: "2026-05-02", status: "pendente", assignedTaskId: null, relatedTaskId: "tk5" },
+  // Feedback geral sobre projeto (sem relatedTaskId)
+  { id: "f3", projectId: "p1", clientId: "c5", clientName: "XP", type: "Elogio", text: "Excelente organização do cronograma da Gala. Time muito ágil nas respostas.", date: "2026-04-20", status: "pendente", assignedTaskId: null, relatedTaskId: null },
+  { id: "f4", projectId: "p9", clientId: "c3", clientName: "Red Bull", type: "Ajuste", text: "Precisamos de mais opções de cardápio vegano para o evento gastronômico. Reavaliar fornecedores.", date: "2026-05-01", status: "pendente", assignedTaskId: null, relatedTaskId: "tk6" },
+];
+
+// Notas internas por cliente — preferências, observações da equipe
+const initialClientNotes = [
+  { id: "cn1", clientId: "c5", author: "Ana Gallotta", date: "2026-03-15", text: "XP prefere comunicação via e-mail formal. Evitar WhatsApp para aprovações — sempre documentar por escrito." },
+  { id: "cn2", clientId: "c5", author: "Ana Gallotta", date: "2026-04-01", text: "Ricardo (contato principal) viaja muito. Agendar reuniões com 1 semana de antecedência mínima." },
+  { id: "cn3", clientId: "c3", author: "Ana Gallotta", date: "2026-02-10", text: "Red Bull gosta de propostas ousadas e criativas. Não ter medo de sugerir ideias fora do convencional." },
+  { id: "cn4", clientId: "c3", author: "Ana Gallotta", date: "2026-03-20", text: "Lucas (contato) é muito visual — sempre levar mockups e referências nas reuniões. Evitar só texto." },
+  { id: "cn5", clientId: "c1", author: "Ana Gallotta", date: "2026-01-08", text: "Ambev tem processo de aprovação interno demorado. Sempre enviar materiais com pelo menos 10 dias de antecedência." },
+  { id: "cn6", clientId: "c2", author: "Ana Gallotta", date: "2026-01-20", text: "Hotmart prefere reuniões rápidas de 15min. Ir direto ao ponto, sem muita contextualização." },
+  { id: "cn7", clientId: "c4", author: "Ana Gallotta", date: "2025-12-05", text: "Seara exige que toda comunicação visual passe pelo jurídico. Incluir esse passo no cronograma sempre." },
 ];
 
 // ============================
@@ -86,6 +108,11 @@ function AppProvider({ children }) {
   const [team] = useState(initialTeam);
   const [learnings, setLearnings] = useState(initialLearnings);
   const [feedbacks, setFeedbacks] = useState(initialFeedbacks);
+  const [clientNotes, setClientNotes] = useState(initialClientNotes);
+
+  const addClientNote = useCallback((clientId, text) => {
+    setClientNotes(prev => [{ id: "cn" + Date.now(), clientId, author: "Ana Gallotta", date: new Date().toISOString().split("T")[0], text }, ...prev]);
+  }, []);
   // Notifications: target = "executor:t1", "qa", "lider", "client:c5"
   // priority = "info" | "warning" | "danger"
   const [notifications, setNotifications] = useState([]);
@@ -229,7 +256,7 @@ function AppProvider({ children }) {
   }, [team, tasks]);
 
   return (
-    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, resubmitTask, revertFromQA, revertFromCompleted, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
+    <AppContext.Provider value={{ tasks, projects, clients, team, learnings, feedbacks, clientNotes, notifications, addTask, updateTaskStatus, submitToQA, approveTask, rejectTask, toggleChecklist, addFeedback, assignFeedbackAsTask, addLearning, addClientNote, resubmitTask, revertFromQA, revertFromCompleted, dismissNotification, dismissSmartAlert, getTeamWithLoad, getSmartAlerts, setNotifications }}>
       {children}
     </AppContext.Provider>
   );
@@ -1026,7 +1053,7 @@ function QAErrorsView({ area, onBack }) {
 // LiderSquadSelector removed — only eventos squad exists now
 
 function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProjectClick, onViewAsClient }) {
-  const { projects, tasks, feedbacks, clients, addTask, assignFeedbackAsTask, getTeamWithLoad, team: rawTeam } = useContext(AppContext);
+  const { projects, tasks, feedbacks, clients, addTask, assignFeedbackAsTask, addClientNote, getTeamWithLoad, team: rawTeam } = useContext(AppContext);
   const [tab, setTab] = useState("geral");
   const [showCreate, setShowCreate] = useState(false);
   const [feedFilter, setFeedFilter] = useState("pendentes");
@@ -1039,8 +1066,9 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
   const areaProjects = projects.filter(p => p.area === area);
   const areaTeam = getTeamWithLoad(area);
   const areaFeedbacks = feedbacks.filter(f => areaProjects.some(p => p.id === f.projectId));
-  const pendingFeedbacks = areaFeedbacks.filter(f => f.status === "pendente");
+  const pendingFeedbacks = areaFeedbacks.filter(f => f.status === "pendente" && f.type !== "Elogio");
   const assignedFeedbacks = areaFeedbacks.filter(f => f.status === "atribuido");
+  const elogios = areaFeedbacks.filter(f => f.type === "Elogio" && f.status === "pendente");
 
   const handleCreateFileSelect = (e) => {
     const selected = Array.from(e.target.files || []);
@@ -1074,25 +1102,46 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
     setShowCreate(false);
   };
 
-  const handleAssignFeedback = (fbId) => {
-    const fb = feedbacks.find(f => f.id === fbId);
+  const [assigningFb, setAssigningFb] = useState(null);
+  const [assignForm, setAssignForm] = useState({ executor: "", priority: "Alta", deadline: "", title: "" });
+  const [elogioNotes, setElogioNotes] = useState({});
+  const [archivedElogios, setArchivedElogios] = useState(new Set());
+  const [relNote, setRelNote] = useState({ clientId: "", text: "" });
+
+  const openAssign = (fb) => {
+    const relatedTask = fb.relatedTaskId ? tasks.find(t => t.id === fb.relatedTaskId) : null;
+    const suggestedExecutor = relatedTask ? relatedTask.executor : "";
+    const suggestedTitle = relatedTask
+      ? `[Feedback] Ajuste em: ${relatedTask.title}`
+      : `[Feedback] ${fb.text.substring(0, 60)}`;
+    setAssigningFb(fb.id);
+    setAssignForm({
+      executor: suggestedExecutor,
+      priority: "Alta",
+      deadline: new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 16),
+      title: suggestedTitle,
+    });
+  };
+
+  const handleAssignFeedback = () => {
+    const fb = feedbacks.find(f => f.id === assigningFb);
     const proj = projects.find(p => p.id === fb?.projectId);
-    if (!fb || !proj) return;
-    const executor = areaTeam.find(m => m.role === "Executor" && m.activeTasks <= 3) || areaTeam.find(m => m.role === "Executor");
-    if (!executor) return;
-    assignFeedbackAsTask(fbId, {
-      title: `[Feedback] ${fb.text.substring(0, 50)}...`,
+    const exec = rawTeam.find(t => t.id === assignForm.executor);
+    if (!fb || !proj || !exec || !assignForm.title.trim()) return;
+    assignFeedbackAsTask(fb.id, {
+      title: assignForm.title,
       projectId: fb.projectId,
       project: proj.name,
-      executor: executor.id,
-      executorName: executor.name,
-      priority: "Alta",
+      executor: exec.id,
+      executorName: exec.name,
+      priority: assignForm.priority,
       area,
-      deadline: new Date(Date.now() + 3 * 86400000).toISOString(),
-      description: `Feedback do cliente: ${fb.text}`,
-      checklist: [{ text: "Analisar feedback", done: false }, { text: "Implementar ajuste", done: false }],
+      deadline: assignForm.deadline,
+      description: `Feedback do cliente ${fb.clientName}: ${fb.text}`,
+      checklist: [{ text: "Analisar feedback do cliente", done: false }, { text: "Implementar ajuste solicitado", done: false }, { text: "Validar com líder antes de enviar ao QA", done: false }],
       attachments: [],
     });
+    setAssigningFb(null);
   };
 
   return (
@@ -1141,31 +1190,164 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
             </table>
           </Card>
 
-          <h2 className="text-xl font-bold mb-4">Aguardando atribuição</h2>
+          <h2 className="text-xl font-bold mb-4">Feedbacks de clientes</h2>
           <div className="flex gap-2 mb-4">
-            <Button variant={feedFilter === "pendentes" ? "default" : "outline"} size="sm" onClick={() => setFeedFilter("pendentes")}>Pendentes</Button>
-            <Button variant={feedFilter === "atribuidos" ? "default" : "outline"} size="sm" onClick={() => setFeedFilter("atribuidos")}>Atribuídos</Button>
+            <Button variant={feedFilter === "pendentes" ? "default" : "outline"} size="sm" onClick={() => setFeedFilter("pendentes")}>Pendentes ({pendingFeedbacks.length})</Button>
+            <Button variant={feedFilter === "atribuidos" ? "default" : "outline"} size="sm" onClick={() => setFeedFilter("atribuidos")}>Atribuídos ({assignedFeedbacks.length})</Button>
           </div>
-          {feedFilter === "pendentes" && pendingFeedbacks.length === 0 && <Card className="p-8 text-center text-gray-400 mb-8">Nenhum feedback pendente de atribuição com esses filtros</Card>}
-          {feedFilter === "pendentes" && pendingFeedbacks.map(fb => (
-            <Card key={fb.id} className="p-5 mb-3">
-              <div className="flex justify-between items-start">
-                <div>
-                  <Badge variant="warning" className="mb-2">{fb.type}</Badge>
-                  <p className="text-sm text-gray-700 mb-1">{fb.text}</p>
-                  <p className="text-xs text-gray-400">Cliente: {fb.clientName} · {fb.date}</p>
+          {feedFilter === "pendentes" && pendingFeedbacks.length === 0 && <Card className="p-8 text-center text-gray-400 mb-8">Nenhum feedback pendente de atribuição</Card>}
+          {feedFilter === "pendentes" && pendingFeedbacks.map(fb => {
+            const relatedTask = fb.relatedTaskId ? tasks.find(t => t.id === fb.relatedTaskId) : null;
+            const proj = projects.find(p => p.id === fb.projectId);
+            const isAssigning = assigningFb === fb.id;
+
+            return (
+              <Card key={fb.id} className="mb-3 overflow-hidden">
+                <div className="p-5">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant={fb.type === "Ajuste" ? "danger" : fb.type === "Sugestão" ? "warning" : "success"}>{fb.type}</Badge>
+                        {relatedTask ? <Badge variant="purple">Sobre entrega específica</Badge> : <Badge variant="info">Sobre o projeto</Badge>}
+                      </div>
+                      <p className="text-sm text-gray-800 mb-2">{fb.text}</p>
+                      <div className="flex items-center gap-4 text-xs text-gray-400">
+                        <span>Cliente: <strong className="text-gray-600">{fb.clientName}</strong></span>
+                        <span>Projeto: <strong className="text-gray-600">{proj?.name || "—"}</strong></span>
+                        <span>{fb.date}</span>
+                      </div>
+                      {relatedTask && (
+                        <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Entrega relacionada</p>
+                          <p className="text-sm font-medium">{relatedTask.title}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">Executor: <strong>{relatedTask.executorName}</strong> · Status: {relatedTask.status === "concluida" ? "Concluída" : relatedTask.status === "em_qa" ? "Em QA" : relatedTask.status === "em_execucao" ? "Em execução" : relatedTask.status === "devolvida" ? "Devolvida" : "A fazer"}</p>
+                        </div>
+                      )}
+                    </div>
+                    {!isAssigning && <Button size="sm" onClick={() => openAssign(fb)}>Atribuir como tarefa</Button>}
+                  </div>
                 </div>
-                <Button size="sm" onClick={() => handleAssignFeedback(fb.id)}>Atribuir como tarefa</Button>
+
+                {isAssigning && (
+                  <div className="border-t bg-gray-50 p-5 space-y-3">
+                    <p className="text-sm font-bold text-gray-700">Atribuir como tarefa</p>
+                    <div>
+                      <label className="text-xs font-medium text-gray-600">Título da tarefa</label>
+                      <input value={assignForm.title} onChange={e => setAssignForm(p => ({ ...p, title: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className="text-xs font-medium text-gray-600">Atribuir para</label>
+                        <select value={assignForm.executor} onChange={e => setAssignForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                          <option value="">Selecione executor</option>
+                          {areaTeam.map(m => (
+                            <option key={m.id} value={m.id}>
+                              {m.name} ({m.activeTasks} tarefas){relatedTask && relatedTask.executor === m.id ? " ★ executor original" : ""}
+                            </option>
+                          ))}
+                        </select>
+                        {relatedTask && <p className="text-xs text-gray-400 mt-1">★ = executor que fez a entrega original</p>}
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-gray-600">Prioridade</label>
+                        <select value={assignForm.priority} onChange={e => setAssignForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
+                          <option>Alta</option><option>Média</option><option>Baixa</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-gray-600">Prazo</label>
+                        <input type="datetime-local" value={assignForm.deadline} onChange={e => setAssignForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                      </div>
+                    </div>
+                    <div className="flex gap-2 pt-1">
+                      <Button size="sm" onClick={handleAssignFeedback} disabled={!assignForm.executor || !assignForm.title.trim()}>Confirmar atribuição</Button>
+                      <Button variant="outline" size="sm" onClick={() => setAssigningFb(null)}>Cancelar</Button>
+                    </div>
+                  </div>
+                )}
+              </Card>
+            );
+          })}
+          {feedFilter === "atribuidos" && assignedFeedbacks.length === 0 && <Card className="p-8 text-center text-gray-400 mb-8">Nenhum feedback atribuído ainda</Card>}
+          {feedFilter === "atribuidos" && assignedFeedbacks.map(fb => {
+            const proj = projects.find(p => p.id === fb.projectId);
+            const assignedTask = fb.assignedTaskId ? tasks.find(t => t.id === fb.assignedTaskId) : null;
+            return (
+              <Card key={fb.id} className="p-5 mb-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="success">Atribuído</Badge>
+                  <Badge variant={fb.type === "Ajuste" ? "danger" : fb.type === "Sugestão" ? "warning" : "success"}>{fb.type}</Badge>
+                </div>
+                <p className="text-sm text-gray-700 mb-1">{fb.text}</p>
+                <p className="text-xs text-gray-400">Cliente: {fb.clientName} · Projeto: {proj?.name || "—"} · {fb.date}</p>
+                {assignedTask && <p className="text-xs text-gray-500 mt-2">Tarefa criada: <strong>{assignedTask.title}</strong> → {assignedTask.executorName}</p>}
+              </Card>
+            );
+          })}
+
+          <h2 className="text-xl font-bold mt-8 mb-4">Relacionamento com cliente</h2>
+          <p className="text-sm text-gray-500 mb-4">Elogios recebidos e anotações sobre preferências dos clientes. Ao registrar, a informação vai para o Histórico de Clientes.</p>
+
+          {elogios.filter(e => !archivedElogios.has(e.id)).length > 0 && (
+            <div className="mb-4">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Elogios recebidos</p>
+              {elogios.filter(e => !archivedElogios.has(e.id)).map(fb => {
+                const proj = projects.find(p => p.id === fb.projectId);
+                return (
+                  <Card key={fb.id} className="mb-3 border-l-4 border-l-green-500">
+                    <div className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="success">Elogio</Badge>
+                        <span className="text-xs text-gray-400">{fb.clientName} · {fb.date}</span>
+                      </div>
+                      <p className="text-sm text-gray-800 mb-1">"{fb.text}"</p>
+                      {proj && <p className="text-xs text-gray-400">Projeto: {proj.name}</p>}
+                      <div className="mt-3">
+                        <textarea
+                          value={elogioNotes[fb.id] || ""}
+                          onChange={e => setElogioNotes(prev => ({ ...prev, [fb.id]: e.target.value }))}
+                          placeholder="Anote o que aprendemos com esse elogio... Ex: 'Cliente valoriza agilidade nas respostas — manter esse padrão'"
+                          className="w-full border border-gray-200 rounded-lg p-2.5 text-sm min-h-[60px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50"
+                        />
+                        <div className="flex justify-end mt-2">
+                          <Button size="sm" variant="outline" onClick={() => {
+                            const noteText = elogioNotes[fb.id]?.trim()
+                              ? `[Elogio] ${fb.text} — Anotação: ${elogioNotes[fb.id].trim()}`
+                              : `[Elogio] ${fb.text}`;
+                            addClientNote(fb.clientId, noteText);
+                            setArchivedElogios(prev => new Set([...prev, fb.id]));
+                            setElogioNotes(prev => { const n = { ...prev }; delete n[fb.id]; return n; });
+                          }}>
+                            <CheckCircle2 size={14} /> Registrar no histórico
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+
+          {elogios.filter(e => !archivedElogios.has(e.id)).length === 0 && (
+            <Card className="p-6 text-center text-gray-400 mb-4">Nenhum elogio pendente de registro</Card>
+          )}
+
+          <Card className="p-5 mb-8">
+            <p className="text-sm font-medium text-gray-700 mb-3">Nova anotação sobre cliente</p>
+            <div className="grid grid-cols-4 gap-3">
+              <div>
+                <select value={relNote.clientId} onChange={e => setRelNote(p => ({ ...p, clientId: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900">
+                  <option value="">Selecione cliente</option>
+                  {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
               </div>
-            </Card>
-          ))}
-          {feedFilter === "atribuidos" && assignedFeedbacks.map(fb => (
-            <Card key={fb.id} className="p-5 mb-3">
-              <Badge variant="success" className="mb-2">Atribuído</Badge>
-              <p className="text-sm text-gray-700 mb-1">{fb.text}</p>
-              <p className="text-xs text-gray-400">Cliente: {fb.clientName} · {fb.date}</p>
-            </Card>
-          ))}
+              <div className="col-span-2">
+                <input value={relNote.text} onChange={e => setRelNote(p => ({ ...p, text: e.target.value }))} onKeyDown={e => { if (e.key === "Enter" && relNote.clientId && relNote.text.trim()) { addClientNote(relNote.clientId, relNote.text.trim()); setRelNote({ clientId: "", text: "" }); } }} placeholder="Ex: Cliente prefere reuniões curtas e objetivas..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+              </div>
+              <Button size="sm" onClick={() => { if (relNote.clientId && relNote.text.trim()) { addClientNote(relNote.clientId, relNote.text.trim()); setRelNote({ clientId: "", text: "" }); } }} disabled={!relNote.clientId || !relNote.text.trim()}>Salvar nota</Button>
+            </div>
+          </Card>
 
           <h2 className="text-xl font-bold mt-8 mb-4">Carga do time</h2>
           <Card className="p-6 mb-8">
@@ -1379,25 +1561,51 @@ function ClientSelectorView({ onSelect, onBack }) {
 }
 
 function ClientHubView({ onBack }) {
-  const { clients, projects } = useContext(AppContext);
+  const { clients, projects, feedbacks, learnings, clientNotes, addClientNote } = useContext(AppContext);
+  const [expandedClient, setExpandedClient] = useState(null);
+  const [clientTab, setClientTab] = useState("projetos");
+  const [newNote, setNewNote] = useState("");
+
   const totalActive = projects.filter(p => p.status === "em_execucao").length;
-  const totalDone = projects.filter(p => p.status === "concluido").length;
+  const totalDone = historicProjects.length;
+  const activeClientIds = new Set(projects.filter(p => p.status === "em_execucao").map(p => p.clientId));
+
+  const getClientData = (clientId) => {
+    const activeP = projects.filter(p => p.clientId === clientId && p.status === "em_execucao");
+    const doneP = historicProjects.filter(p => p.clientId === clientId);
+    const allP = [...activeP, ...doneP];
+    const clientFeedbacks = feedbacks.filter(f => f.clientId === clientId);
+    const clientLearnings = learnings.filter(l => l.clientId === clientId);
+    const notes = clientNotes.filter(n => n.clientId === clientId);
+    return { activeP, doneP, allP, clientFeedbacks, clientLearnings, notes };
+  };
+
+  const handleExpand = (cid) => {
+    if (expandedClient === cid) { setExpandedClient(null); } else { setExpandedClient(cid); setClientTab("projetos"); }
+  };
+
+  const handleAddNote = (clientId) => {
+    if (!newNote.trim()) return;
+    addClientNote(clientId, newNote.trim());
+    setNewNote("");
+  };
+
+  const relationBadge = (r) => r === "estável" ? { label: "Relacionamento estável", variant: "success" } : r === "atenção" ? { label: "Requer atenção", variant: "danger" } : { label: "Parceria excelente", variant: "success" };
 
   return (
     <div className="max-w-6xl mx-auto">
       <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-4"><ArrowLeft size={16} /> Voltar</button>
-      <div className="flex items-center gap-3 mb-2">
-        <Users size={32} className="text-green-600" />
+      <div className="mb-2">
         <h1 className="text-3xl font-bold">Histórico de Clientes</h1>
       </div>
-      <p className="text-gray-500 mb-8">Registro de todos os clientes e projetos realizados pela agência.</p>
+      <p className="text-gray-500 mb-8">Base de conhecimento da agência — projetos, feedbacks, aprendizados e anotações internas de cada cliente.</p>
 
       <div className="grid grid-cols-4 gap-4 mb-8">
         {[
           { label: "Total de clientes", value: clients.length, icon: <Users size={20} className="text-gray-400" /> },
-          { label: "Projetos ativos", value: totalActive, icon: <FolderOpen size={20} className="text-gray-400" /> },
-          { label: "Projetos concluídos", value: totalDone, icon: <CheckCircle2 size={20} className="text-green-400" /> },
-          { label: "Parcerias excelentes", value: clients.filter(c => c.relationship === "excelente").length, icon: <CheckCircle2 size={20} className="text-green-400" /> },
+          { label: "Clientes ativos", value: activeClientIds.size, icon: <CheckCircle2 size={20} className="text-green-400" /> },
+          { label: "Projetos ativos", value: totalActive, icon: <FolderOpen size={20} className="text-blue-400" /> },
+          { label: "Projetos concluídos", value: totalDone, icon: <CheckCircle2 size={20} className="text-gray-400" /> },
         ].map((s, i) => (
           <Card key={i} className="p-5">
             <div className="flex items-center justify-between"><p className="text-sm text-gray-500">{s.label}</p>{s.icon}</div>
@@ -1406,21 +1614,147 @@ function ClientHubView({ onBack }) {
         ))}
       </div>
 
-      <h2 className="text-xl font-bold mb-4">Clientes</h2>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="space-y-4">
         {clients.map(c => {
-          const activeProjects = projects.filter(p => p.clientId === c.id && p.status === "em_execucao");
-          const doneProjects = projects.filter(p => p.clientId === c.id && p.status === "concluido");
+          const data = getClientData(c.id);
+          const isActive = activeClientIds.has(c.id);
+          const isExpanded = expandedClient === c.id;
+          const rel = relationBadge(c.relationship);
+
           return (
-            <Card key={c.id} className="p-5">
-              <h3 className="font-bold text-lg mb-1">{c.name}</h3>
-              <p className="text-sm text-gray-500 mb-3">Contato: {c.contact}</p>
-              <div className="flex justify-between text-sm mb-1"><span>Projetos ativos:</span><Badge variant="info">{activeProjects.length} em andamento</Badge></div>
-              <div className="flex justify-between text-sm mb-4"><span>Concluídos:</span><span className="text-gray-500">{doneProjects.length} projetos</span></div>
-              <hr className="mb-3" />
-              <Badge variant={c.relationship === "estável" ? "success" : c.relationship === "atenção" ? "danger" : "success"}>
-                {c.relationship === "estável" ? "Relacionamento estável" : c.relationship === "atenção" ? "Requer atenção" : "Parceria excelente"}
-              </Badge>
+            <Card key={c.id} className="overflow-hidden">
+              <button onClick={() => handleExpand(c.id)} className="w-full p-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold ${isActive ? "bg-gray-900 text-white" : "bg-gray-200 text-gray-500"}`}>
+                    {c.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-lg">{c.name}</h3>
+                      <Badge variant={isActive ? "success" : "default"}>{isActive ? "Ativo" : "Inativo"}</Badge>
+                      <Badge variant={rel.variant}>{rel.label}</Badge>
+                    </div>
+                    <p className="text-sm text-gray-500">Contato: {c.contact} · Responsável: {c.responsible} · {data.allP.length} projetos · {data.clientFeedbacks.length} feedbacks · {data.notes.length} notas</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  {data.activeP.length > 0 && <Badge variant="info">{data.activeP.length} ativos</Badge>}
+                  {data.doneP.length > 0 && <span className="text-sm text-gray-400">{data.doneP.length} concluídos</span>}
+                  {isExpanded ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+                </div>
+              </button>
+
+              {isExpanded && (
+                <div className="border-t">
+                  <div className="flex border-b">
+                    {[
+                      { key: "projetos", label: "Projetos (" + data.allP.length + ")" },
+                      { key: "feedbacks", label: "Feedbacks (" + data.clientFeedbacks.length + ")" },
+                      { key: "aprendizados", label: "Aprendizados (" + data.clientLearnings.length + ")" },
+                      { key: "notas", label: "Notas internas (" + data.notes.length + ")" },
+                    ].map(t => (
+                      <button key={t.key} onClick={() => setClientTab(t.key)} className={`px-5 py-3 text-sm font-medium transition-colors ${clientTab === t.key ? "border-b-2 border-gray-900 text-gray-900" : "text-gray-500 hover:text-gray-700"}`}>{t.label}</button>
+                    ))}
+                  </div>
+
+                  <div className="p-5">
+                    {clientTab === "projetos" && (
+                      <div className="space-y-3">
+                        {data.allP.length === 0 && <p className="text-sm text-gray-400">Nenhum projeto registrado.</p>}
+                        {data.activeP.length > 0 && (
+                          <>
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Projetos ativos</p>
+                            {data.activeP.map(p => (
+                              <div key={p.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                                <div>
+                                  <p className="font-medium">{p.name}</p>
+                                  <p className="text-sm text-gray-500">Responsável: {p.responsible} · Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant={p.priority === "Alta" ? "danger" : p.priority === "Média" ? "warning" : "success"}>{p.priority}</Badge>
+                                  <div className="w-24 bg-gray-200 rounded-full h-2"><div className="bg-blue-600 h-2 rounded-full" style={{ width: p.progress + "%" }} /></div>
+                                  <span className="text-xs text-gray-500 w-8">{p.progress}%</span>
+                                </div>
+                              </div>
+                            ))}
+                          </>
+                        )}
+                        {data.doneP.length > 0 && (
+                          <>
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 mt-4">Projetos concluídos</p>
+                            {data.doneP.map(p => (
+                              <div key={p.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                  <p className="font-medium text-gray-600">{p.name}</p>
+                                  <p className="text-sm text-gray-400">Responsável: {p.responsible} · Concluído em: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
+                                </div>
+                                <Badge variant="success">Concluído</Badge>
+                              </div>
+                            ))}
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    {clientTab === "feedbacks" && (
+                      <div className="space-y-3">
+                        {data.clientFeedbacks.length === 0 && <p className="text-sm text-gray-400">Nenhum feedback registrado deste cliente.</p>}
+                        {data.clientFeedbacks.map(f => (
+                          <div key={f.id} className={`p-4 rounded-lg border-l-4 ${f.type === "Elogio" ? "bg-green-50 border-l-green-500" : f.type === "Sugestão" ? "bg-blue-50 border-l-blue-500" : "bg-orange-50 border-l-orange-500"}`}>
+                            <div className="flex items-center justify-between mb-1">
+                              <Badge variant={f.type === "Elogio" ? "success" : f.type === "Sugestão" ? "info" : "warning"}>{f.type}</Badge>
+                              <span className="text-xs text-gray-400">{f.date}</span>
+                            </div>
+                            <p className="text-sm mt-1">{f.text}</p>
+                            {f.projectId && <p className="text-xs text-gray-400 mt-2">Projeto: {projects.find(p => p.id === f.projectId)?.name || historicProjects.find(p => p.id === f.projectId)?.name || f.projectId}</p>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {clientTab === "aprendizados" && (
+                      <div className="space-y-3">
+                        {data.clientLearnings.length === 0 && <p className="text-sm text-gray-400">Nenhum aprendizado registrado para este cliente.</p>}
+                        {data.clientLearnings.map(l => (
+                          <div key={l.id} className={`p-4 rounded-lg border-l-4 ${l.type === "erro" ? "bg-red-50 border-l-red-500" : "bg-yellow-50 border-l-yellow-500"}`}>
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2">
+                                <Badge variant={l.type === "erro" ? "danger" : "warning"}>{l.type === "erro" ? "Erro" : "Aprendizado"}</Badge>
+                                <span className="text-xs text-gray-500">Registrado por: {l.origin}</span>
+                              </div>
+                              <span className="text-xs text-gray-400">{l.date}</span>
+                            </div>
+                            <p className="font-medium text-sm mt-1">{l.title}</p>
+                            <p className="text-sm text-gray-600 mt-1">{l.description}</p>
+                            {l.tags && l.tags.length > 0 && <div className="flex gap-1 mt-2">{l.tags.map((tag, i) => <span key={i} className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">{tag}</span>)}</div>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {clientTab === "notas" && (
+                      <div>
+                        <div className="flex gap-2 mb-4">
+                          <input value={newNote} onChange={e => setNewNote(e.target.value)} onKeyDown={e => { if (e.key === "Enter") handleAddNote(c.id); }} placeholder="Adicionar nota interna sobre este cliente..." className="flex-1 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                          <Button size="sm" onClick={() => handleAddNote(c.id)} disabled={!newNote.trim()}>Salvar</Button>
+                        </div>
+                        <div className="space-y-3">
+                          {data.notes.length === 0 && <p className="text-sm text-gray-400">Nenhuma nota interna ainda.</p>}
+                          {data.notes.map(n => (
+                            <div key={n.id} className="p-3 bg-gray-50 rounded-lg">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-xs font-medium text-gray-500">{n.author}</span>
+                                <span className="text-xs text-gray-400">{n.date}</span>
+                              </div>
+                              <p className="text-sm">{n.text}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </Card>
           );
         })}
