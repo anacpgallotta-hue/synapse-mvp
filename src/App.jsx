@@ -283,15 +283,23 @@ function AppProvider({ children }) {
     notify(`Novo feedback de ${fb.clientName}: "${fb.text.substring(0, 60)}..."`, "lider", "warning");
   }, [notify]);
 
-  const assignFeedbackAsTask = useCallback((feedbackId, taskData) => {
+  const assignFeedbackAsTask = useCallback((feedbackId, taskData, reopenTaskId) => {
     setFeedbacks(prev => {
       const fb = prev.find(f => f.id === feedbackId);
-      const newTask = { ...taskData, id: "tk" + Date.now(), status: "a_fazer", submittedLink: "", qaComment: "", feedbackOrigin: { type: fb.type, text: fb.text } };
-      setTasks(t => [...t, newTask]);
-      notify(`Nova tarefa de feedback: "${taskData.title}"`, "executor:" + taskData.executor, "warning");
+      if (reopenTaskId) {
+        // Reopen existing task with feedback — don't create a duplicate
+        setTasks(t => t.map(tk => tk.id === reopenTaskId ? { ...tk, status: "devolvida", feedbackOrigin: { type: fb.type, text: fb.text }, qaComment: `Feedback do cliente (${fb.clientName}): ${fb.text}${taskData.instructions ? "\n\nInstruções do líder: " + taskData.instructions : ""}` } : tk));
+        const task = tasks.find(t => t.id === reopenTaskId);
+        notify(`Feedback do cliente reabriu tarefa: "${task?.title || taskData.title}"`, "executor:" + (task?.executor || taskData.executor), "warning");
+      } else {
+        // General feedback without related task — create new task
+        const newTask = { ...taskData, id: "tk" + Date.now(), status: "a_fazer", submittedLink: "", qaComment: "", feedbackOrigin: { type: fb.type, text: fb.text } };
+        setTasks(t => [...t, newTask]);
+        notify(`Nova tarefa de feedback: "${taskData.title}"`, "executor:" + taskData.executor, "warning");
+      }
       return prev.filter(f => f.id !== feedbackId);
     });
-  }, [notify, addClientNote]);
+  }, [notify, tasks]);
 
   const addLearning = useCallback((learning) => {
     setLearnings(prev => [...prev, { ...learning, id: "l" + Date.now() }]);
@@ -1461,7 +1469,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
     const relatedTask = fb.relatedTaskId ? tasks.find(t => t.id === fb.relatedTaskId) : null;
     const suggestedExecutor = relatedTask ? relatedTask.executor : "";
     const suggestedTitle = relatedTask
-      ? `[Feedback] Ajuste em: ${relatedTask.title}`
+      ? relatedTask.title
       : `[Feedback] ${fb.text.substring(0, 60)}`;
     setAssigningFb(fb.id);
     setAssignForm({
@@ -1478,6 +1486,8 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
     const proj = projects.find(p => p.id === fb?.projectId);
     const exec = rawTeam.find(t => t.id === assignForm.executor);
     if (!fb || !proj || !exec || !assignForm.title.trim()) return;
+    // If feedback is about a specific delivered task, reopen it instead of creating a duplicate
+    const reopenId = fb.relatedTaskId || null;
     assignFeedbackAsTask(fb.id, {
       title: assignForm.title,
       projectId: fb.projectId,
@@ -1487,10 +1497,11 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
       priority: assignForm.priority,
       area,
       deadline: assignForm.deadline,
+      instructions: assignForm.instructions.trim(),
       description: `Feedback do cliente ${fb.clientName}: ${fb.text}${assignForm.instructions.trim() ? `\n\nInstruções do líder: ${assignForm.instructions.trim()}` : ""}`,
       checklist: [{ text: "Analisar feedback do cliente", done: false }, { text: "Implementar ajuste solicitado", done: false }, { text: "Validar com líder antes de enviar ao QA", done: false }],
       attachments: [],
-    });
+    }, reopenId);
     setAssigningFb(null);
   };
 
@@ -1573,16 +1584,17 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                         </div>
                       )}
                     </div>
-                    {!isAssigning && <Button size="sm" onClick={() => openAssign(fb)}>Atribuir como tarefa</Button>}
+                    {!isAssigning && <Button size="sm" onClick={() => openAssign(fb)}>{relatedTask ? "Devolver ao executor" : "Atribuir como tarefa"}</Button>}
                   </div>
                 </div>
 
                 {isAssigning && (
                   <div className="border-t bg-gray-50 p-5 space-y-3">
-                    <p className="text-sm font-bold text-gray-700">Atribuir como tarefa</p>
+                    <p className="text-sm font-bold text-gray-700">{relatedTask ? "Devolver tarefa com feedback" : "Atribuir como nova tarefa"}</p>
+                    {relatedTask && <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">A tarefa original será reaberta como "Devolvida" com o feedback do cliente anexado.</p>}
                     <div>
-                      <label className="text-xs font-medium text-gray-600">Título da tarefa</label>
-                      <input value={assignForm.title} onChange={e => setAssignForm(p => ({ ...p, title: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                      <label className="text-xs font-medium text-gray-600">{relatedTask ? "Tarefa original" : "Título da tarefa"}</label>
+                      <input value={assignForm.title} onChange={e => setAssignForm(p => ({ ...p, title: e.target.value }))} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" readOnly={!!relatedTask} />
                     </div>
                     <div className="grid grid-cols-3 gap-3">
                       <div>
@@ -1613,7 +1625,7 @@ function LiderPortalView({ area, onBack, onViewClients, onSimulateClient, onProj
                       <textarea value={assignForm.instructions} onChange={e => setAssignForm(p => ({ ...p, instructions: e.target.value }))} placeholder="Dê contexto, orientações ou detalhes sobre como resolver este feedback..." className="w-full border border-gray-200 rounded-lg p-2.5 text-sm mt-1 min-h-[60px] focus:outline-none focus:ring-2 focus:ring-gray-900 bg-gray-50" />
                     </div>
                     <div className="flex gap-2 pt-1">
-                      <Button size="sm" onClick={handleAssignFeedback} disabled={!assignForm.executor || !assignForm.title.trim()}>Confirmar atribuição</Button>
+                      <Button size="sm" onClick={handleAssignFeedback} disabled={!assignForm.executor || !assignForm.title.trim()}>{relatedTask ? "Devolver tarefa" : "Confirmar atribuição"}</Button>
                       <Button variant="outline" size="sm" onClick={() => setAssigningFb(null)}>Cancelar</Button>
                     </div>
                   </div>
