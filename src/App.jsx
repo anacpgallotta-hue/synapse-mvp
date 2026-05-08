@@ -540,6 +540,26 @@ function DarkModeStyles() {
       .dark ::-webkit-scrollbar { width: 6px; }
       .dark ::-webkit-scrollbar-track { background: #0c0a09; }
       .dark ::-webkit-scrollbar-thumb { background: #44403c; border-radius: 3px; }
+
+      /* ══════ RESPONSIVE / MOBILE ══════ */
+      @media (max-width: 767px) {
+        /* Tighten card padding on mobile */
+        .p-5 { padding: 1rem; }
+        .p-6 { padding: 1rem; }
+        .p-8 { padding: 1.25rem; }
+        .mb-8 { margin-bottom: 1.5rem; }
+        .mb-6 { margin-bottom: 1rem; }
+        .gap-6 { gap: 1rem; }
+        .gap-4 { gap: 0.75rem; }
+        /* Text sizes */
+        .text-xl { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.25rem; line-height: 1.75rem; }
+        /* Prevent horizontal overflow */
+        body { overflow-x: hidden; }
+        /* Kanban horizontal scroll hint */
+        .snap-x::-webkit-scrollbar { display: none; }
+        .snap-x { -ms-overflow-style: none; scrollbar-width: none; }
+      }
     `}</style>
   );
 }
@@ -787,16 +807,16 @@ function ExecutorView({ executorId, onTaskClick }) {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="mb-2 text-3xl font-bold text-stone-900">Minhas tarefas</h1>
-        <p className="text-stone-500">Organize suas entregas e acompanhe o progresso</p>
+        <h1 className="mb-2 text-2xl md:text-3xl font-bold text-stone-900">Minhas tarefas</h1>
+        <p className="text-sm md:text-base text-stone-500">Organize suas entregas e acompanhe o progresso</p>
 
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex gap-2">
-            {[["hoje", "Hoje"], ["2semanas", "Próximas 2 semanas"], ["todos", "Todos"]].map(([key, label]) => (
+        <div className="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0">
+            {[["hoje", "Hoje"], ["2semanas", "2 semanas"], ["todos", "Todos"]].map(([key, label]) => (
               <Button key={key} variant={timeFilter === key ? "default" : "outline"} size="sm" onClick={() => setTimeFilter(key)}>{label}</Button>
             ))}
           </div>
-          <div className="flex gap-1 bg-stone-100 rounded-lg p-1">
+          <div className="flex gap-1 bg-stone-100 rounded-lg p-1 self-start md:self-auto">
             <button onClick={() => setViewMode("lista")} className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${viewMode === "lista" ? "bg-white text-stone-900 shadow-sm" : "text-stone-500 hover:text-stone-700"}`}>Lista</button>
             <button onClick={() => setViewMode("kanban")} className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${viewMode === "kanban" ? "bg-white text-stone-900 shadow-sm" : "text-stone-500 hover:text-stone-700"}`}>Kanban</button>
           </div>
@@ -887,7 +907,7 @@ function ExecutorView({ executorId, onTaskClick }) {
             const cfg = statusConfig[key];
             const colTasks = myTasks.filter(t => t.status === key).sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
             return (
-              <div key={key} className="bg-stone-50 rounded-xl p-3 border border-stone-100">
+              <div key={key} className="min-w-[260px] md:min-w-0 snap-start flex-shrink-0 md:flex-shrink bg-stone-50 rounded-xl p-3 border border-stone-100">
                 <div className={`flex items-center gap-2 px-3 py-2 rounded-lg mb-3 ${cfg.bg}`}>
                   <div className={`h-2.5 w-2.5 rounded-full ${cfg.dot}`} />
                   <span className={`text-sm font-semibold ${cfg.text}`}>{cfg.label}</span>
@@ -967,7 +987,7 @@ function TaskDetailView({ taskId, onBack }) {
     <div className="max-w-3xl mx-auto">
       <button onClick={onBack} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 mb-6">← Voltar para minhas tarefas</button>
       <div className="flex items-start justify-between mb-2">
-        <h1 className="text-3xl font-bold text-stone-900">{task.title}</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-stone-900">{task.title}</h1>
         <div className={`h-4 w-4 rounded-full mt-2 ${task.priority === "Alta" ? "bg-red-500" : task.priority === "Média" ? "bg-orange-500" : "bg-emerald-500"}`} />
       </div>
       <div className="flex items-center gap-3 text-sm text-stone-500 mb-4 flex-wrap">
@@ -1169,17 +1189,17 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-stone-900">QA Eventos</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-stone-900">QA Eventos</h1>
           <p className="text-stone-500 mt-1">Gestão operacional — projetos, qualidade e conhecimento da área.</p>
         </div>
         <Button variant="outline" size="sm" onClick={onBack}><ArrowLeft size={14} /> Voltar</Button>
       </div>
 
       {/* Metrics bar */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
         <Card className="p-5 cursor-pointer hover:shadow-md transition-shadow" onClick={() => setTab("projetos")}>
           <p className="text-sm text-stone-500 mb-1">Projetos ativos</p>
-          <p className="text-3xl font-bold text-stone-900">{areaProjects.length}</p>
+          <p className="text-2xl md:text-3xl font-bold text-stone-900">{areaProjects.length}</p>
         </Card>
         <Card className={`p-5 cursor-pointer hover:shadow-md transition-shadow ${pendingTasks.length > 0 ? "border-l-4 border-l-violet-500" : ""}`} onClick={() => setTab("revisao")}>
           <p className="text-sm text-stone-500 mb-1">Aguardando revisão</p>
@@ -1278,7 +1298,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
 
           {/* Projetos — visual cards */}
           <h2 className="text-lg font-semibold mb-4">Projetos da área</h2>
-          <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             {areaProjects.map(p => {
               const pTasks = areaTasks.filter(t => t.projectId === p.id);
               const done = pTasks.filter(t => t.status === "concluida").length;
@@ -1329,11 +1349,11 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
             <Card className="p-5 mb-6">
               <p className="text-sm font-semibold text-stone-700 mb-4">Criar novo projeto</p>
               <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div><label className="text-xs font-medium text-stone-600">Nome do projeto / campanha</label><input value={projForm.name} onChange={e => setProjForm(p => ({ ...p, name: e.target.value }))} placeholder="Ex: Festival de Música 2026" className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
                   <div><label className="text-xs font-medium text-stone-600">Cliente</label><select value={projForm.clientId} onChange={e => setProjForm(p => ({ ...p, clientId: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900"><option value="">Selecione</option>{clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
                 </div>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div><label className="text-xs font-medium text-stone-600">Líder responsável</label><select value={projForm.responsible} onChange={e => setProjForm(p => ({ ...p, responsible: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900"><option value="Ana Gallotta">Ana Gallotta</option></select></div>
                   <div><label className="text-xs font-medium text-stone-600">Prioridade</label><select value={projForm.priority} onChange={e => setProjForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900"><option value="Alta">Alta</option><option value="Média">Média</option><option value="Baixa">Baixa</option></select></div>
                   <div><label className="text-xs font-medium text-stone-600">Prazo</label><input type="date" value={projForm.deadline} onChange={e => setProjForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
@@ -1347,7 +1367,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
             </Card>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {areaProjects.map(p => {
               const pTasks = areaTasks.filter(t => t.projectId === p.id);
               const done = pTasks.filter(t => t.status === "concluida").length;
@@ -1414,7 +1434,7 @@ function QAPortalView({ area, onBack, onViewErrors, onProjectClick }) {
                 {isExpanded && (
                   <div className="border-t border-stone-100 bg-stone-50">
                     <div className="p-6">
-                      <div className="grid grid-cols-2 gap-6 mb-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
                         <div className="space-y-4">
                           <div>
                             <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">Instruções da tarefa</p>
@@ -1707,10 +1727,10 @@ function LiderPortalView({ area, onBack, onProjectClick, onViewAsClient }) {
         <button onClick={onBack} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900"><ArrowLeft size={16} /> Voltar ao modo executor</button>
       </div>
       <div className="flex items-center gap-3 mb-1">
-        <h1 className="text-3xl font-bold">Líder Eventos</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">Líder Eventos</h1>
       </div>
-      <p className="text-stone-500 mb-1">Gerencie projetos e distribua tarefas para o time.</p>
-      <p className="text-sm text-stone-400 mb-6">Você está vendo todos os projetos de eventos.</p>
+      <p className="text-sm md:text-base text-stone-500 mb-1">Gerencie projetos e distribua tarefas para o time.</p>
+      <p className="text-xs md:text-sm text-stone-400 mb-4 md:mb-6">Você está vendo todos os projetos de eventos.</p>
 
       <div className="flex gap-2 mb-6">
         <Button variant={tab === "geral" ? "outline" : "ghost"} size="sm" onClick={() => setTab("geral")} className={tab === "geral" ? "border-pink-500 text-pink-700" : ""}>Visão geral</Button>
@@ -1720,21 +1740,21 @@ function LiderPortalView({ area, onBack, onProjectClick, onViewAsClient }) {
       {tab === "geral" && (
         <>
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-amber-500"></span>Projetos ativos</h2>
-          <Card className="mb-8 overflow-hidden">
-            <table className="w-full text-sm">
-              <thead><tr className="border-b"><th className="text-left p-4 font-medium">Projeto</th><th className="text-left p-4 font-medium">Cliente</th><th className="text-left p-4 font-medium">Tipo</th><th className="text-left p-4 font-medium">Status</th><th className="text-left p-4 font-medium">Prioridade</th><th className="text-left p-4 font-medium">Responsável</th><th className="text-left p-4 font-medium">Prazo</th></tr></thead>
+          <Card className="mb-8 overflow-x-auto">
+            <table className="w-full text-sm min-w-[700px]">
+              <thead><tr className="border-b"><th className="text-left p-3 md:p-4 font-medium">Projeto</th><th className="text-left p-3 md:p-4 font-medium">Cliente</th><th className="text-left p-3 md:p-4 font-medium hidden md:table-cell">Tipo</th><th className="text-left p-3 md:p-4 font-medium hidden md:table-cell">Status</th><th className="text-left p-3 md:p-4 font-medium">Prioridade</th><th className="text-left p-3 md:p-4 font-medium hidden md:table-cell">Responsável</th><th className="text-left p-3 md:p-4 font-medium">Prazo</th></tr></thead>
               <tbody>
                 {areaProjects.map(p => {
                   const projFeedbacks = feedbacks.filter(f => f.projectId === p.id && f.status === "pendente");
                   return (
                     <tr key={p.id} className="border-b last:border-0 hover:bg-stone-50 cursor-pointer" onClick={() => onProjectClick && onProjectClick(p.id)}>
-                      <td className="p-4 font-medium">{p.name} {projFeedbacks.length > 0 && <Badge variant="success" className="ml-2">{projFeedbacks.length} feedback</Badge>}</td>
-                      <td className="p-4 text-stone-500">{p.client}</td>
-                      <td className="p-4"><Badge variant="info">{p.type}</Badge></td>
-                      <td className="p-4"><Badge variant="purple">Projeto</Badge></td>
-                      <td className="p-4"><span className="inline-flex items-center gap-1"><span className={`h-2 w-2 rounded-full ${p.priority === "Alta" ? "bg-red-500" : p.priority === "Média" ? "bg-orange-500" : "bg-emerald-500"}`} />{p.priority}</span></td>
-                      <td className="p-4 text-stone-500">{p.responsible}</td>
-                      <td className="p-4 text-stone-500"><Calendar className="inline" size={12} /> {new Date(p.deadline).toLocaleDateString("pt-BR")}</td>
+                      <td className="p-3 md:p-4 font-medium">{p.name} {projFeedbacks.length > 0 && <Badge variant="success" className="ml-2">{projFeedbacks.length} feedback</Badge>}</td>
+                      <td className="p-3 md:p-4 text-stone-500">{p.client}</td>
+                      <td className="p-3 md:p-4 hidden md:table-cell"><Badge variant="info">{p.type}</Badge></td>
+                      <td className="p-3 md:p-4 hidden md:table-cell"><Badge variant="purple">Projeto</Badge></td>
+                      <td className="p-3 md:p-4"><span className="inline-flex items-center gap-1"><span className={`h-2 w-2 rounded-full ${p.priority === "Alta" ? "bg-red-500" : p.priority === "Média" ? "bg-orange-500" : "bg-emerald-500"}`} />{p.priority}</span></td>
+                      <td className="p-3 md:p-4 text-stone-500 hidden md:table-cell">{p.responsible}</td>
+                      <td className="p-3 md:p-4 text-stone-500"><Calendar className="inline" size={12} /> {new Date(p.deadline).toLocaleDateString("pt-BR")}</td>
                     </tr>
                   );
                 })}
@@ -1788,7 +1808,7 @@ function LiderPortalView({ area, onBack, onProjectClick, onViewAsClient }) {
                       <label className="text-xs font-medium text-stone-600">{relatedTask ? "Tarefa original" : "Título da tarefa"}</label>
                       <input value={assignForm.title} onChange={e => setAssignForm(p => ({ ...p, title: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" readOnly={!!relatedTask} />
                     </div>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <div>
                         <label className="text-xs font-medium text-stone-600">Atribuir para</label>
                         <select value={assignForm.executor} onChange={e => setAssignForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
@@ -1933,7 +1953,7 @@ function LiderPortalView({ area, onBack, onProjectClick, onViewAsClient }) {
 
           <h2 className="text-xl font-bold mt-8 mb-4 flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-violet-500"></span>Carga do time</h2>
           <Card className="p-6 mb-8">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {areaTeam.map(m => (
                 <Card key={m.id} className="p-4 border">
                   <div className="flex justify-between items-start mb-1">
@@ -1955,7 +1975,7 @@ function LiderPortalView({ area, onBack, onProjectClick, onViewAsClient }) {
             {showCreate && (
               <div className="px-5 pb-5 space-y-4 border-t pt-4">
                 <div><label className="text-sm font-medium text-stone-700">Nome da tarefa</label><input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Ex: Criar roteiro detalhado..." className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div><label className="text-sm font-medium text-stone-700">Cliente</label>
                     <select value={createClientFilter} onChange={e => { setCreateClientFilter(e.target.value); setForm(p => ({ ...p, projectId: "" })); }} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                       <option value="">Todos os clientes</option>
@@ -1969,7 +1989,7 @@ function LiderPortalView({ area, onBack, onProjectClick, onViewAsClient }) {
                     </select>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div><label className="text-sm font-medium text-stone-700">Responsável</label>
                     <select value={form.executor} onChange={e => setForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
                       <option value="">Selecione</option>
@@ -1977,7 +1997,7 @@ function LiderPortalView({ area, onBack, onProjectClick, onViewAsClient }) {
                     </select>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div><label className="text-sm font-medium text-stone-700">Prazo</label><input type="datetime-local" value={form.deadline} onChange={e => setForm(p => ({ ...p, deadline: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
                   <div><label className="text-sm font-medium text-stone-700">Prioridade</label>
                     <select value={form.priority} onChange={e => setForm(p => ({ ...p, priority: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
@@ -2063,7 +2083,7 @@ function LiderPortalView({ area, onBack, onProjectClick, onViewAsClient }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-4 mb-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
                 <Card className="p-4 text-center"><p className="text-2xl font-bold">{cProjects.length}</p><p className="text-xs text-stone-500">Projetos ativos</p></Card>
                 <Card className="p-4 text-center"><p className="text-2xl font-bold">{cDone.length}/{cTasks.length}</p><p className="text-xs text-stone-500">Tarefas concluídas</p></Card>
                 <Card className="p-4 text-center"><p className={`text-2xl font-bold ${cPendingFb.length > 0 ? "text-orange-600" : "text-emerald-600"}`}>{cPendingFb.length}</p><p className="text-xs text-stone-500">Feedbacks pendentes</p></Card>
@@ -2155,7 +2175,7 @@ function LiderPortalView({ area, onBack, onProjectClick, onViewAsClient }) {
                         {isAssigning && (
                           <div className="border-t bg-stone-50 p-4 space-y-3">
                             <div><label className="text-xs font-medium text-stone-600">Título da tarefa</label><input value={assignForm.title} onChange={e => setAssignForm(p => ({ ...p, title: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
-                            <div className="grid grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                               <div>
                                 <label className="text-xs font-medium text-stone-600">Executor</label>
                                 <select value={assignForm.executor} onChange={e => setAssignForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
@@ -2290,9 +2310,9 @@ function ClientSelectorView({ onSelect, onBack }) {
     <div className="max-w-3xl mx-auto">
       <button onClick={onBack} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 mb-6"><ArrowLeft size={16} /> Voltar</button>
       <p className="text-sm text-stone-400 mb-1">Synapse · Portal do Cliente</p>
-      <h1 className="text-3xl font-bold mb-2">Acessar como cliente</h1>
-      <p className="text-stone-500 mb-8">Selecione o cliente para visualizar o portal com seus projetos.</p>
-      <div className="grid grid-cols-2 gap-6">
+      <h1 className="text-2xl md:text-3xl font-bold mb-2">Acessar como cliente</h1>
+      <p className="text-sm md:text-base text-stone-500 mb-6 md:mb-8">Selecione o cliente para visualizar o portal com seus projetos.</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {activeClients.map(c => (
           <button key={c.id} onClick={() => onSelect(c.id)} className={`group border-2 border-stone-200 rounded-2xl p-8 ${hoverBorders[activeClients.indexOf(c) % 5]} hover:shadow-lg transition-all text-left`}>
             <div className={`w-14 h-14 rounded-xl ${brandColors[activeClients.indexOf(c) % 5]} text-white flex items-center justify-center text-xl font-bold mb-4 group-hover:scale-105 transition-transform`}>{c.logo}</div>
@@ -2343,11 +2363,11 @@ function ClientHubView({ onBack }) {
     <div className="max-w-6xl mx-auto">
       <button onClick={onBack} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 mb-4"><ArrowLeft size={16} /> Voltar</button>
       <div className="mb-2">
-        <h1 className="text-3xl font-bold">Histórico de Clientes</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">Histórico de Clientes</h1>
       </div>
       <p className="text-stone-500 mb-8">Base de conhecimento da agência — projetos, feedbacks, aprendizados e anotações internas de cada cliente.</p>
 
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
         {[
           { label: "Total de clientes", value: clients.length, icon: <Users size={20} className="text-pink-500" /> },
           { label: "Clientes ativos", value: activeClientIds.size, icon: <CheckCircle2 size={20} className="text-emerald-500" /> },
@@ -2356,7 +2376,7 @@ function ClientHubView({ onBack }) {
         ].map((s, i) => (
           <Card key={i} className="p-5">
             <div className="flex items-center justify-between"><p className="text-sm text-stone-500">{s.label}</p>{s.icon}</div>
-            <p className="text-3xl font-bold mt-1">{s.value}</p>
+            <p className="text-2xl md:text-3xl font-bold mt-1">{s.value}</p>
           </Card>
         ))}
       </div>
@@ -2562,17 +2582,17 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
       <div className="max-w-5xl mx-auto">
         <button onClick={() => { setSelectedProject(null); setProjectTab("entregas"); setFeedbackTaskId(null); setFeedbackText(""); }} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 mb-4"><ArrowLeft size={16} /> Voltar aos projetos</button>
         <p className="text-sm text-stone-400 mb-1">Synapse · Portal do Cliente · {client.name}</p>
-        <h1 className="text-3xl font-bold mb-2">{p.name}</h1>
-        <p className="text-sm text-stone-500 mb-6">Responsável: {p.responsible} · Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">{p.name}</h1>
+        <p className="text-xs md:text-sm text-stone-500 mb-4 md:mb-6">Responsável: {p.responsible} · Prazo: {new Date(p.deadline).toLocaleDateString("pt-BR")}</p>
 
         {/* Progress bar */}
-        <Card className="p-5 mb-6">
+        <Card className="p-4 md:p-5 mb-4 md:mb-6">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-medium text-stone-700">Progresso geral</p>
             <p className="text-lg font-bold">{progress}%</p>
           </div>
           <div className="w-full bg-stone-200 rounded-full h-2.5"><div className="bg-emerald-500 h-2.5 rounded-full transition-all" style={{ width: `${progress}%` }} /></div>
-          <div className="flex gap-6 mt-3 text-sm">
+          <div className="flex flex-wrap gap-3 md:gap-6 mt-3 text-sm">
             {pendingApproval.length > 0 && <span className="text-stone-700 font-medium">{pendingApproval.length} para revisar</span>}
             <span className="text-emerald-600 font-medium">{approved.length} aprovada{approved.length !== 1 ? "s" : ""}</span>
             {inProgress > 0 && <span className="text-stone-400">{inProgress} em andamento</span>}
@@ -2738,12 +2758,12 @@ function ClientPortalView({ clientId, onBack, onProjectClick }) {
         <Button variant="outline" size="sm" onClick={onBack}>Sair do portal</Button>
       </div>
       <p className="text-sm text-stone-400 mb-1">Synapse · Portal do Cliente</p>
-      <h1 className="text-3xl font-bold mb-6">Bem-vindo, {client.name}</h1>
+      <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">Bem-vindo, {client.name}</h1>
 
       {/* Account Info */}
-      <Card className="p-6 mb-6 border-l-4 border-l-green-600">
+      <Card className="p-4 md:p-6 mb-4 md:mb-6 border-l-4 border-l-green-600">
         <h3 className="font-bold mb-3">Sua conta na Synapse</h3>
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           <div>
             <p className="text-sm text-stone-500 mb-1">Seu gerente de conta</p>
             <p className="font-medium text-lg">{client.responsible}</p>
@@ -2875,7 +2895,7 @@ function KanbanCreateTask({ projectId, project, team, addTask }) {
         </button>
         {open && (
           <div className="px-5 pb-5 space-y-4 border-t pt-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="col-span-2"><label className="text-sm font-medium text-stone-700">Nome da tarefa</label><input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Ex: Criar roteiro detalhado..." className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900" /></div>
               <div><label className="text-sm font-medium text-stone-700">Responsável</label>
                 <select value={form.executor} onChange={e => setForm(p => ({ ...p, executor: e.target.value }))} className="w-full border border-stone-200 rounded-lg p-2.5 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-gray-900">
@@ -3038,7 +3058,7 @@ function ChatPanel({ isOpen, onClose, role, activeChannel: initialChannel }) {
   return (
     <>
       {isOpen && <div className="fixed inset-0 bg-black bg-opacity-20 z-40 transition-opacity" onClick={onClose} />}
-      <div className={`fixed top-0 right-0 h-full w-[440px] bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
+      <div className={`fixed top-0 right-0 h-full w-full md:w-[440px] bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
         {/* Channel list view */}
         {showChannelList ? (
           <>
@@ -3172,14 +3192,14 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
     <div className="max-w-7xl mx-auto">
       <button onClick={onBack} className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 mb-6"><ArrowLeft size={16} /> Voltar</button>
 
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col md:flex-row md:items-start justify-between mb-4 md:mb-6 gap-3">
         <div>
-          <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-3xl font-bold text-stone-900">{project.name}</h1>
+          <div className="flex items-center gap-2 md:gap-3 mb-1 flex-wrap">
+            <h1 className="text-xl md:text-3xl font-bold text-stone-900">{project.name}</h1>
             <Badge variant="purple">Evento</Badge>
             {isQAView && <span className="text-xs px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 border border-violet-200 font-medium">Visão QA</span>}
           </div>
-          <p className="text-stone-500">Cliente: <strong>{project.client}</strong> · Responsável: <strong>{project.responsible}</strong> · Prazo: <strong>{new Date(project.deadline).toLocaleDateString("pt-BR")}</strong></p>
+          <p className="text-sm md:text-base text-stone-500">Cliente: <strong>{project.client}</strong> · Prazo: <strong>{new Date(project.deadline).toLocaleDateString("pt-BR")}</strong></p>
         </div>
         <div className="flex items-center gap-2">
           {(isQAView || !isClientView) && onOpenChat && (() => {
@@ -3197,7 +3217,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
         <Card className="p-4">
           <p className="text-sm text-stone-500">Total de tarefas</p>
           <p className="text-2xl font-bold">{projectTasks.length}</p>
@@ -3225,7 +3245,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
         {columns.map(col => {
           const colTasks = projectTasks.filter(t => t.status === col.key);
           return (
-            <div key={col.key} className="bg-stone-50 rounded-xl p-3 border border-stone-100">
+            <div key={col.key} className="min-w-[260px] md:min-w-0 snap-start flex-shrink-0 md:flex-shrink bg-stone-50 rounded-xl p-3 border border-stone-100">
               <div className={`flex items-center gap-2 px-3 py-2 rounded-lg mb-3 ${col.headerColor}`}>
                 <div className={`h-2.5 w-2.5 rounded-full ${col.dotColor}`} />
                 <span className="text-sm font-semibold">{col.label}</span>
@@ -3297,7 +3317,7 @@ function ProjectKanbanView({ projectId, onBack, onTaskClick, isClientView = fals
             </div>
 
             {/* Squad members */}
-            <div className="grid grid-cols-4 gap-3 mb-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
               {squadMembers.map(member => {
                 const memberTasks = projectTasks.filter(t => t.executor === member.id);
                 const done = memberTasks.filter(t => t.status === "concluida").length;
@@ -3579,7 +3599,7 @@ function NotificationPanel({ onClose, context, executorId, onTaskClick }) {
   const hasContent = smartAlerts.length > 0 || historyNotifications.length > 0;
 
   return (
-    <div className="fixed top-16 right-6 w-[420px] bg-white rounded-xl shadow-xl border z-50 max-h-[480px] overflow-y-auto">
+    <div className="fixed top-14 md:top-16 right-0 md:right-6 w-full md:w-[420px] bg-white rounded-none md:rounded-xl shadow-xl border z-50 max-h-[85vh] md:max-h-[480px] overflow-y-auto">
       <div className="flex items-center justify-between p-4 border-b">
         <h3 className="font-bold">Notificações</h3>
         <div className="flex gap-2">
@@ -3764,7 +3784,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
         {notifPanel}
         {onboardingModal}
         {chatPanel}
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-8">
           <ProjectKanbanView projectId={selectedProject} onBack={goBack} onTaskClick={handleTaskClick} isQAView={projectOrigin === "qa"} onOpenChat={() => setShowChat(true)} />
         </div>
       </>
@@ -3776,7 +3796,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
       <>
         <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} showBell={false} darkMode={darkMode} setDarkMode={setDarkMode} />
         {onboardingModal}
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-8">
           <ClientSelectorView onSelect={(cid) => { pushHistory(); setClientPortalId(cid); setView("experiencia_cliente"); }} onBack={goBack} />
         </div>
       </>
@@ -3788,7 +3808,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
       <>
         <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} showBell={false} darkMode={darkMode} setDarkMode={setDarkMode} />
         {onboardingModal}
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-8">
           <ClientPortalView clientId={clientPortalId} onBack={goBack} />
         </div>
       </>
@@ -3801,7 +3821,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
         <Header currentView={view} setView={setView} currentExecutor={executorName} setShowNotif={setShowNotif} notifCount={unreadCount} onHelp={helpButton} showBell={false} darkMode={darkMode} setDarkMode={setDarkMode} />
         {notifPanel}
         {onboardingModal}
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-8">
           <ClientHubView onBack={goBack} />
         </div>
       </>
@@ -3823,7 +3843,7 @@ function AppInner({ view, setView, goBack, selectedTask, setSelectedTask, select
           {chatUnread > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse">{chatUnread}</span>}
         </button>
       )}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-8">
         {selectedTask && (
           <TaskDetailView taskId={selectedTask} onBack={goBack} />
         )}
